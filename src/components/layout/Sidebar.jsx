@@ -6,7 +6,7 @@
  */
 import { NavLink } from 'react-router-dom'
 import { Icon } from '../Icon'
-import { cx } from '../ui'
+import { cx } from '../cx'
 
 const NAV_SECTIONS = [
   {

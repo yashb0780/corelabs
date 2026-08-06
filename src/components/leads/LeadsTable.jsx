@@ -14,7 +14,8 @@ import {
   getPhase,
 } from '../../data/companies'
 import { Icon } from '../Icon'
-import { PhasePill, cx } from '../ui'
+import { cx } from '../cx'
+import { PhasePill } from '../ui'
 
 /* --- Company cell ------------------------------------------------------- */
 

@@ -4,11 +4,7 @@
  * from src/styles/tokens.css.
  */
 import { Icon } from './Icon'
-
-/** Joins class names, skipping anything falsy. */
-export function cx(...parts) {
-  return parts.filter(Boolean).join(' ')
-}
+import { cx } from './cx'
 
 /* --- Buttons ------------------------------------------------------------ */
 
