@@ -1,0 +1,9 @@
+@import 'tailwindcss';
+
+/* Self hosted, so there is no runtime request to Google Fonts. */
+@import '@fontsource/inter/latin-400.css';
+@import '@fontsource/inter/latin-500.css';
+@import '@fontsource/inter/latin-600.css';
+
+/* Every color, size and radius in the app lives in this one file. */
+@import './styles/tokens.css';
