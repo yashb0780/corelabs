@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# The app uses client side routing, so every URL must serve index.html and
+# let React Router decide what to show. Without this, refreshing on
+# /leads/meridian-foods would 404 on Netlify.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
