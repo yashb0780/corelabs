@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="Halcyon Retail Group">
+  <rect width="32" height="32" rx="7" fill="#F8EAE9"/>
+  <path d="M8 13h16l-1.4 11.5a1 1 0 0 1-1 .9H10.4a1 1 0 0 1-1-.9z" fill="none" stroke="#C2372F" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M12.4 15V11a3.6 3.6 0 0 1 7.2 0v4" fill="none" stroke="#C2372F" stroke-width="1.8" stroke-linecap="round"/>
+</svg>
