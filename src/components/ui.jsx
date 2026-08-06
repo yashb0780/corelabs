@@ -91,16 +91,40 @@ export function FilterPill({ active, count, children, ...rest }) {
  */
 const TONES = ['grey', 'blue', 'violet', 'amber', 'green', 'teal']
 
-export function TonePill({ tone = 'grey', children, title }) {
+/**
+ * `dashed` is used by the two "we could not tell" states, Unclassified and
+ * Unknown: no fill, dashed outline, so they read as absent rather than as
+ * just another status.
+ */
+export function TonePill({ tone = 'grey', dashed = false, children, title }) {
   const safe = TONES.includes(tone) ? tone : 'grey'
   return (
     <span
       title={title}
-      className="inline-flex items-center rounded-full px-2 py-0.5 text-2xs font-label whitespace-nowrap"
+      className={cx(
+        'inline-flex items-center rounded-full px-2 py-0.5 text-2xs font-label whitespace-nowrap',
+        dashed && 'border border-dashed',
+      )}
       style={{
         color: `var(--lp-tone-${safe})`,
-        backgroundColor: `var(--lp-tone-${safe}-bg)`,
+        backgroundColor: dashed ? 'transparent' : `var(--lp-tone-${safe}-bg)`,
+        borderColor: dashed ? `var(--lp-tone-${safe})` : undefined,
       }}
+    >
+      {children}
+    </span>
+  )
+}
+
+/** A small neutral chip. Used for state markers and counts. */
+export function Chip({ children, title, className }) {
+  return (
+    <span
+      title={title}
+      className={cx(
+        'inline-flex items-center gap-1 rounded-full border border-line px-2 py-0.5 text-2xs font-name text-txt-2 whitespace-nowrap',
+        className,
+      )}
     >
       {children}
     </span>
@@ -117,6 +141,37 @@ export function SectionLabel({ icon, children, className }) {
   return (
     <p className={cx('lp-label flex items-center gap-1.5', className)}>
       {icon && <Icon name={icon} className="size-3.5 shrink-0 text-accent" />}
+      {children}
+    </p>
+  )
+}
+
+/**
+ * The shell every account page section sits in: label with an icon, a thin
+ * divider under it, consistent padding. `aside` renders at the top right of
+ * the card, level with the label.
+ */
+export function SectionCard({ icon, label, aside, children, className }) {
+  return (
+    <section className={cx('lp-card', className)}>
+      <div className="flex items-center justify-between gap-3 pb-2">
+        <SectionLabel icon={icon}>{label}</SectionLabel>
+        {aside && <div className="flex shrink-0 items-center gap-2">{aside}</div>}
+      </div>
+      <div className="border-t border-line pt-[var(--lp-label-gap)]">
+        {children}
+      </div>
+    </section>
+  )
+}
+
+/**
+ * What a section shows when the research found nothing. Deliberately plain:
+ * it should read as an honest gap, not as a styled feature.
+ */
+export function EmptyNote({ children }) {
+  return (
+    <p className="rounded-md border border-dashed border-line px-3 py-2.5 text-sm text-txt-3">
       {children}
     </p>
   )

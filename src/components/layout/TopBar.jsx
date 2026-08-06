@@ -8,18 +8,15 @@
 import { useEffect, useState } from 'react'
 import { Icon } from '../Icon'
 
-/** Reads the saved theme once on load, defaulting to light. */
-function readTheme() {
-  if (typeof window === 'undefined') return 'light'
-  return window.localStorage.getItem('lp-theme') === 'dark' ? 'dark' : 'light'
-}
-
+/**
+ * Theme is held in memory only and resets on reload. The guardrails for this
+ * prototype rule out localStorage, so there is nowhere to persist it.
+ */
 function ThemeToggle() {
-  const [theme, setTheme] = useState(readTheme)
+  const [theme, setTheme] = useState('light')
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
-    window.localStorage.setItem('lp-theme', theme)
   }, [theme])
 
   const next = theme === 'dark' ? 'light' : 'dark'

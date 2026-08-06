@@ -11,7 +11,8 @@
  */
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { computeWindow, formatEmployees, getPhase } from '../../data/companies'
+import { formatEmployees, getPhase } from '../../data/companies'
+import { computeWindow } from '../../lib/window'
 import { Icon } from '../Icon'
 import { cx } from '../cx'
 import { TonePill } from '../ui'
@@ -128,7 +129,9 @@ export function LeadsTable({ companies, archetype }) {
   const [descending, setDescending] = useState(true)
 
   const rows = [...companies].sort((a, b) =>
-    descending ? b.fitScore - a.fitScore : a.fitScore - b.fitScore,
+    descending
+      ? b.icpFitScore - a.icpFitScore
+      : a.icpFitScore - b.icpFitScore,
   )
 
   return (
@@ -165,7 +168,7 @@ export function LeadsTable({ companies, archetype }) {
         <tbody>
           {rows.map((company) => {
             const phase = getPhase(company.phase)
-            const window = computeWindow(company, archetype)
+            const window = computeWindow(company.phase, archetype)
 
             return (
               <tr
@@ -188,15 +191,23 @@ export function LeadsTable({ companies, archetype }) {
                   {formatEmployees(company.employees)}
                 </td>
                 <td className={TD}>
-                  <FitScoreCell score={company.fitScore} />
+                  <FitScoreCell score={company.icpFitScore} />
                 </td>
                 <td className={TD}>
-                  <TonePill tone={phase.tone} title={phase.description}>
+                  <TonePill
+                    tone={phase.tone}
+                    dashed={phase.dashed}
+                    title={phase.description}
+                  >
                     {phase.label}
                   </TonePill>
                 </td>
                 <td className={TD}>
-                  <TonePill tone={window.tone} title={window.description}>
+                  <TonePill
+                    tone={window.tone}
+                    dashed={window.dashed}
+                    title={window.description}
+                  >
                     {window.label}
                   </TonePill>
                 </td>

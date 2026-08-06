@@ -1,66 +1,66 @@
 # LeadPlus prototype - rules for Claude
 
-> **AWAITING THE REAL GUARDRAILS.**
-> The brief referred to a "GUARDRAILS" section but the message was cut off
-> before it. The rules below are the ones that could be derived from the rest
-> of the brief. Paste the real guardrails in here, replacing this note, and
-> delete anything below that contradicts them.
-
 ## What this project is
 
 A click-through prototype for a sales intelligence product. All data is dummy.
 It is edited by hand over time, not regenerated. The owner is non-technical,
 so explain changes in plain language and give exact commands to run.
 
-## Design system - do not redesign
+`BRIEF.md` in the project root is the source of truth for the Account Detail
+screen. Read it before changing that screen.
 
-The look is modelled on Linear. Keep it exactly as-is.
+## Guardrails
 
-- Light background, near-white content area, subtle 1px borders.
-- Indigo/violet accent for primary buttons and active nav only.
-- Inter or system sans-serif. Generous whitespace. Restrained, muted colors.
-- **No gradients. No shadows. No decoration.** If a change adds visual
-  flourish, it is wrong.
-- Body text sits at 13-14px. Do not make it bigger.
-- Color is meaning, never decoration.
+Copied verbatim from section 6 of `BRIEF.md`.
 
-## Hard structural rules
+- Click-through prototype with dummy data. No backend, no API calls, no auth,
+  no localStorage.
+- Tokens in `src/styles/tokens.css` are the only place colours, radii and font
+  sizes are defined. No hex codes in component files.
+- All data lives in `src/data/`. Never move content strings into components.
+- One file per section. Never combine two sections into one file or split one
+  section across files.
+- Design reference is Linear: minimal but high contrast and information dense.
+  Body text never below weight 400. Primary text near-black, not grey. No
+  gradients, no shadows, no colours outside the token set.
+- Do not use em dashes in UI copy. Use a middot, a colon, or restructure.
+- Keep the "Prototype · dummy data" pill visible on every screen.
+- When asked for a change, change the smallest number of files possible and
+  report which files were touched.
 
-1. **All dummy data lives in `src/data/`.** No data - no company names, no
-   scores, no counts, no labels that vary by row - anywhere else. Components
-   read from `src/data/`, they never contain their own.
+## How those guardrails are implemented here
 
-2. **All colors, radii, font sizes, font weights and density live in
-   `src/styles/tokens.css`.** No hex codes and no hardcoded weights in any
-   `.jsx` file. If a component needs a value that does not exist, add a token
-   first, then use it.
+- **Tokens.** `src/styles/tokens.css` holds colours, the tone palette, the
+  type scale, font weights and a DENSITY block. Components reference density
+  through arbitrary values such as `py-[var(--lp-row-pad-y)]`, and use
+  `.lp-card`, `.lp-stack` and `.lp-label` rather than restating padding, gaps
+  or label styling.
+- **Weights.** `font-name` (550) for primary nouns, `font-label` (600) for
+  labels and headers, `font-num` (600) with `tabular-nums` for figures. Body
+  is 450, set once on `body`. Never below 400.
+- **One file per section.** Every Account Detail section, main column and
+  right rail alike, is one file in `src/components/account/`. `SectionCard` in
+  `src/components/ui.jsx` is the shared shell (label, icon, divider, padding),
+  not a section itself.
+- **No localStorage.** The theme toggle is in-memory only, per the first
+  guardrail. Theme resets on reload. This is deliberate.
 
-   Components reference density through arbitrary values, e.g.
-   `py-[var(--lp-row-pad-y)]`, and use `.lp-card`, `.lp-stack` and `.lp-label`
-   rather than re-specifying padding, gaps or label styling. This is what
-   keeps a density change to a single file.
+## The Window rule
 
-   Body text is never below weight 400. Use `font-name` (550) for primary
-   nouns, `font-label` (600) for labels and headers, `font-num` (600) with
-   `tabular-nums` for figures.
+Window is never stored on a company. It is computed from the Decision Phase
+and the selected archetype by `computeWindow(phase, archetype)` in
+`src/lib/window.js`, using the table in section 2 of `BRIEF.md`. It renders
+one of Open, Narrowing, Closed, Re-opening, Unknown, and never a date range.
 
-3. **One file per section of the account page**, in `src/components/account/`.
-   A person changing one section must only ever open one file. If a change
-   requires editing two files to alter one visible thing, the structure is
-   wrong - fix the structure, do not work around it.
-
-4. **Counts are computed, never typed.** Segment pill counts, "All (9)", and
-   anything else numeric derives from the data. Nobody should have to update a
-   number by hand after adding a company.
-
-5. **Fold, do not fork.** Prefer editing an existing file over adding a
-   parallel one. New folders need a reason.
+If a phase and a window ever look contradictory on screen, the data is wrong,
+not the function. Fix the phase.
 
 ## Folder structure
 
 ```
-src/data/          all dummy data
-src/styles/        tokens.css - all colors, radii, sizes, spacing
+src/data/          all dummy data and empty-state copy
+src/lib/           pure logic with no UI (the window rule)
+src/styles/        tokens.css - colours, radii, sizes, weights, density
 src/components/layout/   Sidebar, TopBar, PageShell
 src/components/leads/    LeadsTable, FilterBar, ArchetypeSelector
 src/components/account/  one file per section of the account page
@@ -76,30 +76,14 @@ public/logos/      company logo SVGs
   instructions for a non-technical editor - keep that voice.
 - Commit after each working milestone with a message that describes the
   visible change.
-- Do not add dependencies without asking. The project is deliberately small:
-  React, React Router, Tailwind, Inter. That is all.
+- Do not add dependencies without asking.
 
-## BRIEF.md
+## Known gaps
 
-Several things in this project are waiting on `BRIEF.md`. **That file does not
-exist on this machine.** It has been searched for by name across the project
-and the home directory. Do not pretend to have read it, and do not invent its
-contents - if a task refers to it and it is still missing, say so.
-
-## Known placeholders
-
-These exist so the app runs and must be replaced once `BRIEF.md` is available.
-They are flagged with a `NOTE:` comment in the code.
-
-- `computeWindow()` in `src/data/companies.js` - the four Window states
-  (Open / Narrowing / Closed / Re-opening) are correct, but the rule deciding
-  which one a company shows under each selling archetype is invented. Only
-  this function and the `shift` values need to change.
-- `DECISION_PHASES` in `src/data/companies.js` - the seven phase names are
-  correct. The pill colours for `landed`, `re-expanding` and `unclassified`
-  are assumed; the other four came from the original brief.
-- `src/pages/AccountDetail.jsx` - only the header and contacts sections exist.
-  Every other section is still unbuilt.
 - `src/pages/AdminSection.jsx` - one file covers all five Admin nav items,
-  because none of them had a brief. Split it up when they do.
-- Signals, Saved lists, Campaigns, Generate, Resources - placeholder screens.
+  because none of them has a brief. Split it up when they do.
+- Signals, Saved lists, Campaigns, Generate, Resources - placeholder screens,
+  no brief written yet.
+- Cirrus Software is phase Unclassified and renders honest empty states across
+  most of its account page. That is deliberate, not a bug. Its data fields are
+  `null` or `[]` and the copy comes from `src/data/emptyStates.js`.

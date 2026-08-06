@@ -173,6 +173,9 @@
   --text-xl--line-height: 1.35;
   --text-2xl: 22px;
   --text-2xl--line-height: 1.2;
+  /* The one oversized number on the page: the ICP Fit Score. */
+  --text-score: 56px;
+  --text-score--line-height: 1;
 
   /* --- Radii ---------------------------------------------------------- */
   --radius-sm: 4px;
