@@ -13,6 +13,7 @@
      employees     Employees column (a number, formatted for you)
      fitScore      ICP Fit Score, 0-100
      phase         Decision Phase, must be one of the ids in DECISION_PHASES
+     windowState   Window, must be one of the ids in WINDOW_STATES
      segments      which segment pills this company belongs to
                    (ids come from src/data/segments.js)
      logo          path to its SVG in public/logos/. If the file is missing
@@ -20,17 +21,14 @@
      monogram      the 1-2 letters for that fallback tile
      monogramColor the fallback tile color
      contacts      people on the account, shown in the Contacts column
-     windowStart   see "THE WINDOW COLUMN" below
-     windowLength  see "THE WINDOW COLUMN" below
    ========================================================================== */
 
 /* --- Decision Phase -------------------------------------------------------
-   Six phases. `tone` picks the pill color, defined in src/styles/tokens.css.
+   Seven phases. `tone` picks the pill color from the tone palette in
+   src/styles/tokens.css.
 
-   NOTE: your brief listed four phases (Latent, Evaluating, Mobilizing,
-   Executing) and was cut off before the last two. `stalled` and `live` below
-   are placeholders so the app runs. No company currently uses them - rename
-   or replace them once you have the real names.
+   `unclassified` is the fallback: a company whose phase cannot be determined
+   gets it automatically, so the column is never blank.
    ------------------------------------------------------------------------ */
 export const DECISION_PHASES = [
   {
@@ -57,91 +55,126 @@ export const DECISION_PHASES = [
     tone: 'amber',
     description: 'Program is underway and staffed.',
   },
-  // ---- PLACEHOLDERS, awaiting the rest of the brief ----
   {
-    id: 'stalled',
-    label: 'Stalled',
-    tone: 'red',
-    description: 'PLACEHOLDER - real phase name not yet supplied.',
+    id: 'landed',
+    label: 'Landed',
+    tone: 'green',
+    // NOTE: tone assumed. BRIEF.md was not available to confirm it.
+    description: 'Migration complete and running.',
   },
   {
-    id: 'live',
-    label: 'Live',
-    tone: 'green',
-    description: 'PLACEHOLDER - real phase name not yet supplied.',
+    id: 're-expanding',
+    label: 'Re-expanding',
+    tone: 'teal',
+    // NOTE: tone assumed. BRIEF.md was not available to confirm it.
+    description: 'Post-migration, opening new scope.',
+  },
+  {
+    id: 'unclassified',
+    label: 'Unclassified',
+    tone: 'grey',
+    // NOTE: tone assumed. BRIEF.md was not available to confirm it.
+    description: 'Not enough signal to place this account.',
   },
 ]
 
+/** Falls back to Unclassified rather than guessing a phase. */
 export function getPhase(id) {
-  return DECISION_PHASES.find((p) => p.id === id) ?? DECISION_PHASES[0]
+  return (
+    DECISION_PHASES.find((p) => p.id === id) ??
+    DECISION_PHASES.find((p) => p.id === 'unclassified')
+  )
 }
 
 /* --- THE WINDOW COLUMN ----------------------------------------------------
-   The "Selling as:" dropdown changes how the Window value is computed.
+   Four states. The "Selling as:" dropdown changes which one a company shows.
 
-   NOTE: your brief said "see below" for the exact rule and was cut off
-   before it. The rule below is a stand-in so the control does something
-   visible. It is deliberately all in one function - replace the numbers in
-   SELLING_ARCHETYPES and the body of computeWindow() and you are done.
+   !! THE COMPUTATION RULE IS STILL A PLACEHOLDER !!
+   The real rule lives in BRIEF.md, which does not exist on disk - it could
+   not be read, so it could not be implemented. What is correct here is the
+   set of four values and the fact that the dropdown shifts between them.
+   What is invented is HOW it shifts (the `shift` numbers below).
 
-   How the stand-in works:
-     Each company has a window that opens `windowStart` months from now and
-     lasts `windowLength` months. The archetype shifts when it opens and
-     stretches or shrinks how long it lasts.
+   When the real rule arrives, only computeWindow() and the `shift` values
+   need to change. Nothing else reads these.
    ------------------------------------------------------------------------ */
 
-/** The prototype's "today". Fixed so screenshots stay stable. */
-const ANCHOR = { year: 2026, month: 7 } // month is 0-indexed, so 7 = August
+export const WINDOW_STATES = [
+  {
+    id: 'open',
+    label: 'Open',
+    tone: 'green',
+    description: 'Buying window is open now.',
+  },
+  {
+    id: 'narrowing',
+    label: 'Narrowing',
+    tone: 'amber',
+    description: 'Window is closing, decisions are being locked.',
+  },
+  {
+    id: 'closed',
+    label: 'Closed',
+    tone: 'grey',
+    description: 'No route in at the moment.',
+  },
+  {
+    id: 're-opening',
+    label: 'Re-opening',
+    tone: 'blue',
+    description: 'A closed window is coming back around.',
+  },
+]
+
+/** The order the states sit in when the archetype shifts a company along. */
+const WINDOW_ORDER = ['closed', 're-opening', 'narrowing', 'open']
 
 export const SELLING_ARCHETYPES = [
   {
     id: 'migration-si',
     label: 'Migration SI',
-    shiftMonths: 0,
-    lengthDelta: 0,
+    // The baseline. A company shows the windowState set in its own data.
+    shift: 0,
   },
   {
     id: 'ecc-continuity',
     label: 'ECC continuity',
-    shiftMonths: 6,
-    lengthDelta: 6,
+    // Staying on ECC suits accounts that are not ready to move, so windows
+    // that look shut to a migration seller look better here. PLACEHOLDER.
+    shift: 1,
   },
   {
     id: 'alternative-erp',
     label: 'Alternative ERP',
-    shiftMonths: -3,
-    lengthDelta: -2,
+    // Hardest sell: you need to arrive before the account commits, so most
+    // windows read tighter. PLACEHOLDER.
+    shift: -1,
   },
 ]
 
 export const DEFAULT_ARCHETYPE = SELLING_ARCHETYPES[0].id
 
-function quarterLabel(monthsFromAnchor) {
-  const total = ANCHOR.year * 12 + ANCHOR.month + monthsFromAnchor
-  const year = Math.floor(total / 12)
-  const quarter = Math.floor((total % 12) / 3) + 1
-  return `Q${quarter} ${year}`
+export function getWindowState(id) {
+  return WINDOW_STATES.find((w) => w.id === id) ?? WINDOW_STATES[2]
 }
 
 /**
- * Returns the Window cell for one company under one selling archetype.
- * @returns {{ label: string, detail: string }}
+ * Returns the Window state for one company under one selling archetype.
+ * @returns {{ id, label, tone, description }}
  */
 export function computeWindow(company, archetypeId) {
   const archetype =
     SELLING_ARCHETYPES.find((a) => a.id === archetypeId) ??
     SELLING_ARCHETYPES[0]
 
-  const start = Math.max(0, company.windowStart + archetype.shiftMonths)
-  const length = Math.max(3, company.windowLength + archetype.lengthDelta)
+  const at = WINDOW_ORDER.indexOf(company.windowState)
+  if (at === -1) return getWindowState(company.windowState)
 
-  const from = quarterLabel(start)
-  const to = quarterLabel(start + length)
-
-  return {
-    label: from === to ? from : `${from} – ${to}`,
-    detail: `${length} month window`,
-  }
+  const moved = Math.min(
+    WINDOW_ORDER.length - 1,
+    Math.max(0, at + archetype.shift),
+  )
+  return getWindowState(WINDOW_ORDER[moved])
 }
 
 /* --- The companies ------------------------------------------------------ */
@@ -156,12 +189,11 @@ export const companies = [
     employees: 14200,
     fitScore: 91,
     phase: 'executing',
+    windowState: 'open',
     segments: ['scm'],
     logo: '/logos/meridian-foods.svg',
     monogram: 'MF',
     monogramColor: '#5b5bd6',
-    windowStart: 0,
-    windowLength: 6,
     contacts: [
       { name: 'Dana Whitfield', title: 'VP Supply Chain Systems' },
       { name: 'Arun Patel', title: 'Director, ERP Program' },
@@ -177,12 +209,11 @@ export const companies = [
     employees: 9800,
     fitScore: 82,
     phase: 'mobilizing',
+    windowState: 'open',
     segments: ['multi-erp'],
     logo: '/logos/calder-industrial.svg',
     monogram: 'CI',
-    monogramColor: '#1a7f52',
-    windowStart: 2,
-    windowLength: 6,
+    monogramColor: '#14764a',
     contacts: [
       { name: 'Marcus Feldt', title: 'CIO' },
       { name: 'Priya Raman', title: 'Enterprise Architect' },
@@ -197,12 +228,11 @@ export const companies = [
     employees: 22500,
     fitScore: 74,
     phase: 'mobilizing',
+    windowState: 'narrowing',
     segments: ['fico'],
     logo: '/logos/aventine-health.svg',
     monogram: 'AH',
-    monogramColor: '#1667c2',
-    windowStart: 3,
-    windowLength: 9,
+    monogramColor: '#1361c0',
     contacts: [
       { name: 'Elena Marsh', title: 'SVP Finance Transformation' },
       { name: 'Tobias Nguyen', title: 'Controller' },
@@ -219,12 +249,11 @@ export const companies = [
     employees: 6400,
     fitScore: 66,
     phase: 'evaluating',
+    windowState: 'open',
     segments: ['greenfield'],
     logo: '/logos/ridgeline-energy.svg',
     monogram: 'RE',
-    monogramColor: '#8a6a00',
-    windowStart: 5,
-    windowLength: 9,
+    monogramColor: '#8a6300',
     contacts: [
       { name: 'Holly Vance', title: 'Head of Digital Core' },
       { name: 'Idris Bello', title: 'Solution Architect' },
@@ -239,12 +268,11 @@ export const companies = [
     employees: 31000,
     fitScore: 61,
     phase: 'evaluating',
+    windowState: 'narrowing',
     segments: ['scm'],
     logo: '/logos/halcyon-retail.svg',
     monogram: 'HR',
-    monogramColor: '#c2372f',
-    windowStart: 6,
-    windowLength: 9,
+    monogramColor: '#bc3229',
     contacts: [
       { name: 'Jonah Weiss', title: 'VP Merchandising Systems' },
       { name: 'Camille Duarte', title: 'Director, Supply Chain IT' },
@@ -260,12 +288,11 @@ export const companies = [
     employees: 4900,
     fitScore: 55,
     phase: 'evaluating',
+    windowState: 'narrowing',
     segments: ['scm'],
     logo: '/logos/portsmith-logistics.svg',
     monogram: 'PL',
-    monogramColor: '#1d7a71',
-    windowStart: 7,
-    windowLength: 6,
+    monogramColor: '#14746c',
     contacts: [
       { name: 'Winona Pearce', title: 'Director of IT' },
       { name: 'Felix Adeyemi', title: 'Logistics Systems Manager' },
@@ -280,12 +307,11 @@ export const companies = [
     employees: 3200,
     fitScore: 45,
     phase: 'latent',
+    windowState: 're-opening',
     segments: ['greenfield', 'multi-erp'],
     logo: '/logos/brightmoor-chemical.svg',
     monogram: 'BC',
     monogramColor: '#97398f',
-    windowStart: 10,
-    windowLength: 9,
     contacts: [{ name: 'Theodore Kwan', title: 'IT Director' }],
   },
   {
@@ -297,12 +323,11 @@ export const companies = [
     employees: 12700,
     fitScore: 38,
     phase: 'latent',
+    windowState: 'closed',
     segments: ['fico'],
     logo: '/logos/kestrel-financial.svg',
     monogram: 'KF',
-    monogramColor: '#4f4fc4',
-    windowStart: 12,
-    windowLength: 12,
+    monogramColor: '#4a4ac2',
     contacts: [
       { name: 'Odessa Grant', title: 'Head of Finance Systems' },
       { name: 'Bram Sutherland', title: 'Senior Manager, Reporting' },
@@ -317,12 +342,11 @@ export const companies = [
     employees: 2100,
     fitScore: 22,
     phase: 'latent',
+    windowState: 'closed',
     segments: ['greenfield'],
     logo: '/logos/talloak-materials.svg',
     monogram: 'TM',
-    monogramColor: '#6b7280',
-    windowStart: 15,
-    windowLength: 12,
+    monogramColor: '#5f6470',
     contacts: [{ name: 'Iris Baumann', title: 'Operations Manager' }],
   },
 ]

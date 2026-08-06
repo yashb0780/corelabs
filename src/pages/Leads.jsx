@@ -26,7 +26,7 @@ export default function Leads() {
       title="Company Search"
       subtitle={`SAP ECC migration signals · ${companies.length} companies matching your ICP`}
     >
-      <div className="space-y-4">
+      <div className="lp-stack">
         <FilterBar
           activeSegment={activeSegment}
           onSegmentChange={setActiveSegment}

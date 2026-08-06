@@ -1,57 +1,62 @@
 /* ==========================================================================
-   DESIGN TOKENS - the only file with raw colors, sizes, radii, spacing.
+   DESIGN TOKENS - the only file with raw colors, sizes, weights, radii and
+   spacing.
 
-   HOW TO CHANGE A COLOR:
-   Edit the hex value in the :root block below. Every screen updates at once.
-   Do not put hex codes in component files.
+   HOW TO CHANGE A COLOR: edit the hex value in the :root block below. Every
+   screen updates at once. Do not put hex codes in component files.
+
+   HOW TO CHANGE HOW TIGHT THE UI IS: edit the DENSITY block. Cards, rows and
+   the gaps between them are all driven from there.
 
    The :root block is LIGHT mode (the default look).
-   The :root[data-theme='dark'] block is dark mode (the moon icon in the
-   top bar switches between them).
+   The :root[data-theme='dark'] block is dark mode (the moon icon switches).
    ========================================================================== */
 
 :root {
   /* --- Surfaces -------------------------------------------------------- */
-  --lp-canvas: #f8f9fb; /* page background, behind everything */
+  --lp-canvas: #f6f7f9; /* page background, behind everything */
   --lp-surface: #ffffff; /* cards, table rows, the content area */
-  --lp-surface-hover: #f4f5f7; /* row / button hover */
-  --lp-surface-sunken: #f1f2f4; /* table headers, inset areas */
+  --lp-surface-hover: #f1f2f5; /* row / button hover */
+  --lp-surface-sunken: #eeeff3; /* table headers, inset areas */
 
   /* --- Borders --------------------------------------------------------- */
-  --lp-line: #e5e7eb; /* the standard 1px border */
-  --lp-line-strong: #d4d7dd; /* borders that need to be seen */
+  /* Dark enough that a card has a visible edge against the page. */
+  --lp-line: #d9dae1; /* the standard 1px border */
+  --lp-line-strong: #bcbfc8; /* borders that need to be seen */
 
   /* --- Text ------------------------------------------------------------ */
-  --lp-txt: #101113; /* headings, primary values */
-  --lp-txt-2: #55595e; /* body, secondary */
-  --lp-txt-3: #797e84; /* labels, captions, muted */
+  --lp-txt: #16161d; /* headings, primary values. Near-black. */
+  --lp-txt-2: #5a5a68; /* body, secondary */
+  --lp-txt-3: #8a8a99; /* labels, captions, muted. Never lighter. */
 
-  /* --- Accent (primary buttons, active nav) ---------------------------- */
+  /* --- Accent (primary buttons, active nav, scores, section icons) ----- */
   --lp-accent: #5b5bd6;
-  --lp-accent-hover: #4f4fc4;
-  --lp-accent-quiet: rgba(91, 91, 214, 0.09); /* active nav row wash */
+  --lp-accent-hover: #4a4ac2;
+  --lp-accent-quiet: rgba(91, 91, 214, 0.1); /* active nav row wash */
   --lp-accent-txt: #ffffff; /* text on top of the accent */
 
-  /* --- Decision Phase pill colors -------------------------------------- */
-  /* Each phase gets a text color and a matching quiet background.         */
-  --lp-phase-grey: #6b7280;
-  --lp-phase-grey-bg: rgba(107, 114, 128, 0.1);
-  --lp-phase-blue: #1667c2;
-  --lp-phase-blue-bg: rgba(22, 103, 194, 0.1);
-  --lp-phase-violet: #5b5bd6;
-  --lp-phase-violet-bg: rgba(91, 91, 214, 0.1);
-  --lp-phase-amber: #8a6a00;
-  --lp-phase-amber-bg: rgba(217, 168, 0, 0.14);
-  --lp-phase-green: #1a7f52;
-  --lp-phase-green-bg: rgba(26, 127, 82, 0.1);
-  --lp-phase-red: #c2372f;
-  --lp-phase-red-bg: rgba(194, 55, 47, 0.1);
+  /* --- Tone palette ----------------------------------------------------
+     Shared by the Decision Phase pills and the Window pills. Each tone is a
+     text color plus a matching quiet background.
+     -------------------------------------------------------------------- */
+  --lp-tone-grey: #5f6470;
+  --lp-tone-grey-bg: rgba(95, 100, 112, 0.11);
+  --lp-tone-blue: #1361c0;
+  --lp-tone-blue-bg: rgba(19, 97, 192, 0.11);
+  --lp-tone-violet: #5b5bd6;
+  --lp-tone-violet-bg: rgba(91, 91, 214, 0.11);
+  --lp-tone-amber: #8a6300;
+  --lp-tone-amber-bg: rgba(217, 160, 0, 0.16);
+  --lp-tone-green: #14764a;
+  --lp-tone-green-bg: rgba(20, 118, 74, 0.11);
+  --lp-tone-teal: #14746c;
+  --lp-tone-teal-bg: rgba(20, 116, 108, 0.11);
 
   /* --- Semantic (meaning only, never decoration) ----------------------- */
-  --lp-ok: #1a7f52;
-  --lp-warn: #8a6a00;
-  --lp-bad: #c2372f;
-  --lp-info: #1667c2;
+  --lp-ok: #14764a;
+  --lp-warn: #8a6300;
+  --lp-bad: #bc3229;
+  --lp-info: #1361c0;
 
   color-scheme: light;
 }
@@ -59,46 +64,62 @@
 :root[data-theme='dark'] {
   --lp-canvas: #08090a;
   --lp-surface: #101113;
-  --lp-surface-hover: #16181a;
+  --lp-surface-hover: #191b1e;
   --lp-surface-sunken: #0c0d0e;
 
-  --lp-line: rgba(255, 255, 255, 0.08);
-  --lp-line-strong: rgba(255, 255, 255, 0.14);
+  --lp-line: rgba(255, 255, 255, 0.13);
+  --lp-line-strong: rgba(255, 255, 255, 0.22);
 
   --lp-txt: #f7f8f8;
-  --lp-txt-2: #9ea1a6;
-  --lp-txt-3: #6c7075;
+  --lp-txt-2: #b2b6bd;
+  --lp-txt-3: #868b93;
 
-  --lp-accent: #6e6ee0;
-  --lp-accent-hover: #7d7de8;
-  --lp-accent-quiet: rgba(110, 110, 224, 0.16);
+  --lp-accent: #7b7bea;
+  --lp-accent-hover: #8d8df0;
+  --lp-accent-quiet: rgba(123, 123, 234, 0.18);
   --lp-accent-txt: #ffffff;
 
-  --lp-phase-grey: #9ca3af;
-  --lp-phase-grey-bg: rgba(156, 163, 175, 0.14);
-  --lp-phase-blue: #4ea7fc;
-  --lp-phase-blue-bg: rgba(78, 167, 252, 0.14);
-  --lp-phase-violet: #8b8bf0;
-  --lp-phase-violet-bg: rgba(139, 139, 240, 0.14);
-  --lp-phase-amber: #f2c94c;
-  --lp-phase-amber-bg: rgba(242, 201, 76, 0.14);
-  --lp-phase-green: #4cb782;
-  --lp-phase-green-bg: rgba(76, 183, 130, 0.14);
-  --lp-phase-red: #eb5757;
-  --lp-phase-red-bg: rgba(235, 87, 87, 0.14);
+  --lp-tone-grey: #a8adb8;
+  --lp-tone-grey-bg: rgba(168, 173, 184, 0.16);
+  --lp-tone-blue: #62b0fd;
+  --lp-tone-blue-bg: rgba(98, 176, 253, 0.16);
+  --lp-tone-violet: #9b9bf4;
+  --lp-tone-violet-bg: rgba(155, 155, 244, 0.16);
+  --lp-tone-amber: #f4cf60;
+  --lp-tone-amber-bg: rgba(244, 207, 96, 0.16);
+  --lp-tone-green: #5cc48f;
+  --lp-tone-green-bg: rgba(92, 196, 143, 0.16);
+  --lp-tone-teal: #46b3a8;
+  --lp-tone-teal-bg: rgba(70, 179, 168, 0.16);
 
-  --lp-ok: #4cb782;
-  --lp-warn: #f2c94c;
-  --lp-bad: #eb5757;
-  --lp-info: #4ea7fc;
+  --lp-ok: #5cc48f;
+  --lp-warn: #f4cf60;
+  --lp-bad: #f06a6a;
+  --lp-info: #62b0fd;
 
   color-scheme: dark;
 }
 
 /* ==========================================================================
+   DENSITY
+   How much air the UI has. Lower numbers mean tighter. These feed the cards,
+   the table rows and the gaps between stacked cards.
+   ========================================================================== */
+
+:root {
+  --lp-card-pad-x: 18px; /* left/right padding inside a card */
+  --lp-card-pad-y: 15px; /* top/bottom padding inside a card */
+  --lp-card-gap: 10px; /* gap between stacked cards */
+  --lp-row-pad-x: 12px; /* left/right padding in a table cell */
+  --lp-row-pad-y: 7px; /* top/bottom padding in a table cell */
+  --lp-contact-pad-y: 6px; /* top/bottom padding on a contact row */
+  --lp-label-gap: 7px; /* section label to its first content */
+}
+
+/* ==========================================================================
    Tailwind sees the tokens above through this block. It is what lets you
-   write class names like `bg-surface` or `text-txt-2` in the components.
-   If you add a token above, add a matching line here.
+   write class names like `bg-surface`, `text-txt-2` or `font-name` in the
+   components. If you add a token above, add a matching line here.
    ========================================================================== */
 
 @theme inline {
@@ -124,11 +145,20 @@
   --color-bad: var(--lp-bad);
   --color-info: var(--lp-info);
 
-  /* --- Type scale. Body sits at 13-14px. Resist making this bigger. --- */
+  /* --- Type ----------------------------------------------------------- */
   --font-sans:
-    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
 
+  /* Weights. The variable font renders these exactly, including the
+     in-between ones. Nothing in the UI may go below 400. */
+  --font-weight-body: 450; /* all body text */
+  --font-weight-name: 550; /* company names, contact names, primary nouns */
+  --font-weight-label: 600; /* labels, table headers, section headers */
+  --font-weight-num: 600; /* scores, employee counts, any large number */
+
+  /* Body sits at 13-14px. Resist making this bigger. */
   --text-2xs: 11px;
   --text-2xs--line-height: 1.45;
   --text-xs: 12px;
@@ -138,11 +168,11 @@
   --text-base: 14px;
   --text-base--line-height: 1.5;
   --text-lg: 15px;
-  --text-lg--line-height: 1.45;
+  --text-lg--line-height: 1.4;
   --text-xl: 17px;
-  --text-xl--line-height: 1.4;
+  --text-xl--line-height: 1.35;
   --text-2xl: 22px;
-  --text-2xl--line-height: 1.25;
+  --text-2xl--line-height: 1.2;
 
   /* --- Radii ---------------------------------------------------------- */
   --radius-sm: 4px;
@@ -167,8 +197,10 @@
     color: var(--lp-txt);
     font-family: var(--font-sans);
     font-size: 14px;
+    font-weight: 450;
     line-height: 1.5;
     font-feature-settings: 'cv11', 'ss01';
+    font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -177,8 +209,9 @@
   h2,
   h3,
   h4 {
-    letter-spacing: -0.018em;
+    letter-spacing: -0.019em;
     font-weight: 600;
+    color: var(--lp-txt);
   }
 
   /* One focus treatment everywhere. Keyboard only. */
@@ -194,14 +227,28 @@
 }
 
 @layer components {
-  /* 11px, uppercase, tertiary. The section label used throughout. */
+  /* The one label style: 11px, uppercase, 600, wide tracking.
+     Used for section headers AND table column headers. */
   .lp-label {
     font-size: 11px;
-    line-height: 1.45;
+    line-height: 1.4;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--lp-txt-3);
+  }
+
+  /* A card. Padding comes from the DENSITY block above. */
+  .lp-card {
+    border: 1px solid var(--lp-line);
+    border-radius: var(--radius-lg);
+    background: var(--lp-surface);
+    padding: var(--lp-card-pad-y) var(--lp-card-pad-x);
+  }
+
+  /* Stacked cards on a page. */
+  .lp-stack > * + * {
+    margin-top: var(--lp-card-gap);
   }
 }
 

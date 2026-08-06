@@ -48,7 +48,7 @@ function NavRow({ to, icon, label, collapsed }) {
           'group flex items-center gap-2.5 rounded-md py-1.5 text-sm transition-colors duration-150 ease-lp',
           collapsed ? 'justify-center px-0' : 'px-2',
           isActive
-            ? 'bg-accent-quiet text-txt font-medium'
+            ? 'bg-accent-quiet text-accent font-name'
             : 'text-txt-2 hover:bg-surface-hover hover:text-txt',
         )
       }
@@ -81,11 +81,11 @@ export function Sidebar({ collapsed, onToggleCollapse }) {
       >
         <NavLink
           to="/leads"
-          className="flex items-center gap-2 rounded-md text-sm font-semibold text-txt"
+          className="flex items-center gap-2 rounded-md text-sm font-label text-txt"
         >
           <span
             aria-hidden="true"
-            className="grid size-5 shrink-0 place-items-center rounded border border-line-strong font-mono text-2xs text-accent"
+            className="grid size-5 shrink-0 place-items-center rounded border border-line-strong font-mono text-2xs font-num text-accent"
           >
             L
           </span>

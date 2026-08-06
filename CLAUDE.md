@@ -30,9 +30,19 @@ The look is modelled on Linear. Keep it exactly as-is.
    scores, no counts, no labels that vary by row - anywhere else. Components
    read from `src/data/`, they never contain their own.
 
-2. **All colors, radii, font sizes and spacing live in `src/styles/tokens.css`.**
-   No hex codes in any `.jsx` file. If a component needs a color that does not
-   exist, add a token first, then use it.
+2. **All colors, radii, font sizes, font weights and density live in
+   `src/styles/tokens.css`.** No hex codes and no hardcoded weights in any
+   `.jsx` file. If a component needs a value that does not exist, add a token
+   first, then use it.
+
+   Components reference density through arbitrary values, e.g.
+   `py-[var(--lp-row-pad-y)]`, and use `.lp-card`, `.lp-stack` and `.lp-label`
+   rather than re-specifying padding, gaps or label styling. This is what
+   keeps a density change to a single file.
+
+   Body text is never below weight 400. Use `font-name` (550) for primary
+   nouns, `font-label` (600) for labels and headers, `font-num` (600) with
+   `tabular-nums` for figures.
 
 3. **One file per section of the account page**, in `src/components/account/`.
    A person changing one section must only ever open one file. If a change
@@ -69,17 +79,27 @@ public/logos/      company logo SVGs
 - Do not add dependencies without asking. The project is deliberately small:
   React, React Router, Tailwind, Inter. That is all.
 
+## BRIEF.md
+
+Several things in this project are waiting on `BRIEF.md`. **That file does not
+exist on this machine.** It has been searched for by name across the project
+and the home directory. Do not pretend to have read it, and do not invent its
+contents - if a task refers to it and it is still missing, say so.
+
 ## Known placeholders
 
-These exist so the app runs and must be replaced once the full brief arrives.
+These exist so the app runs and must be replaced once `BRIEF.md` is available.
 They are flagged with a `NOTE:` comment in the code.
 
-- `DECISION_PHASES` in `src/data/companies.js` - the 5th and 6th phase names
-  (`stalled`, `live`) are invented. The brief was cut off after `Executing`.
-- `computeWindow()` in `src/data/companies.js` - the rule for how "Selling as:"
-  changes the Window value is a stand-in. The brief said "see below" and was
-  cut off.
+- `computeWindow()` in `src/data/companies.js` - the four Window states
+  (Open / Narrowing / Closed / Re-opening) are correct, but the rule deciding
+  which one a company shows under each selling archetype is invented. Only
+  this function and the `shift` values need to change.
+- `DECISION_PHASES` in `src/data/companies.js` - the seven phase names are
+  correct. The pill colours for `landed`, `re-expanding` and `unclassified`
+  are assumed; the other four came from the original brief.
 - `src/pages/AccountDetail.jsx` - only the header and contacts sections exist.
+  Every other section is still unbuilt.
 - `src/pages/AdminSection.jsx` - one file covers all five Admin nav items,
   because none of them had a brief. Split it up when they do.
 - Signals, Saved lists, Campaigns, Generate, Resources - placeholder screens.

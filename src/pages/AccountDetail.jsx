@@ -31,12 +31,13 @@ export default function AccountDetail() {
 
   return (
     <PageShell breadcrumb={['Workspace', 'Leads', company.name]}>
-      <div className="space-y-4">
+      <div className="lp-stack">
         <AccountHeader company={company} archetype={DEFAULT_ARCHETYPE} />
         <AccountContacts company={company} />
-        <EmptyState title="More sections to come">
-          The rest of the account page brief has not been written yet. Add each
-          new section as its own file in src/components/account/.
+        <EmptyState title="Remaining sections need BRIEF.md">
+          BRIEF.md was not found anywhere on this machine, so the rest of the
+          account page could not be built. Add the file and the sections go in
+          here, one file each in src/components/account/.
         </EmptyState>
       </div>
     </PageShell>

@@ -48,7 +48,7 @@ export function TopBar({ breadcrumb = [] }) {
               <span
                 className={
                   last
-                    ? 'truncate text-sm font-medium text-txt'
+                    ? 'truncate text-sm font-name text-txt'
                     : 'truncate text-sm text-txt-3'
                 }
                 aria-current={last ? 'page' : undefined}

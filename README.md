@@ -60,8 +60,11 @@ Change any of those values and save. The table updates immediately.
 - **`fitScore`** is the ICP Fit Score, a number from 0 to 100. The bar length
   is worked out from it.
 - **`phase`** must be one of the ids listed in `DECISION_PHASES` at the top of
-  the same file: `latent`, `evaluating`, `mobilizing`, `executing`, `stalled`,
-  `live`.
+  the same file: `latent`, `evaluating`, `mobilizing`, `executing`, `landed`,
+  `re-expanding`, `unclassified`. Anything unrecognised shows as
+  Unclassified rather than breaking.
+- **`windowState`** must be one of `open`, `narrowing`, `closed`,
+  `re-opening`. The "Selling as:" dropdown shifts a company between these.
 - **`employees`** is a plain number with no commas. The commas are added for
   you when it is displayed.
 
@@ -103,6 +106,33 @@ look wrong.
 
 Further down the same file are the text sizes, corner roundness (`--radius-*`)
 and the sidebar width. Same idea: change the number, everything follows.
+
+### Making the UI tighter or airier
+
+In the same file there is a block marked **DENSITY**:
+
+```css
+--lp-card-pad-y: 15px;   /* top/bottom padding inside a card */
+--lp-card-gap: 10px;     /* gap between stacked cards */
+--lp-row-pad-y: 7px;     /* top/bottom padding in a table row */
+```
+
+Raise those numbers for more breathing room, lower them for more information
+on screen. Every card and table row follows automatically.
+
+### Making text heavier or lighter
+
+Also in the same file:
+
+```css
+--font-weight-body: 450;   /* all body text */
+--font-weight-name: 550;   /* company names, contact names */
+--font-weight-label: 600;  /* labels, table headers, section headers */
+--font-weight-num: 600;    /* scores and employee counts */
+```
+
+The project uses the variable version of Inter, which is what makes
+in-between weights like 450 and 550 possible. Do not go below 400.
 
 ---
 

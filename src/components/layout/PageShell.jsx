@@ -19,9 +19,9 @@ export function PageShell({ breadcrumb, title, subtitle, actions, children }) {
       <TopBar breadcrumb={breadcrumb} />
 
       <main className="flex-1 overflow-y-auto bg-surface">
-        <div className="mx-auto max-w-[1400px] px-6 py-6">
+        <div className="mx-auto max-w-[1400px] px-6 py-5">
           {(title || actions) && (
-            <div className="mb-5 flex items-start justify-between gap-4">
+            <div className="mb-4 flex items-start justify-between gap-4">
               <div className="min-w-0">
                 {title && (
                   <h1 className="text-2xl text-txt">{title}</h1>

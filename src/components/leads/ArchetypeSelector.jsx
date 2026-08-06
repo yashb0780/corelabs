@@ -16,7 +16,7 @@ export function ArchetypeSelector({ value, onChange }) {
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="appearance-none bg-transparent pr-4 text-xs font-medium text-txt outline-none"
+          className="appearance-none bg-transparent pr-4 text-xs font-name text-txt outline-none"
         >
           {SELLING_ARCHETYPES.map((a) => (
             <option key={a.id} value={a.id}>

@@ -5,17 +5,16 @@
  *   Company | Industry | Employees | ICP Fit Score | Decision Phase | Window | Contacts
  *
  * Clicking a row opens that company's account page.
+ *
+ * Row padding comes from --lp-row-pad-x / --lp-row-pad-y in
+ * src/styles/tokens.css. Change the density there, not here.
  */
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  computeWindow,
-  formatEmployees,
-  getPhase,
-} from '../../data/companies'
+import { computeWindow, formatEmployees, getPhase } from '../../data/companies'
 import { Icon } from '../Icon'
 import { cx } from '../cx'
-import { PhasePill } from '../ui'
+import { TonePill } from '../ui'
 
 /* --- Company cell ------------------------------------------------------- */
 
@@ -30,7 +29,7 @@ function CompanyLogo({ company }) {
     return (
       <span
         aria-hidden="true"
-        className="grid size-8 shrink-0 place-items-center rounded-md text-xs font-semibold text-white"
+        className="grid size-7 shrink-0 place-items-center rounded-md text-xs font-num text-white"
         style={{ backgroundColor: company.monogramColor }}
       >
         {company.monogram}
@@ -42,10 +41,10 @@ function CompanyLogo({ company }) {
     <img
       src={company.logo}
       alt=""
-      width="32"
-      height="32"
+      width="28"
+      height="28"
       onError={() => setFailed(true)}
-      className="size-8 shrink-0 rounded-md"
+      className="size-7 shrink-0 rounded-md"
     />
   )
 }
@@ -54,8 +53,8 @@ function CompanyCell({ company }) {
   return (
     <div className="flex items-center gap-2.5">
       <CompanyLogo company={company} />
-      <div className="min-w-0">
-        <p className="truncate text-sm font-medium text-txt">{company.name}</p>
+      <div className="min-w-0 leading-tight">
+        <p className="truncate text-sm font-name text-txt">{company.name}</p>
         <p className="truncate text-2xs text-txt-3">
           {company.city}, {company.state}
         </p>
@@ -71,14 +70,14 @@ function FitScoreCell({ score }) {
     <div className="flex items-center gap-2.5">
       <span
         aria-hidden="true"
-        className="h-1.5 w-16 shrink-0 overflow-hidden rounded-full bg-surface-sunken"
+        className="h-1.5 w-14 shrink-0 overflow-hidden rounded-full bg-surface-sunken"
       >
         <span
           className="block h-full rounded-full bg-accent"
           style={{ width: `${score}%` }}
         />
       </span>
-      <span className="font-mono text-xs tabular-nums text-txt">{score}</span>
+      <span className="text-sm font-num tabular-nums text-accent">{score}</span>
     </div>
   )
 }
@@ -95,7 +94,6 @@ function initials(name) {
 
 function ContactsCell({ contacts }) {
   const shown = contacts.slice(0, 3)
-  const extra = contacts.length - shown.length
 
   return (
     <div className="flex items-center gap-2">
@@ -104,15 +102,14 @@ function ContactsCell({ contacts }) {
           <span
             key={c.name}
             title={`${c.name} · ${c.title}`}
-            className="grid size-6 place-items-center rounded-full border border-surface bg-surface-sunken font-mono text-2xs text-txt-2"
+            className="grid size-5.5 place-items-center rounded-full border border-surface bg-surface-sunken text-2xs font-name text-txt-2"
           >
             {initials(c.name)}
           </span>
         ))}
       </div>
-      <span className="font-mono text-2xs tabular-nums text-txt-3">
+      <span className="text-2xs font-num tabular-nums text-txt-3">
         {contacts.length}
-        {extra > 0 ? '' : ''}
       </span>
     </div>
   )
@@ -120,8 +117,10 @@ function ContactsCell({ contacts }) {
 
 /* --- Table -------------------------------------------------------------- */
 
-const TH = 'px-3 py-2 text-left text-2xs font-medium text-txt-3 whitespace-nowrap'
-const TD = 'px-3 py-2.5 align-middle'
+/* Padding is driven by the density tokens so it can be tuned in one place. */
+const CELL_PAD = 'px-[var(--lp-row-pad-x)] py-[var(--lp-row-pad-y)]'
+const TH = `lp-label ${CELL_PAD} text-left whitespace-nowrap`
+const TD = `${CELL_PAD} align-middle`
 
 export function LeadsTable({ companies, archetype }) {
   const navigate = useNavigate()
@@ -145,13 +144,13 @@ export function LeadsTable({ companies, archetype }) {
                 type="button"
                 onClick={() => setDescending((d) => !d)}
                 aria-label={`Sort by ICP Fit Score, currently ${descending ? 'highest' : 'lowest'} first`}
-                className="inline-flex items-center gap-1 text-2xs font-medium text-txt-3 transition-colors duration-150 ease-lp hover:text-txt-2"
+                className="lp-label inline-flex items-center gap-1 transition-colors duration-150 ease-lp hover:text-accent"
               >
                 ICP Fit Score
                 <Icon
                   name="arrowDown"
                   className={cx(
-                    'size-3 transition-transform duration-150 ease-lp',
+                    'size-3 text-accent transition-transform duration-150 ease-lp',
                     descending ? '' : 'rotate-180',
                   )}
                 />
@@ -172,7 +171,7 @@ export function LeadsTable({ companies, archetype }) {
               <tr
                 key={company.id}
                 onClick={() => navigate(`/leads/${company.id}`)}
-                className="cursor-pointer border-b border-line bg-surface transition-colors duration-150 ease-lp last:border-b-0 hover:bg-surface-hover"
+                className="cursor-pointer border-b border-line bg-surface transition-colors duration-150 ease-lp last:border-b-0 hover:bg-accent-quiet"
               >
                 <td className={cx(TD, 'w-[26%]')}>
                   <CompanyCell company={company} />
@@ -183,7 +182,7 @@ export function LeadsTable({ companies, archetype }) {
                 <td
                   className={cx(
                     TD,
-                    'text-right font-mono text-xs tabular-nums text-txt-2',
+                    'text-right text-sm font-num tabular-nums text-txt',
                   )}
                 >
                   {formatEmployees(company.employees)}
@@ -192,17 +191,14 @@ export function LeadsTable({ companies, archetype }) {
                   <FitScoreCell score={company.fitScore} />
                 </td>
                 <td className={TD}>
-                  <PhasePill tone={phase.tone} title={phase.description}>
+                  <TonePill tone={phase.tone} title={phase.description}>
                     {phase.label}
-                  </PhasePill>
+                  </TonePill>
                 </td>
                 <td className={TD}>
-                  <p className="text-sm whitespace-nowrap text-txt">
+                  <TonePill tone={window.tone} title={window.description}>
                     {window.label}
-                  </p>
-                  <p className="text-2xs whitespace-nowrap text-txt-3">
-                    {window.detail}
-                  </p>
+                  </TonePill>
                 </td>
                 <td className={TD}>
                   <ContactsCell contacts={company.contacts} />
