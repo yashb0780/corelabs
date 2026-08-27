@@ -9,7 +9,7 @@ import { cx } from './cx'
 /* --- Buttons ------------------------------------------------------------ */
 
 const BUTTON_BASE =
-  'inline-flex items-center gap-1.5 rounded-md text-sm font-name transition-colors duration-150 ease-lp disabled:opacity-50 disabled:pointer-events-none'
+  'inline-flex items-center gap-1.5 rounded-md text-sm font-name transition-colors duration-150 ease-lp disabled:pointer-events-none'
 
 const BUTTON_SIZES = {
   sm: 'h-7 px-2.5 text-xs',
@@ -17,10 +17,13 @@ const BUTTON_SIZES = {
 }
 
 const BUTTON_VARIANTS = {
-  primary: 'bg-accent text-accent-txt hover:bg-accent-hover',
+  // Disabled primary is the accent at 40%, which is why it does not just
+  // dim the whole button the way the other two variants do.
+  primary:
+    'bg-accent text-accent-txt hover:bg-accent-hover active:bg-accent-pressed disabled:bg-accent-disabled',
   secondary:
-    'border border-line bg-surface text-txt-2 hover:bg-surface-hover hover:text-accent hover:border-accent',
-  ghost: 'text-txt-2 hover:bg-surface-hover hover:text-accent',
+    'border border-line bg-surface text-txt-2 hover:bg-surface-hover hover:text-accent hover:border-accent disabled:opacity-50',
+  ghost: 'text-txt-2 hover:bg-surface-hover hover:text-accent disabled:opacity-50',
 }
 
 export function Button({

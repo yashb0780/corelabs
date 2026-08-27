@@ -29,11 +29,18 @@
   --lp-txt-2: #5a5a68; /* body, secondary */
   --lp-txt-3: #8a8a99; /* labels, captions, muted. Never lighter. */
 
-  /* --- Accent (primary buttons, active nav, scores, section icons) ----- */
-  --lp-accent: #5b5bd6;
-  --lp-accent-hover: #4a4ac2;
-  --lp-accent-quiet: rgba(91, 91, 214, 0.1); /* active nav row wash */
-  --lp-accent-txt: #ffffff; /* text on top of the accent */
+  /* --- Accent (primary buttons, active nav, scores, section icons) -----
+     A soft, slightly warm near-black. Not pure #000. Change these five
+     values and every accented thing in the product follows: the Lead Assist
+     button, the active sidebar item, the ICP fit score number and bar,
+     section icons, focus rings, links and hover washes.
+     -------------------------------------------------------------------- */
+  --lp-accent: #1a1a1a;
+  --lp-accent-hover: #2e2e2e;
+  --lp-accent-pressed: #0f0f0f;
+  --lp-accent-disabled: rgba(26, 26, 26, 0.4); /* the accent at 40% */
+  --lp-accent-quiet: rgba(26, 26, 26, 0.07); /* active nav and hover wash */
+  --lp-accent-txt: #ffffff; /* text and icons on top of the accent */
 
   /* --- Tone palette ----------------------------------------------------
      Shared by the Decision Phase pills and the Window pills. Each tone is a
@@ -74,10 +81,15 @@
   --lp-txt-2: #b2b6bd;
   --lp-txt-3: #868b93;
 
-  --lp-accent: #7b7bea;
-  --lp-accent-hover: #8d8df0;
-  --lp-accent-quiet: rgba(123, 123, 234, 0.18);
-  --lp-accent-txt: #ffffff;
+  /* Dark mode inverts the accent. A soft black on a near-black canvas would
+     be invisible, so here the accent is a soft near-white and the text that
+     sits on top of it goes dark. Same role, flipped. */
+  --lp-accent: #f2f2f2;
+  --lp-accent-hover: #ffffff;
+  --lp-accent-pressed: #d8d8d8;
+  --lp-accent-disabled: rgba(242, 242, 242, 0.4);
+  --lp-accent-quiet: rgba(242, 242, 242, 0.12);
+  --lp-accent-txt: #16161d;
 
   --lp-tone-grey: #a8adb8;
   --lp-tone-grey-bg: rgba(168, 173, 184, 0.16);
@@ -137,6 +149,8 @@
 
   --color-accent: var(--lp-accent);
   --color-accent-hover: var(--lp-accent-hover);
+  --color-accent-pressed: var(--lp-accent-pressed);
+  --color-accent-disabled: var(--lp-accent-disabled);
   --color-accent-quiet: var(--lp-accent-quiet);
   --color-accent-txt: var(--lp-accent-txt);
 
