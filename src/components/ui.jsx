@@ -10,12 +10,13 @@ import { logoSrc } from '../lib/logo'
 
 /* --- Buttons ------------------------------------------------------------ */
 
+// Buttons and badges both sit at text-xs, which the scale defines as 14px.
 const BUTTON_BASE =
-  'inline-flex items-center gap-1.5 rounded-md text-sm font-name transition-colors duration-150 ease-lp disabled:pointer-events-none'
+  'inline-flex items-center gap-1.5 rounded-md text-xs font-name transition-colors duration-150 ease-lp disabled:pointer-events-none'
 
 const BUTTON_SIZES = {
-  sm: 'h-7 px-2.5 text-xs',
-  md: 'h-8 px-3',
+  sm: 'h-7 px-2.5',
+  md: 'h-9 px-3',
 }
 
 const BUTTON_VARIANTS = {
@@ -65,7 +66,7 @@ export function FilterPill({ active, count, children, ...rest }) {
       type="button"
       aria-pressed={active}
       className={cx(
-        'inline-flex h-7 items-center gap-1.5 rounded-full border px-3 text-xs font-name transition-colors duration-150 ease-lp',
+        'inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-name transition-colors duration-150 ease-lp',
         active
           ? 'border-accent bg-accent-quiet text-accent'
           : 'border-line bg-surface text-txt-2 hover:border-accent hover:bg-accent-quiet hover:text-accent',
@@ -107,7 +108,7 @@ export function TonePill({ tone = 'grey', dashed = false, children, title }) {
     <span
       title={title}
       className={cx(
-        'inline-flex items-center rounded-full px-2 py-0.5 text-2xs font-label whitespace-nowrap',
+        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-name whitespace-nowrap',
         dashed && 'border border-dashed',
       )}
       style={{
@@ -127,7 +128,7 @@ export function Chip({ children, title, className }) {
     <span
       title={title}
       className={cx(
-        'inline-flex items-center gap-1 rounded-full border border-line px-2 py-0.5 text-2xs font-name text-txt-2 whitespace-nowrap',
+        'inline-flex items-center gap-1 rounded-full border border-line px-2.5 py-0.5 text-xs font-name text-txt-2 whitespace-nowrap',
         className,
       )}
     >

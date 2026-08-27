@@ -10,7 +10,7 @@ import { Icon } from '../Icon'
 
 export function ArchetypeSelector({ value, onChange }) {
   return (
-    <label className="inline-flex h-8 items-center gap-1.5 rounded-md border border-line bg-surface pl-2.5 pr-1.5 text-xs text-txt-2 transition-colors duration-150 ease-lp focus-within:border-line-strong hover:border-line-strong">
+    <label className="inline-flex h-9 items-center gap-1.5 rounded-md border border-line bg-surface pl-2.5 pr-1.5 text-xs text-txt-2 transition-colors duration-150 ease-lp focus-within:border-line-strong hover:border-line-strong">
       <span className="text-txt-3">Selling as:</span>
       <span className="relative flex items-center">
         <select

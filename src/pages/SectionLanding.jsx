@@ -23,8 +23,8 @@ function OptionCard({ sectionId, card }) {
       <span className="flex size-7 items-center justify-center rounded-md border border-line bg-surface-sunken text-accent transition-colors duration-150 ease-lp group-hover:border-accent">
         <Icon name={card.icon} className="size-3.5" />
       </span>
-      <p className="mt-2 text-sm font-name text-txt">{card.label}</p>
-      <p className="mt-[var(--lp-label-gap)] text-sm text-txt-2">
+      <p className="mt-2 text-base font-label text-txt">{card.label}</p>
+      <p className="mt-[var(--lp-label-gap)] text-xs text-txt-2">
         {card.description}
       </p>
     </Link>

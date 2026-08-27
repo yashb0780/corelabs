@@ -78,7 +78,7 @@ export function TopBar({ breadcrumb = [] }) {
       <div className="flex shrink-0 items-center gap-2">
         <button
           type="button"
-          className="flex h-7 items-center gap-2 rounded-md border border-line bg-surface pl-2.5 pr-1.5 text-xs text-txt-3 transition-colors duration-150 ease-lp hover:border-line-strong hover:bg-surface-hover hover:text-txt-2"
+          className="flex h-8 items-center gap-2 rounded-md border border-line bg-surface pl-2.5 pr-1.5 text-xs text-txt-3 transition-colors duration-150 ease-lp hover:border-line-strong hover:bg-surface-hover hover:text-txt-2"
         >
           <Icon name="search" className="size-3.5" />
           <span className="hidden sm:inline">Search companies…</span>

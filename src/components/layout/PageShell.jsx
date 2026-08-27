@@ -23,9 +23,7 @@ export function PageShell({ breadcrumb, title, subtitle, actions, children }) {
           {(title || actions) && (
             <div className="mb-4 flex items-start justify-between gap-4">
               <div className="min-w-0">
-                {title && (
-                  <h1 className="text-2xl text-txt">{title}</h1>
-                )}
+                {title && <h1 className="text-title text-txt">{title}</h1>}
                 {subtitle && (
                   <p className="mt-1 text-sm text-txt-2">{subtitle}</p>
                 )}

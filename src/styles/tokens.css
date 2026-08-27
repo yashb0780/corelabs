@@ -125,7 +125,8 @@
   --lp-card-pad-y: 15px; /* top/bottom padding inside a card */
   --lp-card-gap: 10px; /* gap between stacked cards */
   --lp-row-pad-x: 12px; /* left/right padding in a table cell */
-  --lp-row-pad-y: 7px; /* top/bottom padding in a table cell */
+  /* Raised with the type scale: 15px rows need more air than 13px rows did. */
+  --lp-row-pad-y: 10px; /* top/bottom padding in a table cell */
   --lp-contact-pad-y: 6px; /* top/bottom padding on a contact row */
   --lp-label-gap: 7px; /* section label to its first content */
 }
@@ -163,33 +164,53 @@
 
   /* --- Type ----------------------------------------------------------- */
   --font-sans:
-    'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, sans-serif;
+    'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
 
   /* Weights. The variable font renders these exactly, including the
      in-between ones. Nothing in the UI may go below 400. */
   --font-weight-body: 450; /* all body text */
   --font-weight-name: 550; /* company names, contact names, primary nouns */
-  --font-weight-label: 600; /* labels, table headers, section headers */
+  --font-weight-label: 600; /* primary nouns that need more weight */
   --font-weight-num: 600; /* scores, employee counts, any large number */
 
-  /* Body sits at 13-14px. Resist making this bigger. */
-  --text-2xs: 11px;
+  /* --- The type scale -------------------------------------------------
+     Every size in the app comes from here. Nothing sets a px font size in
+     a component.
+
+     Line height is 1.5 for anything you read in sentences, and 1.2 for
+     headings, which are short and should sit tight.
+
+     Where each step is used:
+       2xs  captions, city/state lines, tenure, footnotes
+       xs   buttons and badges
+       sm   BODY: table rows, sidebar nav, page subtitles, prose
+       base card titles on the section landing pages
+       lg   the four headline numbers on the account page
+       xl   the account page company name
+       2xl  spare heading step
+       title  the page title
+       score  the one oversized number, the ICP Fit Score
+     ------------------------------------------------------------------- */
+  --text-2xs: 12px;
   --text-2xs--line-height: 1.45;
-  --text-xs: 12px;
+  --text-xs: 14px;
   --text-xs--line-height: 1.5;
-  --text-sm: 13px;
+  --text-sm: 15px;
   --text-sm--line-height: 1.5;
-  --text-base: 14px;
+  --text-base: 16px;
   --text-base--line-height: 1.5;
-  --text-lg: 15px;
-  --text-lg--line-height: 1.4;
-  --text-xl: 17px;
-  --text-xl--line-height: 1.35;
-  --text-2xl: 22px;
+  --text-lg: 18px;
+  --text-lg--line-height: 1.35;
+  --text-xl: 20px;
+  --text-xl--line-height: 1.2;
+  --text-2xl: 24px;
   --text-2xl--line-height: 1.2;
-  /* The one oversized number on the page: the ICP Fit Score. */
+  --text-title: 32px;
+  --text-title--line-height: 1.2;
+  --text-title--letter-spacing: -0.02em;
+  --text-title--font-weight: 600;
   --text-score: 56px;
   --text-score--line-height: 1;
 
@@ -215,7 +236,9 @@
     background-color: var(--lp-canvas);
     color: var(--lp-txt);
     font-family: var(--font-sans);
-    font-size: 14px;
+    /* Matches --text-sm, the body step, so anything that inherits rather
+       than setting its own size still lands on the scale. */
+    font-size: 15px;
     font-weight: 450;
     line-height: 1.5;
     font-feature-settings: 'cv11', 'ss01';
@@ -228,7 +251,8 @@
   h2,
   h3,
   h4 {
-    letter-spacing: -0.019em;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
     font-weight: 600;
     color: var(--lp-txt);
   }
@@ -246,14 +270,15 @@
 }
 
 @layer components {
-  /* The one label style: 11px, uppercase, 600, wide tracking.
-     Used for section headers AND table column headers. */
+  /* The one label style: 13px, uppercase, medium, wide tracking.
+     Used for table column headers AND section headers, so the two always
+     match. Change it here and both follow. */
   .lp-label {
-    font-size: 11px;
-    line-height: 1.4;
+    font-size: 13px;
+    line-height: 1.2;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-weight: 600;
+    letter-spacing: 0.04em;
+    font-weight: 500;
     color: var(--lp-txt-3);
   }
 
