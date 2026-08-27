@@ -159,6 +159,7 @@ export const companies = [
     id: 'coca-cola',
     name: 'Coca-Cola',
     domain: 'coca-colacompany.com',
+    logo: '/logos/coca-cola.png',
     monogram: 'CC',
     monogramColor: MONOGRAM,
     city: 'Atlanta',
@@ -373,18 +374,19 @@ export const companies = [
 
   /* ---------------------------------------------------------------------- */
   {
-    id: 'john-deere',
-    name: 'John Deere',
-    domain: 'deere.com',
-    monogram: 'JD',
+    id: 'caterpillar',
+    name: 'Caterpillar',
+    domain: 'caterpillar.com',
+    logo: '/logos/caterpillar.png',
+    monogram: 'CA',
     monogramColor: MONOGRAM,
-    city: 'Moline',
-    state: 'IL',
-    hq: 'Moline, IL',
-    industry: 'Agricultural Machinery',
-    employees: 83000,
-    revenue: '$61.3B est.',
-    founded: 1837,
+    city: 'Irving',
+    state: 'TX',
+    hq: 'Irving, TX',
+    industry: 'Heavy Equipment',
+    employees: 113000,
+    revenue: '$64.8B est.',
+    founded: 1925,
     icpFitScore: 86,
     phase: 'executing',
     evidenceConfidence: {
@@ -395,16 +397,16 @@ export const companies = [
 
     brief: {
       whatTheySell:
-        'Agricultural, construction and forestry equipment, plus the precision technology and financing that go with it.',
+        'Construction and mining equipment, engines and turbines, plus the dealer parts and service network that runs alongside them.',
       revenueDrivers:
-        'Large equipment unit volume tied to farm income cycles, with precision ag subscriptions growing as recurring revenue.',
+        'Machine volume tied to construction and commodity cycles, with aftermarket parts and service carrying the steadier margin.',
       fitNote:
         'Partner is already named and build roles are open at volume. The platform decision is behind them, so the opening is scope expansion rather than selection.',
       milestones: [
-        'Founded 1837',
-        '83,000 employees',
+        'Founded 1925',
+        '113,000 employees',
         'Partner named',
-        '$61.3B est. revenue',
+        '$64.8B est. revenue',
       ],
     },
 
@@ -533,6 +535,7 @@ export const companies = [
     id: 'cummins',
     name: 'Cummins',
     domain: 'cummins.com',
+    logo: '/logos/cummins.png',
     monogram: 'CU',
     monogramColor: MONOGRAM,
     city: 'Columbus',
@@ -686,6 +689,7 @@ export const companies = [
     id: 'whirlpool',
     name: 'Whirlpool',
     domain: 'whirlpoolcorp.com',
+    logo: '/logos/whirlpool.png',
     monogram: 'WH',
     monogramColor: MONOGRAM,
     city: 'Benton Harbor',
@@ -838,6 +842,7 @@ export const companies = [
     id: 'colgate-palmolive',
     name: 'Colgate-Palmolive',
     domain: 'colgatepalmolive.com',
+    logo: '/logos/colgate-palmolive.png',
     monogram: 'CP',
     monogramColor: MONOGRAM,
     city: 'New York',
@@ -991,6 +996,7 @@ export const companies = [
     id: 'kimberly-clark',
     name: 'Kimberly-Clark',
     domain: 'kimberly-clark.com',
+    logo: '/logos/kimberly-clark.png',
     monogram: 'KC',
     monogramColor: MONOGRAM,
     city: 'Irving',
@@ -1129,6 +1135,7 @@ export const companies = [
     id: 'emerson-electric',
     name: 'Emerson Electric',
     domain: 'emerson.com',
+    logo: '/logos/emerson-electric.png',
     monogram: 'EE',
     monogramColor: MONOGRAM,
     city: 'St. Louis',
@@ -1278,6 +1285,7 @@ export const companies = [
     id: 'sherwin-williams',
     name: 'Sherwin-Williams',
     domain: 'sherwin-williams.com',
+    logo: '/logos/sherwin-williams.png',
     monogram: 'SW',
     monogramColor: MONOGRAM,
     city: 'Cleveland',
@@ -1419,18 +1427,19 @@ export const companies = [
 
   /* ---------------------------------------------------------------------- */
   {
-    id: 'stanley-black-decker',
-    name: 'Stanley Black & Decker',
-    domain: 'stanleyblackanddecker.com',
-    monogram: 'SB',
+    id: 'illinois-tool-works',
+    name: 'Illinois Tool Works',
+    domain: 'itw.com',
+    logo: '/logos/illinois-tool-works.png',
+    monogram: 'IT',
     monogramColor: MONOGRAM,
-    city: 'New Britain',
-    state: 'CT',
-    hq: 'New Britain, CT',
-    industry: 'Tools & Hardware',
-    employees: 48000,
-    revenue: '$15.4B est.',
-    founded: 1843,
+    city: 'Glenview',
+    state: 'IL',
+    hq: 'Glenview, IL',
+    industry: 'Diversified Industrial',
+    employees: 44000,
+    revenue: '$15.9B est.',
+    founded: 1912,
     icpFitScore: 46,
     phase: 'latent',
     evidenceConfidence: {
@@ -1441,32 +1450,32 @@ export const companies = [
 
     brief: {
       whatTheySell:
-        'Power tools, hand tools and outdoor equipment across several brands sold through big box retail and industrial distribution.',
+        'Components, consumables and specialty equipment across seven segments, from automotive fasteners to food equipment and welding.',
       revenueDrivers:
-        'Tool volume tied to construction and DIY demand, with brand portfolio breadth cushioning single-channel swings.',
+        'Highly decentralised operating units selling into industrial customers, where the 80/20 focus on core products sets the margin.',
       fitNote:
-        'A multi-ERP estate from acquisitions, but every open role is maintenance. Nothing indicates a programme forming.',
+        'One of the most fragmented estates on the list, with each operating unit running its own systems. Strong future fit, but every open role today is maintenance.',
       milestones: [
-        'Founded 1843',
-        '48,000 employees',
-        'Multi-ERP estate',
-        '$15.4B est. revenue',
+        'Founded 1912',
+        '44,000 employees',
+        'Decentralised units',
+        '$15.9B est. revenue',
       ],
     },
 
     signalsFired: [
-      { label: 'Several ERP instances confirmed across brands', points: 17 },
+      { label: 'Several ERP instances confirmed across units', points: 17 },
       { label: 'Basis and ABAP maintenance roles only', points: 13 },
       { label: 'No roadmap or architecture language in postings', points: 10 },
       { label: 'IT headcount flat across four quarters', points: 6 },
     ],
 
     phaseNote:
-      'The estate is fragmented from years of acquisitions, but hiring is maintenance only. There is no programme, study or budget cycle in evidence.',
+      'The estate is fragmented across decentralised operating units, but hiring is maintenance only. There is no programme, study or budget cycle in evidence.',
 
     landscape: {
       verdict:
-        'Several ERP instances across acquired brands, ECC among them. Fragmented but stable, with no consolidation signal detected.',
+        'Several ERP instances across operating units, ECC among them. Fragmented but stable, with no consolidation signal detected.',
       state: 'Confirmed legacy',
       stack: [
         {
@@ -1479,7 +1488,7 @@ export const companies = [
           name: 'Infor CloudSuite',
           layer: 'ERP core',
           provenance: 'observed',
-          source: 'Technographic record, acquired brand domain',
+          source: 'Technographic record, operating unit domain',
         },
         {
           name: 'Power BI',
@@ -1516,7 +1525,7 @@ export const companies = [
     },
 
     ecosystem: [
-      'A second ERP across acquired brands will make any future consolidation larger in scope than the SAP footprint suggests.',
+      'A second ERP across operating units will make any future consolidation larger in scope than the SAP footprint suggests.',
     ],
 
     contacts: [
@@ -1558,18 +1567,19 @@ export const companies = [
 
   /* ---------------------------------------------------------------------- */
   {
-    id: 'ball-corporation',
-    name: 'Ball Corporation',
-    domain: 'ball.com',
-    monogram: 'BA',
+    id: 'air-products',
+    name: 'Air Products',
+    domain: 'airproducts.com',
+    logo: '/logos/air-products.png',
+    monogram: 'AP',
     monogramColor: MONOGRAM,
-    city: 'Westminster',
-    state: 'CO',
-    hq: 'Westminster, CO',
-    industry: 'Packaging',
-    employees: 16000,
-    revenue: '$11.8B est.',
-    founded: 1880,
+    city: 'Allentown',
+    state: 'PA',
+    hq: 'Allentown, PA',
+    industry: 'Industrial Gases',
+    employees: 23000,
+    revenue: '$12.1B est.',
+    founded: 1940,
     icpFitScore: 39,
     phase: 'latent',
     evidenceConfidence: {
@@ -1580,16 +1590,16 @@ export const companies = [
 
     brief: {
       whatTheySell:
-        'Aluminium beverage cans and packaging for beverage, personal care and household producers.',
+        'Industrial gases including oxygen, nitrogen and hydrogen, supplied on long-term contracts through on-site plants and pipelines.',
       revenueDrivers:
-        'Can volume under long-term contracts, with aluminium cost passed through and plant utilisation setting the real margin.',
+        'Take-or-pay contracts running fifteen years or more, where plant uptime and energy cost set the margin rather than volume swings.',
       fitNote:
         'ECC runs finance and plant operations and is stable. Hiring is maintenance only, so there is no programme to join yet.',
       milestones: [
-        'Founded 1880',
-        '16,000 employees',
+        'Founded 1940',
+        '23,000 employees',
         'Maintenance hiring',
-        '$11.8B est. revenue',
+        '$12.1B est. revenue',
       ],
     },
 
@@ -1695,18 +1705,19 @@ export const companies = [
 
   /* ---------------------------------------------------------------------- */
   {
-    id: 'dover-corporation',
-    name: 'Dover Corporation',
-    domain: 'dovercorp.com',
-    monogram: 'DC',
+    id: 'avery-dennison',
+    name: 'Avery Dennison',
+    domain: 'averydennison.com',
+    logo: '/logos/avery-dennison.png',
+    monogram: 'AD',
     monogramColor: MONOGRAM,
-    city: 'Downers Grove',
-    state: 'IL',
-    hq: 'Downers Grove, IL',
-    industry: 'Industrial Manufacturing',
-    employees: 24000,
-    revenue: '$8.7B est.',
-    founded: 1955,
+    city: 'Mentor',
+    state: 'OH',
+    hq: 'Mentor, OH',
+    industry: 'Materials Manufacturing',
+    employees: 35000,
+    revenue: '$8.8B est.',
+    founded: 1935,
     icpFitScore: 31,
     phase: 'latent',
     evidenceConfidence: {
@@ -1717,32 +1728,32 @@ export const companies = [
 
     brief: {
       whatTheySell:
-        'A portfolio of industrial businesses spanning pumps, refrigeration systems, marking equipment and fluid handling.',
+        'Pressure-sensitive label materials, RFID inlays and branding solutions sold to packaging converters, retailers and apparel brands.',
       revenueDrivers:
-        'Aftermarket parts and service across a decentralised portfolio, where each operating company runs largely on its own.',
+        'Label material volume tied to consumer packaging demand, with RFID in apparel the faster growing and higher margin line.',
       fitNote:
-        'Highly decentralised, so there is no single ERP decision to sell into. Any entry has to be at an operating company level.',
+        'Regional ERP instances rather than one global core, and hiring is maintenance. No group programme to sell into yet.',
       milestones: [
-        'Founded 1955',
-        '24,000 employees',
-        'Decentralised portfolio',
-        '$8.7B est. revenue',
+        'Founded 1935',
+        '35,000 employees',
+        'Regional instances',
+        '$8.8B est. revenue',
       ],
     },
 
     signalsFired: [
-      { label: 'ERP instances differ by operating company', points: 12 },
-      { label: 'Divisional maintenance roles only', points: 9 },
+      { label: 'ERP instances differ by region', points: 12 },
+      { label: 'Regional maintenance roles only', points: 9 },
       { label: 'No group-level architecture postings', points: 6 },
       { label: 'No filing references to systems risk', points: 4 },
     ],
 
     phaseNote:
-      'Each operating company runs its own systems and hires for maintenance. There is no group programme and no evidence of one forming.',
+      'Each region runs its own instance and hires for maintenance. There is no group programme and no evidence of one forming.',
 
     landscape: {
       verdict:
-        'No single ERP system of record at group level. Instances differ by operating company, with ECC present in some. No consolidation signal.',
+        'No single ERP system of record at group level. Instances differ by region, with ECC present in some. No consolidation signal.',
       state: 'Confirmed legacy',
       stack: [
         {
@@ -1755,20 +1766,20 @@ export const companies = [
           name: 'Epicor',
           layer: 'ERP core',
           provenance: 'observed',
-          source: 'Technographic record, operating company domain',
+          source: 'Technographic record, regional domain',
         },
       ],
       evidence: [
         {
           source: 'Technographics',
           observed:
-            'Different ERP products across operating company domains. No group standard.',
-          implies: 'Decentralised. No single decision maker for a platform.',
+            'Different ERP products across regional domains. No group standard.',
+          implies: 'Regionally split. No single decision maker for a platform.',
         },
         {
           source: 'Job postings (2 recent)',
-          observed: 'Divisional finance and applications roles, maintenance scoped.',
-          implies: 'No group programme. Sell at the operating company.',
+          observed: 'Regional finance and applications roles, maintenance scoped.',
+          implies: 'No group programme. Sell into a region.',
         },
       ],
     },
@@ -1780,19 +1791,19 @@ export const companies = [
     ],
 
     whyNow: {
-      title: 'Decentralised · no group decision',
+      title: 'Regionally split · no group decision',
       chip: 'Nurture',
-      body: 'There is no group platform decision to win. If this account matters, pick one operating company and work it on its own merits.',
+      body: 'There is no group platform decision to win. If this account matters, pick one region and work it on its own merits.',
     },
 
     ecosystem: [
-      'A mixed ERP estate across operating companies means no shared integration surface to anchor a group pitch.',
+      'A mixed ERP estate across regions means no shared integration surface to anchor a group pitch.',
     ],
 
     contacts: [
       {
         name: 'Gwen Amherst',
-        title: 'Divisional IT Manager',
+        title: 'Regional IT Manager',
         tenure: 'Joined 5 years ago',
         prior: null,
         likelyChampion: true,
@@ -1801,18 +1812,18 @@ export const companies = [
 
     jobPostings: [
       {
-        title: 'Divisional Finance Systems Analyst',
-        team: 'Operating Company Finance',
+        title: 'Regional Finance Systems Analyst',
+        team: 'Regional Finance',
         ageDays: 38,
-        snippet: 'Support SAP ECC for a single operating company finance team.',
+        snippet: 'Support SAP ECC for a single regional finance team.',
         keywords: ['SAP ECC'],
       },
       {
         title: 'Applications Support Analyst',
-        team: 'Divisional IT',
+        team: 'Regional IT',
         ageDays: 52,
-        snippet: 'Maintain divisional ERP and reporting tools.',
-        keywords: ['divisional ERP'],
+        snippet: 'Maintain regional ERP and reporting tools.',
+        keywords: ['regional ERP'],
       },
     ],
   },
@@ -1828,6 +1839,7 @@ export const companies = [
     id: 'coreweave',
     name: 'CoreWeave',
     domain: 'coreweave.com',
+    logo: '/logos/coreweave.png',
     monogram: 'CW',
     monogramColor: MONOGRAM,
     city: 'Livingston',

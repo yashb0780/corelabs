@@ -6,7 +6,7 @@
 import { useState } from 'react'
 import { Icon } from './Icon'
 import { cx } from './cx'
-import { logoUrl } from '../lib/logo'
+import { logoSrc } from '../lib/logo'
 
 /* --- Buttons ------------------------------------------------------------ */
 
@@ -151,7 +151,7 @@ export function Chip({ children, title, className }) {
  */
 export function CompanyLogo({ company, size = 7 }) {
   const [failed, setFailed] = useState(false)
-  const src = logoUrl(company.domain)
+  const src = logoSrc(company)
 
   // size is a Tailwind spacing step: the box, and the image inside it.
   const box = size === 9 ? 'size-9' : 'size-7'
