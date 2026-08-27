@@ -3,8 +3,10 @@
  * Nothing here holds data and nothing here holds a hex color, a font weight
  * or a padding value - those all come from src/styles/tokens.css.
  */
+import { useState } from 'react'
 import { Icon } from './Icon'
 import { cx } from './cx'
+import { logoUrl } from '../lib/logo'
 
 /* --- Buttons ------------------------------------------------------------ */
 
@@ -92,7 +94,7 @@ export function FilterPill({ active, count, children, ...rest }) {
  * Tailwind cannot build class names from a variable, so the colors are
  * applied from CSS variables - still no hex codes in this file.
  */
-const TONES = ['grey', 'blue', 'violet', 'amber', 'green', 'teal']
+const TONES = ['grey', 'blue', 'accent', 'amber', 'green', 'teal']
 
 /**
  * `dashed` is used by the two "we could not tell" states, Unclassified and
@@ -130,6 +132,61 @@ export function Chip({ children, title, className }) {
       )}
     >
       {children}
+    </span>
+  )
+}
+
+/* --- Company logo ------------------------------------------------------- */
+
+/**
+ * The company logo, fetched from a CDN by domain (see src/lib/logo.js).
+ *
+ * Every logo sits in a fixed rounded square with the image contained inside
+ * it, so brand marks with wildly different aspect ratios do not make rows
+ * taller or wider than one another.
+ *
+ * If the CDN has no logo for that domain the request 404s, onError fires and
+ * the monogram tile takes over. A broken image is never shown, and with no
+ * network at all every company falls back cleanly.
+ */
+export function CompanyLogo({ company, size = 7 }) {
+  const [failed, setFailed] = useState(false)
+  const src = logoUrl(company.domain)
+
+  // size is a Tailwind spacing step: the box, and the image inside it.
+  const box = size === 9 ? 'size-9' : 'size-7'
+  const inner = size === 9 ? 'size-7' : 'size-5'
+
+  if (!src || failed) {
+    return (
+      <span
+        aria-hidden="true"
+        className={cx(
+          'grid shrink-0 place-items-center rounded-md text-2xs font-num text-accent-txt',
+          box,
+        )}
+        style={{ backgroundColor: company.monogramColor }}
+      >
+        {company.monogram}
+      </span>
+    )
+  }
+
+  return (
+    <span
+      className={cx(
+        'grid shrink-0 place-items-center overflow-hidden rounded-md border border-line bg-surface',
+        box,
+      )}
+    >
+      {/* Not lazy: the table is short, every row is near the fold, and lazy
+          loading only delays the logos appearing. */}
+      <img
+        src={src}
+        alt=""
+        onError={() => setFailed(true)}
+        className={cx('object-contain', inner)}
+      />
     </span>
   )
 }

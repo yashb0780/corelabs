@@ -50,8 +50,12 @@
   --lp-tone-grey-bg: rgba(95, 100, 112, 0.11);
   --lp-tone-blue: #1361c0;
   --lp-tone-blue-bg: rgba(19, 97, 192, 0.11);
-  --lp-tone-violet: #5b5bd6;
-  --lp-tone-violet-bg: rgba(91, 91, 214, 0.11);
+  /* Mobilizing is the highest-value phase, so it is the one tone that fills
+     with the accent instead of tinting: white on soft black. Written as var()
+     references, so it follows the accent in both themes and inverts with it.
+     There is no separate dark-mode entry for this tone, by design. */
+  --lp-tone-accent: var(--lp-accent-txt);
+  --lp-tone-accent-bg: var(--lp-accent);
   --lp-tone-amber: #8a6300;
   --lp-tone-amber-bg: rgba(217, 160, 0, 0.16);
   --lp-tone-green: #14764a;
@@ -95,8 +99,6 @@
   --lp-tone-grey-bg: rgba(168, 173, 184, 0.16);
   --lp-tone-blue: #62b0fd;
   --lp-tone-blue-bg: rgba(98, 176, 253, 0.16);
-  --lp-tone-violet: #9b9bf4;
-  --lp-tone-violet-bg: rgba(155, 155, 244, 0.16);
   --lp-tone-amber: #f4cf60;
   --lp-tone-amber-bg: rgba(244, 207, 96, 0.16);
   --lp-tone-green: #5cc48f;

@@ -44,13 +44,18 @@ including Screen 1.
 |---|---|---|
 | Latent | grey | ECC present, maintenance-only hiring, no program exists |
 | Evaluating | blue | Architects, roadmap and business-case language, readiness checks |
-| Mobilizing | violet | Program governance cluster, budget language, partner not signed |
+| Mobilizing | soft black, filled (the `--lp-accent` token, white text) | Program governance cluster, budget language, partner not signed |
 | Executing | amber | Module consultants, build and data roles, partner named |
 | Landed | green | S/4 live, hypercare and AMS language |
 | Re-expanding | teal | Parent modern, subsidiaries still legacy, wave 2 rollout |
 | Unclassified | light grey, dashed border | Insufficient evidence. Not a phase. |
 
 Delete any values named "Stalled" or "Live". They were placeholders.
+
+Mobilizing was violet until the accent became a soft black. It is the
+highest-value phase, so it now fills with the accent rather than tinting like
+the other tones: white text on soft black, inverting in dark mode. This is
+deliberate. Do not put violet back.
 
 ### Window, computed not stored
 

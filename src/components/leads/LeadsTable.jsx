@@ -15,40 +15,9 @@ import { formatEmployees, getPhase } from '../../data/companies'
 import { computeWindow } from '../../lib/window'
 import { Icon } from '../Icon'
 import { cx } from '../cx'
-import { TonePill } from '../ui'
+import { CompanyLogo, TonePill } from '../ui'
 
 /* --- Company cell ------------------------------------------------------- */
-
-/**
- * Shows the company's SVG logo. If the file is missing or fails to load,
- * falls back to the colored monogram tile.
- */
-function CompanyLogo({ company }) {
-  const [failed, setFailed] = useState(false)
-
-  if (!company.logo || failed) {
-    return (
-      <span
-        aria-hidden="true"
-        className="grid size-7 shrink-0 place-items-center rounded-md text-xs font-num text-white"
-        style={{ backgroundColor: company.monogramColor }}
-      >
-        {company.monogram}
-      </span>
-    )
-  }
-
-  return (
-    <img
-      src={company.logo}
-      alt=""
-      width="28"
-      height="28"
-      onError={() => setFailed(true)}
-      className="size-7 shrink-0 rounded-md"
-    />
-  )
-}
 
 function CompanyCell({ company }) {
   return (

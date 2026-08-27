@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="Calder Industrial">
-  <rect width="32" height="32" rx="7" fill="#E7F1EC"/>
-  <path d="M8 12.5 16 8l8 4.5" fill="none" stroke="#1A7F52" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M8 17 16 12.5 24 17" fill="none" stroke="#1A7F52" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M8 21.5 16 17l8 4.5" fill="none" stroke="#1A7F52" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>

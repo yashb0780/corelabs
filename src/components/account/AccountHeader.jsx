@@ -8,7 +8,7 @@
 import { formatEmployees, getPhase } from '../../data/companies'
 import { getSegment } from '../../data/segments'
 import { computeWindow } from '../../lib/window'
-import { Button, TonePill } from '../ui'
+import { Button, CompanyLogo, TonePill } from '../ui'
 
 function Fact({ label, children }) {
   return (
@@ -27,13 +27,7 @@ export function AccountHeader({ company, archetype }) {
     <section className="lp-card">
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-start gap-3">
-          <img
-            src={company.logo}
-            alt=""
-            width="36"
-            height="36"
-            className="size-9 shrink-0 rounded-md"
-          />
+          <CompanyLogo company={company} size={9} />
           <div className="min-w-0">
             <h2 className="text-xl text-txt">{company.name}</h2>
             <p className="mt-0.5 text-sm text-txt-2">

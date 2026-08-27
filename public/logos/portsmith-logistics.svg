@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="Portsmith Logistics">
-  <rect width="32" height="32" rx="7" fill="#E4F0EE"/>
-  <circle cx="16" cy="16" r="8.5" fill="none" stroke="#1D7A71" stroke-width="1.8"/>
-  <path d="M11 19.5 21 12.5" stroke="#1D7A71" stroke-width="1.8" stroke-linecap="round"/>
-  <path d="M17 12.5h4v4" fill="none" stroke="#1D7A71" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>

@@ -2,11 +2,21 @@
    ALL DUMMY COMPANY DATA LIVES HERE. Nowhere else.
    No content strings belong in component files.
 
+   !! PROTOTYPE DISPLAY DATA ONLY !!
+   The company names, domains and logos below are real, so the table reads
+   like a genuine prospect list. Everything else about them is invented for
+   demonstration: the ICP fit scores, decision phases, windows, signals, ERP
+   landscape verdicts, momentum counts, contacts and job postings are
+   ILLUSTRATIVE, not real classifications, and not research. Contact names
+   are fictional and do not refer to real people at these companies. Do not
+   quote any of it as fact, and do not put it in front of a customer as
+   though it were.
+
    TO CHANGE THE TABLE OR AN ACCOUNT PAGE: edit the `companies` array below.
 
    Shape of a company (see section 5 of BRIEF.md):
 
-     id, name, logo, city, state, industry, employees, revenue, founded, hq,
+     id, name, domain, city, state, industry, employees, revenue, founded, hq,
      icpFitScore, phase, evidenceConfidence, segments: [],
      brief: { whatTheySell, revenueDrivers, fitNote, milestones: [] },
      signalsFired: [ { label, points } ],
@@ -22,11 +32,12 @@
      contacts: [ { name, title, tenure, prior, likelyChampion } ],
      jobPostings: [ { title, team, ageDays, snippet, keywords: [] } ]
 
-   `monogram` and `monogramColor` are extra: they draw the fallback tile in
-   the leads table when a logo SVG is missing.
+   `domain` drives the logo: it is turned into a CDN image URL by
+   src/lib/logo.js. If the image fails, the table falls back to the monogram
+   tile drawn from `monogram` and `monogramColor`.
 
    A field set to null or [] renders as an honest empty state, using the copy
-   in src/data/emptyStates.js. Cirrus Software is the worked example.
+   in src/data/emptyStates.js. CoreWeave is the worked example.
 
    NOTE: Window is NOT stored here. It is computed from phase plus the
    selected archetype in src/lib/window.js.
@@ -51,9 +62,11 @@ export const DECISION_PHASES = [
       'Architects, roadmap and business-case language, readiness checks.',
   },
   {
+    // The highest-value phase, so it is the one tone that fills with the
+    // accent instead of tinting. See BRIEF.md section 2.
     id: 'mobilizing',
     label: 'Mobilizing',
-    tone: 'violet',
+    tone: 'accent',
     description:
       'Program governance cluster, budget language, partner not signed.',
   },
@@ -132,6 +145,9 @@ export const STACK_LAYERS = [
   'Finance and HCM',
 ]
 
+/** Every monogram tile uses the accent, so it follows the token. */
+const MONOGRAM = 'var(--lp-accent)'
+
 /* ========================================================================== */
 
 export const companies = [
@@ -140,18 +156,18 @@ export const companies = [
      exists to find, so this one is populated in full.
      ---------------------------------------------------------------------- */
   {
-    id: 'meridian-foods',
-    name: 'Meridian Foods',
-    logo: '/logos/meridian-foods.svg',
-    monogram: 'MF',
-    monogramColor: 'var(--lp-accent)',
-    city: 'Columbus',
-    state: 'OH',
-    hq: 'Columbus, OH',
-    industry: 'Food & Beverage',
-    employees: 14200,
-    revenue: '$4.2B est.',
-    founded: 1978,
+    id: 'coca-cola',
+    name: 'Coca-Cola',
+    domain: 'coca-colacompany.com',
+    monogram: 'CC',
+    monogramColor: MONOGRAM,
+    city: 'Atlanta',
+    state: 'GA',
+    hq: 'Atlanta, GA',
+    industry: 'Beverages',
+    employees: 70000,
+    revenue: '$47.1B est.',
+    founded: 1892,
     icpFitScore: 91,
     phase: 'mobilizing',
     evidenceConfidence: {
@@ -163,16 +179,16 @@ export const companies = [
 
     brief: {
       whatTheySell:
-        'Chilled ready meals and branded dairy, made in house and sold through national grocery retailers across the Midwest and Southeast.',
+        'Concentrates and finished beverages sold through a global network of independent bottling partners and retail accounts.',
       revenueDrivers:
-        'Volume contracts with a small number of grocery chains, where margin turns on plant utilisation and on-time-in-full delivery performance.',
+        'Concentrate volume and pricing through the bottler system, where margin turns on route-to-market efficiency and packaging cost.',
       fitNote:
-        'Two ERP instances, a transformation office standing up, and no implementation partner named anywhere. This is a partner-selection window, not a technology-evaluation window.',
+        'Multiple ERP instances across the bottler estate, a transformation office standing up, and no implementation partner named anywhere. This is a partner-selection window, not a technology-evaluation window.',
       milestones: [
-        'Founded 1978',
-        '14,200 employees',
-        '9 plants',
-        '$4.2B est. revenue',
+        'Founded 1892',
+        '70,000 employees',
+        '200+ markets',
+        '$47.1B est. revenue',
         'FY26 10-K filed',
       ],
     },
@@ -188,8 +204,11 @@ export const companies = [
         label: 'ECC end-of-support named in FY26 10-K risk factors',
         points: 15,
       },
-      { label: 'Director, ERP Program hired from Capgemini', points: 13 },
-      { label: 'S/4HANA mentions up 4x across the trailing 90 days', points: 11 },
+      { label: 'Director, ERP Program hired from a global SI', points: 13 },
+      {
+        label: 'S/4HANA mentions up 4x across the trailing 90 days',
+        points: 11,
+      },
       { label: 'New CIO appointed within the trailing 9 months', points: 8 },
       { label: 'On-premise Basis administration still referenced', points: 4 },
     ],
@@ -199,14 +218,15 @@ export const companies = [
 
     landscape: {
       verdict:
-        'Running SAP ECC 6.0 (EHP 7) as the core with Infor M3 in at least one subsidiary. A migration program is forming but no target platform is locked and no partner is named. Deployment is on-premise today with no RISE or GROW commitment detected.',
+        'Running SAP ECC 6.0 (EHP 7) as the core with a second ERP in at least one bottling subsidiary. A migration program is forming but no target platform is locked and no partner is named. Deployment is on-premise today with no RISE or GROW commitment detected.',
       state: 'Confirmed legacy · migrating',
       stack: [
         {
           name: 'SAP ECC 6.0',
           layer: 'ERP core',
           provenance: 'observed',
-          source: 'Technographic record, licence footprint, refreshed 3 days ago',
+          source:
+            'Technographic record, licence footprint, refreshed 3 days ago',
         },
         {
           name: 'Infor M3',
@@ -249,7 +269,7 @@ export const companies = [
         {
           source: 'Technographics',
           observed:
-            'SAP ECC 6.0 and Infor M3 both present. No S/4HANA licence record.',
+            'SAP ECC 6.0 and a second ERP both present. No S/4HANA licence record.',
           implies:
             'Core is still legacy. Multi-ERP estate, not a single-instance shop.',
         },
@@ -263,7 +283,7 @@ export const companies = [
         {
           source: 'People movement',
           observed:
-            'Arun Patel joined 5 months ago as Director, ERP Program, prior Capgemini. New CIO within the trailing 9 months.',
+            'A Director, ERP Program joined 5 months ago from a global SI. New CIO within the trailing 9 months.',
           implies:
             'SI-side practitioners moving client-side. A program is being staffed.',
         },
@@ -297,7 +317,7 @@ export const companies = [
         name: 'Arun Patel',
         title: 'Director, ERP Program',
         tenure: 'Joined 5 months ago',
-        prior: 'Capgemini',
+        prior: 'Global SI',
         likelyChampion: true,
       },
       {
@@ -318,7 +338,7 @@ export const companies = [
         name: 'Marcus Oyelaran',
         title: 'Chief Information Officer',
         tenure: 'Joined 9 months ago',
-        prior: 'Kellanova',
+        prior: 'Consumer goods peer',
         likelyChampion: false,
       },
     ],
@@ -353,19 +373,19 @@ export const companies = [
 
   /* ---------------------------------------------------------------------- */
   {
-    id: 'calder-industrial',
-    name: 'Calder Industrial',
-    logo: '/logos/calder-industrial.svg',
-    monogram: 'CI',
-    monogramColor: '#14764a',
-    city: 'Milwaukee',
-    state: 'WI',
-    hq: 'Milwaukee, WI',
-    industry: 'Industrial Manufacturing',
-    employees: 9800,
-    revenue: '$2.8B est.',
-    founded: 1954,
-    icpFitScore: 82,
+    id: 'john-deere',
+    name: 'John Deere',
+    domain: 'deere.com',
+    monogram: 'JD',
+    monogramColor: MONOGRAM,
+    city: 'Moline',
+    state: 'IL',
+    hq: 'Moline, IL',
+    industry: 'Agricultural Machinery',
+    employees: 83000,
+    revenue: '$61.3B est.',
+    founded: 1837,
+    icpFitScore: 86,
     phase: 'executing',
     evidenceConfidence: {
       level: 'High',
@@ -375,25 +395,28 @@ export const companies = [
 
     brief: {
       whatTheySell:
-        'Hydraulic components and powertrain assemblies sold to agricultural and construction equipment manufacturers.',
+        'Agricultural, construction and forestry equipment, plus the precision technology and financing that go with it.',
       revenueDrivers:
-        'Long-run OEM supply agreements, with aftermarket parts carrying the higher margin.',
+        'Large equipment unit volume tied to farm income cycles, with precision ag subscriptions growing as recurring revenue.',
       fitNote:
-        'Partner is already named and build roles are open. The platform decision is behind them, so the opening here is scope expansion rather than selection.',
+        'Partner is already named and build roles are open at volume. The platform decision is behind them, so the opening is scope expansion rather than selection.',
       milestones: [
-        'Founded 1954',
-        '9,800 employees',
-        '6 plants',
-        '$2.8B est. revenue',
+        'Founded 1837',
+        '83,000 employees',
+        'Partner named',
+        '$61.3B est. revenue',
       ],
     },
 
     signalsFired: [
-      { label: 'Five S/4HANA build and data roles open concurrently', points: 24 },
-      { label: 'Implementation partner named in a press release', points: 20 },
-      { label: 'Four ERP instances referenced across postings', points: 18 },
-      { label: 'Cutover and data migration language present', points: 12 },
-      { label: 'Programme director hired 14 months ago', points: 8 },
+      {
+        label: 'Six S/4HANA build and data roles open concurrently',
+        points: 26,
+      },
+      { label: 'Implementation partner named in a press release', points: 21 },
+      { label: 'Multiple ERP instances referenced across postings', points: 17 },
+      { label: 'Cutover and data migration language present', points: 13 },
+      { label: 'Programme director hired 14 months ago', points: 9 },
     ],
 
     phaseNote:
@@ -401,7 +424,7 @@ export const companies = [
 
     landscape: {
       verdict:
-        'Four ERP instances from three decades of acquisitions, consolidating onto S/4HANA with a named partner. Migration is underway rather than being evaluated.',
+        'A multi-instance ECC estate consolidating onto S/4HANA with a named partner. Migration is underway rather than being evaluated.',
       state: 'Confirmed legacy · migrating',
       stack: [
         {
@@ -414,16 +437,10 @@ export const companies = [
           name: 'SAP S/4HANA',
           layer: 'ERP core',
           provenance: 'posting',
-          source: 'Named in five current build postings',
+          source: 'Named in six current build postings',
         },
         {
-          name: 'Epicor',
-          layer: 'ERP core',
-          provenance: 'observed',
-          source: 'Technographic record, acquired subsidiary domain',
-        },
-        {
-          name: 'Power BI',
+          name: 'Snowflake',
           layer: 'Data and analytics',
           provenance: 'observed',
           source: 'Technographic record',
@@ -439,11 +456,11 @@ export const companies = [
         {
           source: 'Technographics',
           observed:
-            'ECC 6.0 and Epicor both present. S/4HANA appears in postings but not yet in licence records.',
+            'ECC 6.0 present. S/4HANA appears in postings but not yet in licence records.',
           implies: 'Mid-migration. The legacy estate is still live.',
         },
         {
-          source: 'Job postings (5 recent)',
+          source: 'Job postings (6 recent)',
           observed:
             'Module consultants for FICO and MM, plus two data migration engineers. Partner named in the posting body.',
           implies: 'Build phase, staffed. Selection is closed.',
@@ -460,7 +477,7 @@ export const companies = [
     whyNow: {
       title: 'Mid-build · scope expanding',
       chip: 'Partner named',
-      body: 'The selection window has closed but four instances means wave two is inevitable. Position for the subsidiaries not in the current scope.',
+      body: 'The selection window has closed but a multi-instance estate means wave two is inevitable. Position for the divisions not in the current scope.',
     },
 
     ecosystem: [
@@ -469,6 +486,13 @@ export const companies = [
 
     contacts: [
       {
+        name: 'Priya Raman',
+        title: 'Enterprise Architect',
+        tenure: 'Joined 14 months ago',
+        prior: 'Big four consultancy',
+        likelyChampion: true,
+      },
+      {
         name: 'Marcus Feldt',
         title: 'Chief Information Officer',
         tenure: 'Joined 6 years ago',
@@ -476,17 +500,10 @@ export const companies = [
         likelyChampion: false,
       },
       {
-        name: 'Priya Raman',
-        title: 'Enterprise Architect',
-        tenure: 'Joined 14 months ago',
-        prior: 'Deloitte',
-        likelyChampion: true,
-      },
-      {
         name: 'Neil Vasquez',
         title: 'Programme Director, ERP',
         tenure: 'Joined 14 months ago',
-        prior: 'Accenture',
+        prior: 'Global SI',
         likelyChampion: false,
       },
     ],
@@ -505,62 +522,367 @@ export const companies = [
         team: 'ERP Programme',
         ageDays: 9,
         snippet:
-          'Move master data from four legacy ERP instances into the new single instance.',
-        keywords: ['four legacy ERP instances', 'single instance'],
+          'Move master data from the legacy ERP instances into the new single instance.',
+        keywords: ['legacy ERP instances', 'single instance'],
       },
     ],
   },
 
   /* ---------------------------------------------------------------------- */
   {
-    id: 'aventine-health',
-    name: 'Aventine Health',
-    logo: '/logos/aventine-health.svg',
-    monogram: 'AH',
-    monogramColor: '#1361c0',
-    city: 'Nashville',
-    state: 'TN',
-    hq: 'Nashville, TN',
-    industry: 'Healthcare',
-    employees: 22500,
-    revenue: '$6.1B est.',
-    founded: 1991,
+    id: 'cummins',
+    name: 'Cummins',
+    domain: 'cummins.com',
+    monogram: 'CU',
+    monogramColor: MONOGRAM,
+    city: 'Columbus',
+    state: 'IN',
+    hq: 'Columbus, IN',
+    industry: 'Industrial Machinery',
+    employees: 75000,
+    revenue: '$34.1B est.',
+    founded: 1919,
+    icpFitScore: 79,
+    phase: 'mobilizing',
+    evidenceConfidence: {
+      level: 'High',
+      detail: '3 independent signal families, 8 source records, dates present.',
+    },
+    segments: ['multi-erp'],
+
+    brief: {
+      whatTheySell:
+        'Engines, power generation systems and the aftermarket parts and service that follow them through a long asset life.',
+      revenueDrivers:
+        'Engine and component volume to truck and equipment makers, with aftermarket carrying the steadier margin.',
+      fitNote:
+        'Governance roles are landing and budget language has appeared, but no partner is named. A selection process is forming now.',
+      milestones: [
+        'Founded 1919',
+        '75,000 employees',
+        'Multi-instance estate',
+        '$34.1B est. revenue',
+      ],
+    },
+
+    signalsFired: [
+      { label: 'ERP programme governance roles posted this quarter', points: 24 },
+      { label: 'Budget approval language in two postings', points: 20 },
+      { label: 'Three ERP instances referenced across divisions', points: 16 },
+      { label: 'No implementation partner named anywhere', points: 12 },
+      { label: 'Enterprise architect hired 7 months ago', points: 7 },
+    ],
+
+    phaseNote:
+      'A programme office and two process owner roles appeared within a quarter, and budget language is present. No partner has been named, so the seat is still open.',
+
+    landscape: {
+      verdict:
+        'SAP ECC 6.0 across most divisions with a separate instance from an acquisition. Consolidation is being scoped and no target platform is locked.',
+      state: 'Confirmed legacy',
+      stack: [
+        {
+          name: 'SAP ECC 6.0',
+          layer: 'ERP core',
+          provenance: 'observed',
+          source: 'Technographic record, licence footprint',
+        },
+        {
+          name: 'Oracle EBS',
+          layer: 'ERP core',
+          provenance: 'observed',
+          source: 'Technographic record, acquired division domain',
+        },
+        {
+          name: 'Power BI',
+          layer: 'Data and analytics',
+          provenance: 'observed',
+          source: 'Technographic record',
+        },
+        {
+          name: 'Coupa',
+          layer: 'Finance and HCM',
+          provenance: 'posting',
+          source: 'Named in a procurement systems posting',
+        },
+      ],
+      evidence: [
+        {
+          source: 'Job postings (4 recent)',
+          observed:
+            'Programme office and process owner roles, with budget approval referenced. No build or module roles.',
+          implies: 'Mobilizing. Governance before selection.',
+        },
+        {
+          source: 'Technographics',
+          observed: 'ECC 6.0 and Oracle EBS both present. No S/4HANA record.',
+          implies: 'Multi-ERP estate, still entirely legacy.',
+        },
+      ],
+    },
+
+    momentum: [
+      { term: 'SAP ECC', counts: [3, 5, 6] },
+      { term: 'S/4HANA', counts: [2, 5, 9] },
+      { term: 'programme office', counts: [0, 2, 4] },
+    ],
+
+    whyNow: {
+      title: 'Governance landed · partner not named',
+      chip: 'Partner seat open',
+      body: 'Budget language and programme roles arrived in the same quarter and nobody has been appointed to deliver. This is the window.',
+    },
+
+    ecosystem: [
+      'Coupa in procurement means a core decision pulls a source-to-pay workstream along with it.',
+    ],
+
+    contacts: [
+      {
+        name: 'Helena Voss',
+        title: 'Director, Enterprise Applications',
+        tenure: 'Joined 7 months ago',
+        prior: 'Industrial peer',
+        likelyChampion: true,
+      },
+      {
+        name: 'Raymond Cho',
+        title: 'VP Information Technology',
+        tenure: 'Joined 5 years ago',
+        prior: null,
+        likelyChampion: false,
+      },
+      {
+        name: 'Anita Brenner',
+        title: 'Global Process Owner, Finance',
+        tenure: 'Joined 3 months ago',
+        prior: null,
+        likelyChampion: false,
+      },
+    ],
+
+    jobPostings: [
+      {
+        title: 'ERP Programme Manager',
+        team: 'Corporate IT',
+        ageDays: 7,
+        snippet:
+          'Stand up the ERP programme office and prepare the platform business case for budget approval.',
+        keywords: ['programme office', 'budget approval'],
+      },
+      {
+        title: 'Global Process Owner, Finance',
+        team: 'Finance',
+        ageDays: 15,
+        snippet:
+          'Define target process design across three ERP instances ahead of consolidation.',
+        keywords: ['three ERP instances', 'consolidation'],
+      },
+    ],
+  },
+
+  /* ---------------------------------------------------------------------- */
+  {
+    id: 'whirlpool',
+    name: 'Whirlpool',
+    domain: 'whirlpoolcorp.com',
+    monogram: 'WH',
+    monogramColor: MONOGRAM,
+    city: 'Benton Harbor',
+    state: 'MI',
+    hq: 'Benton Harbor, MI',
+    industry: 'Home Appliances',
+    employees: 44000,
+    revenue: '$16.6B est.',
+    founded: 1911,
     icpFitScore: 74,
     phase: 'evaluating',
     evidenceConfidence: {
       level: 'Medium',
       detail: '3 independent signal families, 7 source records, some undated.',
     },
-    segments: ['fico'],
+    segments: ['scm'],
 
     brief: {
       whatTheySell:
-        'Operates 34 acute care hospitals and a network of outpatient surgical centres across the Southeast.',
+        'Major home appliances sold through retail channels and directly to homebuilders across several regional brands.',
       revenueDrivers:
-        'Payer mix and procedure volume, with cost per case the lever finance watches most closely.',
+        'Unit volume tied to housing turnover and replacement cycles, with promotional cadence and freight cost setting margin.',
       fitNote:
-        'Finance is driving, not IT. A business case is being built and no governance structure exists yet, so the entry point is the CFO organisation.',
+        'Supply chain pain is the trigger, not finance. Any ERP conversation here starts from planning and fulfilment.',
       milestones: [
-        'Founded 1991',
-        '22,500 employees',
-        '34 hospitals',
-        '$6.1B est. revenue',
+        'Founded 1911',
+        '44,000 employees',
+        'Multiple brands',
+        '$16.6B est. revenue',
       ],
     },
 
     signalsFired: [
-      { label: 'Finance transformation business case role posted', points: 26 },
-      { label: 'Two enterprise architect roles naming ERP readiness', points: 20 },
-      { label: 'ECC end-of-support named in an investor deck', points: 16 },
-      { label: 'Consolidation and close cycle language in postings', points: 12 },
+      { label: 'Supply chain systems roadmap role posted', points: 25 },
+      { label: 'Planning replacement study referenced in a posting', points: 20 },
+      { label: 'Two enterprise architect roles naming ERP readiness', points: 16 },
+      { label: 'Freight and fulfilment cost cited in earnings call', points: 13 },
     ],
 
     phaseNote:
-      'Architects and a business case lead are in market, and readiness assessment language appears repeatedly. No budget has been named and no governance cluster has formed.',
+      'Roadmap and architecture roles are open and a planning system study is referenced, but there is no budget language and no programme structure.',
 
     landscape: {
       verdict:
-        'SAP ECC 6.0 in finance with a separate clinical estate that will not move. Evaluation is active and finance-led, with no target platform named and no partner engaged.',
+        'SAP ECC 6.0 as the core with a separate legacy planning system under review. No target platform named and no partner engaged.',
+      state: 'Confirmed legacy',
+      stack: [
+        {
+          name: 'SAP ECC 6.0',
+          layer: 'ERP core',
+          provenance: 'observed',
+          source: 'Technographic record, licence footprint',
+        },
+        {
+          name: 'Blue Yonder',
+          layer: 'Supply chain',
+          provenance: 'observed',
+          source: 'Technographic record, planning systems footprint',
+        },
+        {
+          name: 'Databricks',
+          layer: 'Data and analytics',
+          provenance: 'posting',
+          source: 'Named in a data platform engineer posting',
+        },
+        {
+          name: 'Workday',
+          layer: 'Finance and HCM',
+          provenance: 'observed',
+          source: 'Technographic record',
+        },
+      ],
+      evidence: [
+        {
+          source: 'Job postings (3 recent)',
+          observed:
+            'Supply chain systems roadmap owner plus two architects. Study language, no build roles.',
+          implies: 'Evaluating. Supply chain is holding the pen, not finance.',
+        },
+        {
+          source: 'Technographics',
+          observed: 'ECC 6.0 present. No S/4HANA record.',
+          implies: 'Core is legacy and untouched.',
+        },
+      ],
+    },
+
+    momentum: [
+      { term: 'SAP ECC', counts: [2, 3, 4] },
+      { term: 'S/4HANA', counts: [0, 2, 5] },
+      { term: 'roadmap', counts: [3, 4, 6] },
+    ],
+
+    whyNow: {
+      title: 'Planning study open · scope undefined',
+      chip: 'Supply chain led',
+      body: 'A planning replacement study is live and the ERP question is riding alongside it. Whoever frames the planning scope frames the ERP scope.',
+    },
+
+    ecosystem: [
+      'Blue Yonder runs planning, so a core platform decision pulls a fulfilment integration workstream with it.',
+    ],
+
+    contacts: [
+      {
+        name: 'Jonah Weiss',
+        title: 'VP Supply Chain Systems',
+        tenure: 'Joined 5 years ago',
+        prior: null,
+        likelyChampion: true,
+      },
+      {
+        name: 'Camille Duarte',
+        title: 'Director, Supply Chain IT',
+        tenure: 'Joined 2 years ago',
+        prior: null,
+        likelyChampion: false,
+      },
+      {
+        name: 'Peter Halloran',
+        title: 'ERP Lead',
+        tenure: 'Joined 8 years ago',
+        prior: null,
+        likelyChampion: false,
+      },
+    ],
+
+    jobPostings: [
+      {
+        title: 'Director, Supply Chain Systems Roadmap',
+        team: 'Supply Chain',
+        ageDays: 16,
+        snippet:
+          'Own the multi-year roadmap for planning and fulfilment systems, including the ERP dependency.',
+        keywords: ['roadmap', 'ERP dependency'],
+      },
+      {
+        title: 'Enterprise Architect',
+        team: 'Corporate IT',
+        ageDays: 24,
+        snippet:
+          'Assess the current planning estate against target architecture options.',
+        keywords: ['target architecture'],
+      },
+    ],
+  },
+
+  /* ---------------------------------------------------------------------- */
+  {
+    id: 'colgate-palmolive',
+    name: 'Colgate-Palmolive',
+    domain: 'colgatepalmolive.com',
+    monogram: 'CP',
+    monogramColor: MONOGRAM,
+    city: 'New York',
+    state: 'NY',
+    hq: 'New York, NY',
+    industry: 'Consumer Products',
+    employees: 34000,
+    revenue: '$20.1B est.',
+    founded: 1806,
+    icpFitScore: 69,
+    phase: 'evaluating',
+    evidenceConfidence: {
+      level: 'Medium',
+      detail: '3 independent signal families, 6 source records, some undated.',
+    },
+    segments: ['fico'],
+
+    brief: {
+      whatTheySell:
+        'Oral care, personal care and home care brands, plus a pet nutrition business sold through vets and specialty retail.',
+      revenueDrivers:
+        'Brand pricing power in oral care and steady pet nutrition growth, with raw material cost the main margin swing.',
+      fitNote:
+        'Finance is driving. A business case is being written and no governance structure exists yet, so the entry point is the CFO organisation.',
+      milestones: [
+        'Founded 1806',
+        '34,000 employees',
+        'Finance led',
+        '$20.1B est. revenue',
+      ],
+    },
+
+    signalsFired: [
+      { label: 'Finance transformation business case role posted', points: 24 },
+      { label: 'Close cycle and consolidation language in postings', points: 19 },
+      { label: 'ECC end-of-support named in an investor deck', points: 15 },
+      { label: 'No architecture or build roles open', points: 11 },
+    ],
+
+    phaseNote:
+      'A business case lead and readiness assessment language appear repeatedly. No budget has been named and no governance cluster has formed.',
+
+    landscape: {
+      verdict:
+        'SAP ECC 6.0 in finance with regional instances elsewhere. Evaluation is active and finance-led, with no target platform named and no partner engaged.',
       state: 'Confirmed legacy',
       stack: [
         {
@@ -570,16 +892,16 @@ export const companies = [
           source: 'Technographic record, finance systems footprint',
         },
         {
-          name: 'Infor CloudSuite',
-          layer: 'ERP core',
-          provenance: 'posting',
-          source: 'Referenced in a supply chain analyst posting',
-        },
-        {
           name: 'Snowflake',
           layer: 'Data and analytics',
           provenance: 'observed',
           source: 'Technographic record',
+        },
+        {
+          name: 'SAP IBP',
+          layer: 'Supply chain',
+          provenance: 'posting',
+          source: 'Named in a demand planning posting',
         },
         {
           name: 'Workday',
@@ -592,7 +914,7 @@ export const companies = [
         {
           source: 'Job postings (4 recent)',
           observed:
-            'Business case and readiness assessment language across two finance transformation roles. No implementation or build roles.',
+            'Business case and readiness assessment language across two finance transformation roles. No implementation roles.',
           implies: 'Evaluating, not yet mobilising. Finance holds the pen.',
         },
         {
@@ -636,13 +958,6 @@ export const companies = [
         likelyChampion: false,
       },
       {
-        name: 'Rachel Okafor',
-        title: 'Director, Applications',
-        tenure: 'Joined 18 months ago',
-        prior: 'Cerner',
-        likelyChampion: false,
-      },
-      {
         name: 'Sam Delacroix',
         title: 'Programme Manager, Finance Systems',
         tenure: 'Joined 11 months ago',
@@ -673,19 +988,157 @@ export const companies = [
 
   /* ---------------------------------------------------------------------- */
   {
-    id: 'ridgeline-energy',
-    name: 'Ridgeline Energy',
-    logo: '/logos/ridgeline-energy.svg',
-    monogram: 'RE',
-    monogramColor: '#8a6300',
-    city: 'Denver',
-    state: 'CO',
-    hq: 'Denver, CO',
-    industry: 'Utilities',
-    employees: 6400,
-    revenue: '$1.9B est.',
-    founded: 1966,
-    icpFitScore: 66,
+    id: 'kimberly-clark',
+    name: 'Kimberly-Clark',
+    domain: 'kimberly-clark.com',
+    monogram: 'KC',
+    monogramColor: MONOGRAM,
+    city: 'Irving',
+    state: 'TX',
+    hq: 'Irving, TX',
+    industry: 'Consumer Products',
+    employees: 40000,
+    revenue: '$20.1B est.',
+    founded: 1872,
+    icpFitScore: 64,
+    phase: 'evaluating',
+    evidenceConfidence: {
+      level: 'Medium',
+      detail: '2 independent signal families, 6 source records, dates present.',
+    },
+    segments: ['scm'],
+
+    brief: {
+      whatTheySell:
+        'Tissue, personal care and professional hygiene products sold through grocery, club and business-to-business channels.',
+      revenueDrivers:
+        'Volume through a small number of large retail accounts, where pulp cost and mill utilisation set the margin.',
+      fitNote:
+        'Network and planning redesign is the live conversation. The ERP question sits underneath it and has not surfaced on its own yet.',
+      milestones: [
+        'Founded 1872',
+        '40,000 employees',
+        'Network redesign live',
+        '$20.1B est. revenue',
+      ],
+    },
+
+    signalsFired: [
+      { label: 'Supply network redesign programme referenced', points: 22 },
+      { label: 'Two planning systems architect roles open', points: 18 },
+      { label: 'ECC named alongside a planning study', points: 14 },
+      { label: 'No budget or partner language present', points: 10 },
+    ],
+
+    phaseNote:
+      'A network redesign is underway and planning architecture roles are open, with ERP named as a dependency rather than a programme of its own.',
+
+    landscape: {
+      verdict:
+        'SAP ECC 6.0 as the core with a separate planning estate being reviewed as part of a network redesign. No platform decision taken.',
+      state: 'Confirmed legacy',
+      stack: [
+        {
+          name: 'SAP ECC 6.0',
+          layer: 'ERP core',
+          provenance: 'observed',
+          source: 'Technographic record, licence footprint',
+        },
+        {
+          name: 'Kinaxis',
+          layer: 'Supply chain',
+          provenance: 'observed',
+          source: 'Technographic record, planning systems footprint',
+        },
+        {
+          name: 'Snowflake',
+          layer: 'Data and analytics',
+          provenance: 'posting',
+          source: 'Named in a supply chain analytics posting',
+        },
+      ],
+      evidence: [
+        {
+          source: 'Job postings (3 recent)',
+          observed:
+            'Planning systems architects and a network design lead. ERP named as a dependency.',
+          implies: 'The ERP conversation is downstream of the network redesign.',
+        },
+        {
+          source: 'Technographics',
+          observed: 'ECC 6.0 present. No S/4HANA record.',
+          implies: 'Legacy core, no migration signal yet.',
+        },
+      ],
+    },
+
+    momentum: [
+      { term: 'SAP ECC', counts: [2, 3, 3] },
+      { term: 'network redesign', counts: [1, 3, 5] },
+      { term: 'S/4HANA', counts: [0, 1, 3] },
+    ],
+
+    whyNow: {
+      title: 'Network redesign live · ERP downstream',
+      chip: 'Dependency, not programme',
+      body: 'The network programme will force the ERP question within a year. Get in on the planning workstream before the ERP scope is written by someone else.',
+    },
+
+    ecosystem: [
+      'Kinaxis is embedded in planning, which will shape the integration scope of any core decision.',
+    ],
+
+    contacts: [
+      {
+        name: 'Rosalind Fyfe',
+        title: 'VP Supply Chain Strategy',
+        tenure: 'Joined 4 years ago',
+        prior: null,
+        likelyChampion: true,
+      },
+      {
+        name: 'Owen Castellanos',
+        title: 'Director, Planning Systems',
+        tenure: 'Joined 18 months ago',
+        prior: null,
+        likelyChampion: false,
+      },
+    ],
+
+    jobPostings: [
+      {
+        title: 'Planning Systems Architect',
+        team: 'Supply Chain',
+        ageDays: 12,
+        snippet:
+          'Design the target planning architecture for the network redesign, including the ERP dependency.',
+        keywords: ['network redesign', 'ERP dependency'],
+      },
+      {
+        title: 'Supply Chain Analytics Lead',
+        team: 'Supply Chain',
+        ageDays: 29,
+        snippet: 'Build reporting on the Snowflake platform against ECC data.',
+        keywords: ['Snowflake', 'ECC'],
+      },
+    ],
+  },
+
+  /* ---------------------------------------------------------------------- */
+  {
+    id: 'emerson-electric',
+    name: 'Emerson Electric',
+    domain: 'emerson.com',
+    monogram: 'EE',
+    monogramColor: MONOGRAM,
+    city: 'St. Louis',
+    state: 'MO',
+    hq: 'St. Louis, MO',
+    industry: 'Industrial Automation',
+    employees: 67000,
+    revenue: '$17.5B est.',
+    founded: 1890,
+    icpFitScore: 58,
     phase: 're-expanding',
     evidenceConfidence: {
       level: 'Medium',
@@ -695,32 +1148,35 @@ export const companies = [
 
     brief: {
       whatTheySell:
-        'Regulated electricity distribution across Colorado and Wyoming, plus a growing utility-scale renewables arm.',
+        'Automation hardware, control software and measurement instruments for process and discrete manufacturing.',
       revenueDrivers:
-        'Rate-base growth on the regulated side, with the renewables arm funded separately and growing faster.',
+        'Project-driven automation spend plus a growing software base that smooths the capital cycle.',
       fitNote:
-        'The parent is already on S/4. Two acquired subsidiaries are still on legacy, and wave two scoping language has started appearing.',
+        'The parent is already on S/4. Acquired businesses are still on legacy, and wave two scoping language has started appearing.',
       milestones: [
-        'Founded 1966',
-        '6,400 employees',
-        'S/4 live at parent since 2023',
-        '$1.9B est. revenue',
+        'Founded 1890',
+        '67,000 employees',
+        'S/4 live at parent',
+        '$17.5B est. revenue',
       ],
     },
 
     signalsFired: [
-      { label: 'Wave two rollout language in two postings', points: 22 },
-      { label: 'Subsidiaries still on legacy ERP after parent go-live', points: 18 },
-      { label: 'Template rollout lead role open', points: 14 },
-      { label: 'AMS contract renewal referenced', points: 12 },
+      { label: 'Wave two rollout language in two postings', points: 21 },
+      {
+        label: 'Acquired businesses still on legacy ERP after parent go-live',
+        points: 16,
+      },
+      { label: 'Template rollout lead role open', points: 13 },
+      { label: 'AMS contract renewal referenced', points: 8 },
     ],
 
     phaseNote:
-      'The parent went live on S/4 in 2023 and is in steady state. Two acquired subsidiaries remain on legacy systems and template rollout roles have started appearing.',
+      'The parent went live on S/4 and is in steady state. Several acquired businesses remain on legacy systems and template rollout roles have started appearing.',
 
     landscape: {
       verdict:
-        'S/4HANA live at the parent since 2023, with two acquired subsidiaries still on legacy Oracle. A wave two rollout is being scoped but not yet staffed.',
+        'S/4HANA live at the parent, with acquired businesses still on legacy Oracle. A wave two rollout is being scoped but not yet staffed.',
       state: 'Confirmed modern',
       stack: [
         {
@@ -733,7 +1189,7 @@ export const companies = [
           name: 'Oracle EBS',
           layer: 'ERP core',
           provenance: 'observed',
-          source: 'Technographic record, subsidiary domain scan',
+          source: 'Technographic record, acquired business domain scan',
         },
         {
           name: 'SAP BW/4HANA',
@@ -752,13 +1208,13 @@ export const companies = [
         {
           source: 'Technographics',
           observed:
-            'S/4HANA licence at the parent. Oracle EBS still present on two subsidiary domains.',
+            'S/4HANA licence at the parent. Oracle EBS still present on acquired business domains.',
           implies: 'Modern core, unfinished estate. Wave two is real.',
         },
         {
           source: 'Job postings (2 recent)',
           observed:
-            'Template rollout lead and a subsidiary finance systems analyst, both referencing wave two.',
+            'Template rollout lead and a divisional finance systems analyst, both referencing wave two.',
           implies: 'Scoping has started. Staffing has not.',
         },
       ],
@@ -771,13 +1227,13 @@ export const companies = [
     ],
 
     whyNow: {
-      title: 'Wave two scoping · subsidiaries on legacy',
+      title: 'Wave two scoping · acquisitions on legacy',
       chip: 'Rollout not staffed',
-      body: 'The parent has a template and the subsidiaries have a deadline. Rollout work is being scoped right now and nobody has been appointed to run it.',
+      body: 'The parent has a template and the acquired businesses have a deadline. Rollout work is being scoped right now and nobody has been appointed to run it.',
     },
 
     ecosystem: [
-      'Ariba is already in place at the parent, so subsidiary procurement is likely in scope for the same wave.',
+      'Ariba is already in place at the parent, so divisional procurement is likely in scope for the same wave.',
     ],
 
     contacts: [
@@ -792,7 +1248,7 @@ export const companies = [
         name: 'Idris Bello',
         title: 'Solution Architect',
         tenure: 'Joined 2 years ago',
-        prior: 'IBM',
+        prior: 'Global SI',
         likelyChampion: false,
       },
     ],
@@ -803,12 +1259,12 @@ export const companies = [
         team: 'Digital Core',
         ageDays: 13,
         snippet:
-          'Take the parent S/4 template into the acquired subsidiaries as part of wave two.',
+          'Take the parent S/4 template into the acquired businesses as part of wave two.',
         keywords: ['S/4 template', 'wave two'],
       },
       {
         title: 'Finance Systems Analyst',
-        team: 'Subsidiary Finance',
+        team: 'Divisional Finance',
         ageDays: 27,
         snippet:
           'Support Oracle EBS while planning the transition to the group platform.',
@@ -819,345 +1275,54 @@ export const companies = [
 
   /* ---------------------------------------------------------------------- */
   {
-    id: 'halcyon-retail',
-    name: 'Halcyon Retail Group',
-    logo: '/logos/halcyon-retail.svg',
-    monogram: 'HR',
-    monogramColor: '#bc3229',
-    city: 'Atlanta',
-    state: 'GA',
-    hq: 'Atlanta, GA',
-    industry: 'Retail',
-    employees: 31000,
-    revenue: '$7.4B est.',
-    founded: 1962,
-    icpFitScore: 61,
-    phase: 'evaluating',
-    evidenceConfidence: {
-      level: 'Medium',
-      detail: '3 independent signal families, 6 source records, some undated.',
-    },
-    segments: ['scm'],
-
-    brief: {
-      whatTheySell:
-        'Operates 410 department and home goods stores, with a direct-to-consumer channel that now carries a quarter of revenue.',
-      revenueDrivers:
-        'Store footfall and basket size, with online fulfilment cost the pressure point as the channel mix shifts.',
-      fitNote:
-        'Merchandising systems are the trigger rather than finance. Any ERP conversation here starts from supply chain pain.',
-      milestones: [
-        'Founded 1962',
-        '31,000 employees',
-        '410 stores',
-        '$7.4B est. revenue',
-      ],
-    },
-
-    signalsFired: [
-      { label: 'Merchandising systems roadmap role posted', points: 21 },
-      { label: 'ECC named alongside a planning replacement study', points: 17 },
-      { label: 'Two supply chain IT architect roles open', points: 13 },
-      { label: 'Omnichannel fulfilment cost cited in earnings call', points: 10 },
-    ],
-
-    phaseNote:
-      'Roadmap and architecture roles are open and a planning system study is referenced, but there is no budget language and no programme structure.',
-
-    landscape: {
-      verdict:
-        'SAP ECC 6.0 as the merchandising and finance core, with a separate legacy planning system under review. No target platform named and no partner engaged.',
-      state: 'Confirmed legacy',
-      stack: [
-        {
-          name: 'SAP ECC 6.0',
-          layer: 'ERP core',
-          provenance: 'observed',
-          source: 'Technographic record, licence footprint',
-        },
-        {
-          name: 'Manhattan Associates',
-          layer: 'Supply chain',
-          provenance: 'observed',
-          source: 'Technographic record, warehouse systems footprint',
-        },
-        {
-          name: 'Databricks',
-          layer: 'Data and analytics',
-          provenance: 'posting',
-          source: 'Named in a data platform engineer posting',
-        },
-        {
-          name: 'Workday',
-          layer: 'Finance and HCM',
-          provenance: 'observed',
-          source: 'Technographic record',
-        },
-      ],
-      evidence: [
-        {
-          source: 'Job postings (3 recent)',
-          observed:
-            'Merchandising systems roadmap owner plus two supply chain IT architects. Study language, no build roles.',
-          implies: 'Evaluating. Supply chain is holding the pen, not finance.',
-        },
-        {
-          source: 'Technographics',
-          observed: 'ECC 6.0 present. No S/4HANA record.',
-          implies: 'Core is legacy and untouched.',
-        },
-      ],
-    },
-
-    momentum: [
-      { term: 'SAP ECC', counts: [2, 3, 4] },
-      { term: 'S/4HANA', counts: [0, 2, 4] },
-      { term: 'roadmap', counts: [3, 4, 6] },
-    ],
-
-    whyNow: {
-      title: 'Planning study open · scope undefined',
-      chip: 'Supply chain led',
-      body: 'A planning replacement study is live and the ERP question is riding alongside it. Whoever frames the planning scope frames the ERP scope.',
-    },
-
-    ecosystem: [
-      'Manhattan Associates runs the warehouses, so a core platform decision pulls a fulfilment integration workstream with it.',
-    ],
-
-    contacts: [
-      {
-        name: 'Jonah Weiss',
-        title: 'VP Merchandising Systems',
-        tenure: 'Joined 5 years ago',
-        prior: null,
-        likelyChampion: true,
-      },
-      {
-        name: 'Camille Duarte',
-        title: 'Director, Supply Chain IT',
-        tenure: 'Joined 2 years ago',
-        prior: null,
-        likelyChampion: false,
-      },
-      {
-        name: 'Peter Halloran',
-        title: 'ERP Lead',
-        tenure: 'Joined 8 years ago',
-        prior: null,
-        likelyChampion: false,
-      },
-    ],
-
-    jobPostings: [
-      {
-        title: 'Director, Merchandising Systems Roadmap',
-        team: 'Merchandising',
-        ageDays: 16,
-        snippet:
-          'Own the multi-year roadmap for merchandising and planning systems, including the ERP dependency.',
-        keywords: ['roadmap', 'ERP dependency'],
-      },
-      {
-        title: 'Supply Chain IT Architect',
-        team: 'Supply Chain',
-        ageDays: 24,
-        snippet:
-          'Assess the current planning estate against target architecture options.',
-        keywords: ['target architecture'],
-      },
-    ],
-  },
-
-  /* ---------------------------------------------------------------------- */
-  {
-    id: 'portsmith-logistics',
-    name: 'Portsmith Logistics',
-    logo: '/logos/portsmith-logistics.svg',
-    monogram: 'PL',
-    monogramColor: '#14746c',
-    city: 'Long Beach',
-    state: 'CA',
-    hq: 'Long Beach, CA',
-    industry: 'Transportation & Logistics',
-    employees: 4900,
-    revenue: '$980M est.',
-    founded: 1988,
-    icpFitScore: 55,
-    phase: 'latent',
-    evidenceConfidence: {
-      level: 'Medium',
-      detail: '2 independent signal families, 5 source records, dates present.',
-    },
-    segments: ['scm'],
-
-    brief: {
-      whatTheySell:
-        'Drayage and bonded warehousing around the San Pedro Bay ports, plus a small customs brokerage arm.',
-      revenueDrivers:
-        'Container volume through Long Beach and Los Angeles, with warehouse utilisation smoothing the seasonal swing.',
-      fitNote:
-        'ECC is present and stable. Hiring is maintenance only, so there is no programme to join yet.',
-      milestones: [
-        'Founded 1988',
-        '4,900 employees',
-        '11 facilities',
-        '$980M est. revenue',
-      ],
-    },
-
-    signalsFired: [
-      { label: 'ECC 6.0 confirmed in technographic data', points: 20 },
-      { label: 'Basis and ABAP maintenance roles only', points: 16 },
-      { label: 'No roadmap or architecture language in postings', points: 11 },
-      { label: 'IT headcount flat across four quarters', points: 8 },
-    ],
-
-    phaseNote:
-      'ECC is present and supported, and every open role is maintenance. Nothing indicates a programme, a study or a budget cycle.',
-
-    landscape: {
-      verdict:
-        'SAP ECC 6.0 running the core with a bolt-on transport management system. No migration signal of any kind detected.',
-      state: 'Confirmed legacy',
-      stack: [
-        {
-          name: 'SAP ECC 6.0',
-          layer: 'ERP core',
-          provenance: 'observed',
-          source: 'Technographic record, licence footprint',
-        },
-        {
-          name: 'Oracle OTM',
-          layer: 'Supply chain',
-          provenance: 'observed',
-          source: 'Technographic record, transport systems footprint',
-        },
-        {
-          name: 'Tableau',
-          layer: 'Data and analytics',
-          provenance: 'posting',
-          source: 'Named in an operations analyst posting',
-        },
-      ],
-      evidence: [
-        {
-          source: 'Technographics',
-          observed: 'ECC 6.0 present. No S/4HANA record, no cloud ERP record.',
-          implies: 'Legacy core, no movement.',
-        },
-        {
-          source: 'Job postings (2 recent)',
-          observed:
-            'ABAP developer and a Basis administrator. Both maintenance scoped.',
-          implies: 'Keeping the lights on. No programme exists.',
-        },
-      ],
-    },
-
-    momentum: [
-      { term: 'SAP ECC', counts: [2, 2, 2] },
-      { term: 'S/4HANA', counts: [0, 0, 1] },
-      { term: 'upgrade', counts: [1, 1, 1] },
-    ],
-
-    whyNow: {
-      title: 'No programme · maintenance only',
-      chip: 'Nurture',
-      body: 'There is nothing to sell into today. Set a watch on governance and architecture postings and revisit when hiring shifts away from maintenance.',
-    },
-
-    ecosystem: [
-      'Oracle OTM sits beside SAP, which will complicate any future core decision but is not a trigger on its own.',
-    ],
-
-    contacts: [
-      {
-        name: 'Winona Pearce',
-        title: 'Director of IT',
-        tenure: 'Joined 9 years ago',
-        prior: null,
-        likelyChampion: true,
-      },
-      {
-        name: 'Felix Adeyemi',
-        title: 'Logistics Systems Manager',
-        tenure: 'Joined 3 years ago',
-        prior: null,
-        likelyChampion: false,
-      },
-    ],
-
-    jobPostings: [
-      {
-        title: 'SAP ABAP Developer',
-        team: 'Corporate IT',
-        ageDays: 31,
-        snippet:
-          'Maintain custom ABAP objects in the ECC 6.0 environment and support month-end.',
-        keywords: ['ECC 6.0', 'maintain'],
-      },
-      {
-        title: 'SAP Basis Administrator',
-        team: 'Corporate IT',
-        ageDays: 44,
-        snippet:
-          'Day-to-day Basis administration and patching for the on-premise landscape.',
-        keywords: ['on-premise', 'patching'],
-      },
-    ],
-  },
-
-  /* ---------------------------------------------------------------------- */
-  {
-    id: 'brightmoor-chemical',
-    name: 'Brightmoor Chemical',
-    logo: '/logos/brightmoor-chemical.svg',
-    monogram: 'BC',
-    monogramColor: 'var(--lp-accent)',
-    city: 'Baton Rouge',
-    state: 'LA',
-    hq: 'Baton Rouge, LA',
-    industry: 'Chemicals',
-    employees: 3200,
-    revenue: '$740M est.',
-    founded: 1971,
-    icpFitScore: 45,
+    id: 'sherwin-williams',
+    name: 'Sherwin-Williams',
+    domain: 'sherwin-williams.com',
+    monogram: 'SW',
+    monogramColor: MONOGRAM,
+    city: 'Cleveland',
+    state: 'OH',
+    hq: 'Cleveland, OH',
+    industry: 'Chemicals & Coatings',
+    employees: 64000,
+    revenue: '$23.1B est.',
+    founded: 1866,
+    icpFitScore: 52,
     phase: 'landed',
     evidenceConfidence: {
       level: 'Medium',
       detail: '2 independent signal families, 5 source records, dates present.',
     },
-    segments: ['greenfield', 'multi-erp'],
+    segments: ['greenfield'],
 
     brief: {
       whatTheySell:
-        'Specialty polymers and coating resins sold to industrial coatings and adhesives manufacturers.',
+        'Architectural and industrial coatings sold through company-owned stores, big box retail and direct industrial channels.',
       revenueDrivers:
-        'Feedstock spread and plant uptime, with a small number of long-term offtake agreements underwriting volume.',
+        'Store network throughput and pro painter loyalty, with raw material cost the main margin pressure.',
       fitNote:
-        'Went live on S/4 fourteen months ago. Hypercare has ended and the conversation now is support model, not migration.',
+        'Went live on S/4 last year. Hypercare has ended and the conversation now is support model, not migration.',
       milestones: [
-        'Founded 1971',
-        '3,200 employees',
+        'Founded 1866',
+        '64,000 employees',
         'S/4 live 14 months',
-        '$740M est. revenue',
+        '$23.1B est. revenue',
       ],
     },
 
     signalsFired: [
-      { label: 'S/4HANA licence confirmed, greenfield build', points: 18 },
-      { label: 'Hypercare and AMS language across postings', points: 13 },
-      { label: 'Application support lead role open', points: 9 },
-      { label: 'No further migration roles posted since go-live', points: 5 },
+      { label: 'S/4HANA licence confirmed, greenfield build', points: 19 },
+      { label: 'Hypercare and AMS language across postings', points: 15 },
+      { label: 'Application support lead role open', points: 11 },
+      { label: 'No further migration roles posted since go-live', points: 7 },
     ],
 
     phaseNote:
-      'S/4 has been live for fourteen months. Postings reference hypercare exit and application managed services rather than build work.',
+      'S/4 has been live for over a year. Postings reference hypercare exit and application managed services rather than build work.',
 
     landscape: {
       verdict:
-        'S/4HANA live on a greenfield build since 2025. The legacy estate has been retired. Current activity is support model rather than platform change.',
+        'S/4HANA live on a greenfield build. The legacy estate has been retired. Current activity is support model rather than platform change.',
       state: 'Confirmed modern',
       stack: [
         {
@@ -1228,7 +1393,7 @@ export const companies = [
         name: 'Marisol Reyes',
         title: 'Application Support Lead',
         tenure: 'Joined 10 months ago',
-        prior: 'Infosys',
+        prior: 'Global SI',
         likelyChampion: false,
       },
     ],
@@ -1254,19 +1419,158 @@ export const companies = [
 
   /* ---------------------------------------------------------------------- */
   {
-    id: 'kestrel-financial',
-    name: 'Kestrel Financial',
-    logo: '/logos/kestrel-financial.svg',
-    monogram: 'KF',
-    monogramColor: 'var(--lp-accent)',
-    city: 'Charlotte',
-    state: 'NC',
-    hq: 'Charlotte, NC',
-    industry: 'Financial Services',
-    employees: 12700,
-    revenue: '$3.3B est.',
-    founded: 1949,
-    icpFitScore: 38,
+    id: 'stanley-black-decker',
+    name: 'Stanley Black & Decker',
+    domain: 'stanleyblackanddecker.com',
+    monogram: 'SB',
+    monogramColor: MONOGRAM,
+    city: 'New Britain',
+    state: 'CT',
+    hq: 'New Britain, CT',
+    industry: 'Tools & Hardware',
+    employees: 48000,
+    revenue: '$15.4B est.',
+    founded: 1843,
+    icpFitScore: 46,
+    phase: 'latent',
+    evidenceConfidence: {
+      level: 'Low',
+      detail: '2 independent signal families, 4 source records, mostly undated.',
+    },
+    segments: ['multi-erp'],
+
+    brief: {
+      whatTheySell:
+        'Power tools, hand tools and outdoor equipment across several brands sold through big box retail and industrial distribution.',
+      revenueDrivers:
+        'Tool volume tied to construction and DIY demand, with brand portfolio breadth cushioning single-channel swings.',
+      fitNote:
+        'A multi-ERP estate from acquisitions, but every open role is maintenance. Nothing indicates a programme forming.',
+      milestones: [
+        'Founded 1843',
+        '48,000 employees',
+        'Multi-ERP estate',
+        '$15.4B est. revenue',
+      ],
+    },
+
+    signalsFired: [
+      { label: 'Several ERP instances confirmed across brands', points: 17 },
+      { label: 'Basis and ABAP maintenance roles only', points: 13 },
+      { label: 'No roadmap or architecture language in postings', points: 10 },
+      { label: 'IT headcount flat across four quarters', points: 6 },
+    ],
+
+    phaseNote:
+      'The estate is fragmented from years of acquisitions, but hiring is maintenance only. There is no programme, study or budget cycle in evidence.',
+
+    landscape: {
+      verdict:
+        'Several ERP instances across acquired brands, ECC among them. Fragmented but stable, with no consolidation signal detected.',
+      state: 'Confirmed legacy',
+      stack: [
+        {
+          name: 'SAP ECC 6.0',
+          layer: 'ERP core',
+          provenance: 'observed',
+          source: 'Technographic record, licence footprint',
+        },
+        {
+          name: 'Infor CloudSuite',
+          layer: 'ERP core',
+          provenance: 'observed',
+          source: 'Technographic record, acquired brand domain',
+        },
+        {
+          name: 'Power BI',
+          layer: 'Data and analytics',
+          provenance: 'posting',
+          source: 'Named in an operations analyst posting',
+        },
+      ],
+      evidence: [
+        {
+          source: 'Technographics',
+          observed:
+            'ECC 6.0 and a second ERP both present. No S/4HANA record.',
+          implies: 'Fragmented legacy estate, no movement.',
+        },
+        {
+          source: 'Job postings (2 recent)',
+          observed: 'ABAP developer and a Basis administrator, both maintenance scoped.',
+          implies: 'Keeping the lights on. No programme exists.',
+        },
+      ],
+    },
+
+    momentum: [
+      { term: 'SAP ECC', counts: [2, 2, 2] },
+      { term: 'S/4HANA', counts: [0, 0, 1] },
+      { term: 'consolidation', counts: [1, 1, 1] },
+    ],
+
+    whyNow: {
+      title: 'No programme · maintenance only',
+      chip: 'Nurture',
+      body: 'A fragmented estate makes this a strong future fit, but nothing is moving today. Watch for an architecture or programme posting as the first real signal.',
+    },
+
+    ecosystem: [
+      'A second ERP across acquired brands will make any future consolidation larger in scope than the SAP footprint suggests.',
+    ],
+
+    contacts: [
+      {
+        name: 'Winona Pearce',
+        title: 'Director of IT',
+        tenure: 'Joined 9 years ago',
+        prior: null,
+        likelyChampion: true,
+      },
+      {
+        name: 'Felix Adeyemi',
+        title: 'Applications Manager',
+        tenure: 'Joined 3 years ago',
+        prior: null,
+        likelyChampion: false,
+      },
+    ],
+
+    jobPostings: [
+      {
+        title: 'SAP ABAP Developer',
+        team: 'Corporate IT',
+        ageDays: 31,
+        snippet:
+          'Maintain custom ABAP objects in the ECC 6.0 environment and support month-end.',
+        keywords: ['ECC 6.0', 'Maintain'],
+      },
+      {
+        title: 'SAP Basis Administrator',
+        team: 'Corporate IT',
+        ageDays: 44,
+        snippet:
+          'Day-to-day Basis administration and patching for the on-premise landscape.',
+        keywords: ['on-premise', 'patching'],
+      },
+    ],
+  },
+
+  /* ---------------------------------------------------------------------- */
+  {
+    id: 'ball-corporation',
+    name: 'Ball Corporation',
+    domain: 'ball.com',
+    monogram: 'BA',
+    monogramColor: MONOGRAM,
+    city: 'Westminster',
+    state: 'CO',
+    hq: 'Westminster, CO',
+    industry: 'Packaging',
+    employees: 16000,
+    revenue: '$11.8B est.',
+    founded: 1880,
+    icpFitScore: 39,
     phase: 'latent',
     evidenceConfidence: {
       level: 'Low',
@@ -1276,58 +1580,58 @@ export const companies = [
 
     brief: {
       whatTheySell:
-        'Commercial banking and treasury services for mid-market businesses across the Carolinas and Virginia.',
+        'Aluminium beverage cans and packaging for beverage, personal care and household producers.',
       revenueDrivers:
-        'Net interest margin on the commercial loan book, with treasury services fee income growing steadily.',
+        'Can volume under long-term contracts, with aluminium cost passed through and plant utilisation setting the real margin.',
       fitNote:
-        'ECC runs corporate finance only. Regulated core banking will never move, so the addressable scope is small and no programme exists.',
+        'ECC runs finance and plant operations and is stable. Hiring is maintenance only, so there is no programme to join yet.',
       milestones: [
-        'Founded 1949',
-        '12,700 employees',
-        '190 branches',
-        '$3.3B est. revenue',
+        'Founded 1880',
+        '16,000 employees',
+        'Maintenance hiring',
+        '$11.8B est. revenue',
       ],
     },
 
     signalsFired: [
-      { label: 'ECC 6.0 present in corporate finance', points: 15 },
-      { label: 'Reporting and close roles only', points: 11 },
-      { label: 'No architecture or roadmap postings', points: 7 },
-      { label: 'Core banking platform out of ERP scope', points: 5 },
+      { label: 'ECC 6.0 confirmed in technographic data', points: 15 },
+      { label: 'Finance close and reporting roles only', points: 12 },
+      { label: 'No architecture or roadmap postings', points: 8 },
+      { label: 'IT headcount flat across four quarters', points: 4 },
     ],
 
     phaseNote:
-      'ECC supports corporate finance and nothing else. Open roles are reporting and close focused with no roadmap or architecture language.',
+      'ECC is present and supported, and every open role is finance operations. Nothing indicates a programme, a study or a budget cycle.',
 
     landscape: {
       verdict:
-        'SAP ECC 6.0 confined to corporate finance, sitting beside a regulated core banking platform that is out of scope. No migration signal detected.',
+        'SAP ECC 6.0 running finance and plant operations. No migration signal of any kind detected.',
       state: 'Confirmed legacy',
       stack: [
         {
           name: 'SAP ECC 6.0',
           layer: 'ERP core',
           provenance: 'observed',
-          source: 'Technographic record, finance systems footprint',
+          source: 'Technographic record, licence footprint',
         },
         {
-          name: 'Temenos',
-          layer: 'ERP core',
-          provenance: 'observed',
-          source: 'Technographic record, core banking footprint',
+          name: 'Tableau',
+          layer: 'Data and analytics',
+          provenance: 'posting',
+          source: 'Named in a finance analyst posting',
         },
         {
           name: 'Oracle Hyperion',
           layer: 'Finance and HCM',
           provenance: 'posting',
-          source: 'Named in a financial reporting manager posting',
+          source: 'Named in a consolidation posting',
         },
       ],
       evidence: [
         {
           source: 'Technographics',
-          observed: 'ECC 6.0 in finance. Temenos as the regulated core.',
-          implies: 'Small SAP footprint. Most of the estate is untouchable.',
+          observed: 'ECC 6.0 present. No S/4HANA record, no cloud ERP record.',
+          implies: 'Legacy core, no movement.',
         },
         {
           source: 'Job postings (2 recent)',
@@ -1338,19 +1642,19 @@ export const companies = [
     },
 
     momentum: [
-      { term: 'SAP ECC', counts: [1, 1, 2] },
-      { term: 'S/4HANA', counts: [0, 0, 0] },
+      { term: 'SAP ECC', counts: [1, 2, 2] },
+      { term: 'S/4HANA', counts: [0, 0, 1] },
       { term: 'close cycle', counts: [2, 2, 3] },
     ],
 
     whyNow: {
-      title: 'No programme · narrow footprint',
+      title: 'No programme · finance footprint only',
       chip: 'Nurture',
-      body: 'Nothing is moving and the addressable scope is small even if it did. Watch for a finance systems architecture posting as the first real signal.',
+      body: 'Nothing is moving today. Watch for a finance systems architecture posting as the first real signal.',
     },
 
     ecosystem: [
-      'Hyperion still handles consolidation, which would be the first thing to come up if finance ever revisits the platform.',
+      'Hyperion still handles consolidation, which would be the first thing to surface if finance revisits the platform.',
     ],
 
     contacts: [
@@ -1389,25 +1693,151 @@ export const companies = [
     ],
   },
 
+  /* ---------------------------------------------------------------------- */
+  {
+    id: 'dover-corporation',
+    name: 'Dover Corporation',
+    domain: 'dovercorp.com',
+    monogram: 'DC',
+    monogramColor: MONOGRAM,
+    city: 'Downers Grove',
+    state: 'IL',
+    hq: 'Downers Grove, IL',
+    industry: 'Industrial Manufacturing',
+    employees: 24000,
+    revenue: '$8.7B est.',
+    founded: 1955,
+    icpFitScore: 31,
+    phase: 'latent',
+    evidenceConfidence: {
+      level: 'Low',
+      detail: '2 independent signal families, 3 source records, mostly undated.',
+    },
+    segments: ['greenfield'],
+
+    brief: {
+      whatTheySell:
+        'A portfolio of industrial businesses spanning pumps, refrigeration systems, marking equipment and fluid handling.',
+      revenueDrivers:
+        'Aftermarket parts and service across a decentralised portfolio, where each operating company runs largely on its own.',
+      fitNote:
+        'Highly decentralised, so there is no single ERP decision to sell into. Any entry has to be at an operating company level.',
+      milestones: [
+        'Founded 1955',
+        '24,000 employees',
+        'Decentralised portfolio',
+        '$8.7B est. revenue',
+      ],
+    },
+
+    signalsFired: [
+      { label: 'ERP instances differ by operating company', points: 12 },
+      { label: 'Divisional maintenance roles only', points: 9 },
+      { label: 'No group-level architecture postings', points: 6 },
+      { label: 'No filing references to systems risk', points: 4 },
+    ],
+
+    phaseNote:
+      'Each operating company runs its own systems and hires for maintenance. There is no group programme and no evidence of one forming.',
+
+    landscape: {
+      verdict:
+        'No single ERP system of record at group level. Instances differ by operating company, with ECC present in some. No consolidation signal.',
+      state: 'Confirmed legacy',
+      stack: [
+        {
+          name: 'SAP ECC 6.0',
+          layer: 'ERP core',
+          provenance: 'posting',
+          source: 'Named in a divisional finance posting',
+        },
+        {
+          name: 'Epicor',
+          layer: 'ERP core',
+          provenance: 'observed',
+          source: 'Technographic record, operating company domain',
+        },
+      ],
+      evidence: [
+        {
+          source: 'Technographics',
+          observed:
+            'Different ERP products across operating company domains. No group standard.',
+          implies: 'Decentralised. No single decision maker for a platform.',
+        },
+        {
+          source: 'Job postings (2 recent)',
+          observed: 'Divisional finance and applications roles, maintenance scoped.',
+          implies: 'No group programme. Sell at the operating company.',
+        },
+      ],
+    },
+
+    momentum: [
+      { term: 'SAP ECC', counts: [1, 1, 1] },
+      { term: 'S/4HANA', counts: [0, 0, 0] },
+      { term: 'consolidation', counts: [0, 1, 1] },
+    ],
+
+    whyNow: {
+      title: 'Decentralised · no group decision',
+      chip: 'Nurture',
+      body: 'There is no group platform decision to win. If this account matters, pick one operating company and work it on its own merits.',
+    },
+
+    ecosystem: [
+      'A mixed ERP estate across operating companies means no shared integration surface to anchor a group pitch.',
+    ],
+
+    contacts: [
+      {
+        name: 'Gwen Amherst',
+        title: 'Divisional IT Manager',
+        tenure: 'Joined 5 years ago',
+        prior: null,
+        likelyChampion: true,
+      },
+    ],
+
+    jobPostings: [
+      {
+        title: 'Divisional Finance Systems Analyst',
+        team: 'Operating Company Finance',
+        ageDays: 38,
+        snippet: 'Support SAP ECC for a single operating company finance team.',
+        keywords: ['SAP ECC'],
+      },
+      {
+        title: 'Applications Support Analyst',
+        team: 'Divisional IT',
+        ageDays: 52,
+        snippet: 'Maintain divisional ERP and reporting tools.',
+        keywords: ['divisional ERP'],
+      },
+    ],
+  },
+
   /* ------------------------------------------------------------------------
      DELIBERATELY THIN. Phase Unclassified: the evidence was not there, so
      the page degrades into honest empty states rather than inventing
-     content. This is intentional, not a bug.
+     content. This is intentional, not a bug. A cloud-native company founded
+     in 2017 genuinely has no SAP ECC estate to find, which makes it the
+     right example.
      ---------------------------------------------------------------------- */
   {
-    id: 'cirrus-software',
-    name: 'Cirrus Software',
-    logo: '/logos/cirrus-software.svg',
-    monogram: 'CS',
-    monogramColor: '#5f6470',
-    city: 'Boise',
-    state: 'ID',
-    hq: 'Boise, ID',
-    industry: 'Software',
-    employees: 2100,
+    id: 'coreweave',
+    name: 'CoreWeave',
+    domain: 'coreweave.com',
+    monogram: 'CW',
+    monogramColor: MONOGRAM,
+    city: 'Livingston',
+    state: 'NJ',
+    hq: 'Livingston, NJ',
+    industry: 'Cloud Infrastructure',
+    employees: 1000,
     revenue: null,
     founded: null,
-    icpFitScore: 22,
+    icpFitScore: 18,
     phase: 'unclassified',
     evidenceConfidence: {
       level: 'Low',
@@ -1424,8 +1854,8 @@ export const companies = [
     },
 
     signalsFired: [
-      { label: 'Generic IT modernisation language in two postings', points: 14 },
-      { label: 'ERP referenced without naming a vendor', points: 8 },
+      { label: 'Generic finance systems language in two postings', points: 11 },
+      { label: 'ERP referenced without naming a vendor', points: 7 },
     ],
 
     phaseNote: null,

@@ -15,6 +15,11 @@ Copied verbatim from section 6 of `BRIEF.md`.
 
 - Click-through prototype with dummy data. No backend, no API calls, no auth,
   no localStorage.
+  - **Sanctioned exception:** company logos are loaded as image URLs from a
+    logo CDN, keyed on each company's domain in `src/data/companies.js`. This
+    rule was meant to rule out a server and live API calls, not `<img>` URLs.
+    Do not strip these out. Every logo falls back to a monogram tile if the
+    image fails, so the prototype still works with no network.
 - Tokens in `src/styles/tokens.css` are the only place colours, radii and font
   sizes are defined. No hex codes in component files.
 - All data lives in `src/data/`. Never move content strings into components.
@@ -65,7 +70,6 @@ src/components/layout/   Sidebar, TopBar, PageShell
 src/components/leads/    LeadsTable, FilterBar, ArchetypeSelector
 src/components/account/  one file per section of the account page
 src/pages/         one file per screen
-public/logos/      company logo SVGs
 ```
 
 ## When making changes
@@ -84,6 +88,13 @@ public/logos/      company logo SVGs
   because none of them has a brief. Split it up when they do.
 - Signals, Saved lists, Campaigns, Generate, Resources - placeholder screens,
   no brief written yet.
-- Cirrus Software is phase Unclassified and renders honest empty states across
-  most of its account page. That is deliberate, not a bug. Its data fields are
+- CoreWeave is phase Unclassified and renders honest empty states across most
+  of its account page. That is deliberate, not a bug. Its data fields are
   `null` or `[]` and the copy comes from `src/data/emptyStates.js`.
+- Company names, domains and logos are real. Everything else about them is
+  invented for demonstration: scores, phases, windows, signals, verdicts,
+  contacts and postings are illustrative, not real classifications. Contact
+  names are fictional. See the banner comment at the top of
+  `src/data/companies.js`.
+- Dover Corporation has no logo on the CDN, so it renders the monogram tile.
+  That path is working as intended, not broken.
