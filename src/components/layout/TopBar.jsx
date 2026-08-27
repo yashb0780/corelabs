@@ -6,6 +6,7 @@
  * ['Workspace', 'Leads'].
  */
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Icon } from '../Icon'
 
 /**
@@ -40,18 +41,32 @@ export function TopBar({ breadcrumb = [] }) {
       <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1.5">
         {breadcrumb.map((crumb, i) => {
           const last = i === breadcrumb.length - 1
+          // A crumb is either a plain string, or { label, to } to make it a
+          // link back up the hierarchy.
+          const label = typeof crumb === 'string' ? crumb : crumb.label
+          const to = typeof crumb === 'string' ? null : crumb.to
+
           return (
-            <span key={crumb} className="flex min-w-0 items-center gap-1.5">
-              <span
-                className={
-                  last
-                    ? 'truncate text-sm font-name text-txt'
-                    : 'truncate text-sm text-txt-3'
-                }
-                aria-current={last ? 'page' : undefined}
-              >
-                {crumb}
-              </span>
+            <span key={label} className="flex min-w-0 items-center gap-1.5">
+              {to && !last ? (
+                <Link
+                  to={to}
+                  className="truncate text-sm text-txt-3 transition-colors duration-150 ease-lp hover:text-txt"
+                >
+                  {label}
+                </Link>
+              ) : (
+                <span
+                  className={
+                    last
+                      ? 'truncate text-sm font-name text-txt'
+                      : 'truncate text-sm text-txt-3'
+                  }
+                  aria-current={last ? 'page' : undefined}
+                >
+                  {label}
+                </span>
+              )}
               {!last && (
                 <Icon name="chevronRight" className="size-3 text-txt-3" />
               )}

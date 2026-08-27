@@ -7,6 +7,7 @@
 import { NavLink } from 'react-router-dom'
 import { Icon } from '../Icon'
 import { cx } from '../cx'
+import { SECTIONS } from '../../data/sections'
 
 const NAV_SECTIONS = [
   {
@@ -29,11 +30,16 @@ const NAV_SECTIONS = [
   {
     label: 'Admin',
     items: [
-      { to: '/admin/vendor', label: 'Vendor', icon: 'building' },
-      { to: '/admin/customer', label: 'Customer', icon: 'users' },
-      { to: '/admin/tenant', label: 'Tenant', icon: 'box' },
+      // Vendor, Customer, Tenant and Settings are plain links to their card
+      // landing pages. They are built from src/data/sections.js so the menu
+      // and the pages can never drift apart. No chevrons, no accordions, no
+      // nested items: the options live on the landing page, not in here.
+      ...SECTIONS.map((s) => ({
+        to: `/${s.id}`,
+        label: s.label,
+        icon: s.icon,
+      })),
       { to: '/admin/workspace', label: 'Workspace', icon: 'grid' },
-      { to: '/admin/settings', label: 'Settings', icon: 'settings' },
     ],
   },
 ]
