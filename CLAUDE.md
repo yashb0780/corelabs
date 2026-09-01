@@ -32,6 +32,10 @@ Copied verbatim from section 6 of `BRIEF.md`.
 - Design reference is Linear: minimal but high contrast and information dense.
   Body text never below weight 400. Primary text near-black, not grey. No
   gradients, no shadows, no colours outside the token set.
+  - **Sanctioned exception:** the assistant widget carries a soft drop shadow,
+    because it floats above the page and has to read as lifted off it. The
+    three shadow values are tokens (`--lp-shadow-widget`, `-lift`, `-panel`)
+    and are the only shadows in the product. Everything else stays flat.
 - Do not use em dashes in UI copy. Use a middot, a colon, or restructure.
 - Keep the "Prototype · dummy data" pill visible on every screen.
 - When asked for a change, change the smallest number of files possible and
@@ -73,7 +77,7 @@ not the function. Fix the phase.
 src/data/          all dummy data and empty-state copy
 src/lib/           pure logic with no UI (the window rule)
 src/styles/        tokens.css - colours, radii, sizes, weights, density
-src/components/layout/   Sidebar, TopBar, PageShell
+src/components/layout/   Sidebar, TopBar, PageShell, AssistantWidget
 src/components/leads/    LeadsTable, FilterBar, ArchetypeSelector
 src/components/account/  one file per section of the account page
 src/pages/         one file per screen
@@ -95,6 +99,10 @@ src/pages/         one file per screen
   because none of them has a brief. Split it up when they do.
 - Signals, Saved lists, Campaigns, Generate, Resources - placeholder screens,
   no brief written yet.
+- The assistant widget is visual only. There is no model behind it: it waits a
+  moment and returns one fixed line from `src/data/assistant.js`, whatever it
+  was asked. It is rendered by `App.jsx` outside `<Routes>` so the
+  conversation survives navigation.
 - CoreWeave is phase Unclassified and renders honest empty states across most
   of its account page. That is deliberate, not a bug. Its data fields are
   `null` or `[]` and the copy comes from `src/data/emptyStates.js`.

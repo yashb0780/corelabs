@@ -6,6 +6,7 @@
  */
 import { useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { AssistantWidget } from './components/layout/AssistantWidget'
 import { Sidebar } from './components/layout/Sidebar'
 import AccountDetail from './pages/AccountDetail'
 import AdminSection from './pages/AdminSection'
@@ -76,6 +77,11 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
+
+      {/* Outside <Routes> on purpose: it appears on every screen, and keeping
+          it above the router means navigating does not throw the
+          conversation away. */}
+      <AssistantWidget />
     </div>
   )
 }

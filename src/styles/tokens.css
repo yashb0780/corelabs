@@ -63,6 +63,15 @@
   --lp-tone-teal: #14746c;
   --lp-tone-teal-bg: rgba(20, 116, 108, 0.11);
 
+  /* --- Shadows ---------------------------------------------------------
+     The only shadows in the product, and only on the assistant widget,
+     which floats above the page and needs to read as lifted off it. The
+     rest of the UI stays flat. See the note in CLAUDE.md.
+     -------------------------------------------------------------------- */
+  --lp-shadow-widget: 0 4px 14px rgba(22, 22, 29, 0.16);
+  --lp-shadow-widget-lift: 0 8px 22px rgba(22, 22, 29, 0.22);
+  --lp-shadow-panel: 0 14px 44px rgba(22, 22, 29, 0.2);
+
   /* --- Semantic (meaning only, never decoration) ----------------------- */
   --lp-ok: #14764a;
   --lp-warn: #8a6300;
@@ -106,6 +115,12 @@
   --lp-tone-teal: #46b3a8;
   --lp-tone-teal-bg: rgba(70, 179, 168, 0.16);
 
+  /* Deeper and darker, because a soft grey shadow is invisible on a
+     near-black canvas. */
+  --lp-shadow-widget: 0 4px 14px rgba(0, 0, 0, 0.55);
+  --lp-shadow-widget-lift: 0 8px 22px rgba(0, 0, 0, 0.65);
+  --lp-shadow-panel: 0 14px 44px rgba(0, 0, 0, 0.6);
+
   --lp-ok: #5cc48f;
   --lp-warn: #f4cf60;
   --lp-bad: #f06a6a;
@@ -129,6 +144,15 @@
   --lp-row-pad-y: 10px; /* top/bottom padding in a table cell */
   --lp-contact-pad-y: 6px; /* top/bottom padding on a contact row */
   --lp-label-gap: 7px; /* section label to its first content */
+
+  /* --- Assistant widget ------------------------------------------------
+     The floating chat bubble and its panel. Change these to move or resize
+     it; nothing about its geometry is set in the component.
+     -------------------------------------------------------------------- */
+  --lp-assistant-offset: 24px; /* distance from the bottom and right edges */
+  --lp-assistant-button: 56px; /* the closed circular button */
+  --lp-assistant-w: 380px; /* open panel width */
+  --lp-assistant-h: 600px; /* open panel height */
 }
 
 /* ==========================================================================
@@ -218,6 +242,7 @@
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
+  --radius-xl: 16px; /* the assistant panel */
 
   /* --- Layout --------------------------------------------------------- */
   --spacing-sidebar: 232px;
@@ -293,6 +318,31 @@
   /* Stacked cards on a page. */
   .lp-stack > * + * {
     margin-top: var(--lp-card-gap);
+  }
+
+  /* The three dots the assistant shows while it is "thinking". The global
+     reduced-motion rule below stops them for anyone who asks for that. */
+  .lp-typing-dot {
+    animation: lp-typing 1.2s ease-in-out infinite;
+  }
+  .lp-typing-dot:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .lp-typing-dot:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+}
+
+@keyframes lp-typing {
+  0%,
+  60%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-2px);
   }
 }
 
