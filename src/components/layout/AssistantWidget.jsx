@@ -112,15 +112,16 @@ export function AssistantWidget() {
         aria-label={`Open ${ASSISTANT.title}`}
         title={ASSISTANT.title}
         style={{
-          bottom: 'var(--lp-assistant-offset)',
-          right: 'var(--lp-assistant-offset)',
+          bottom: 'var(--lp-assistant-button-offset)',
+          right: 'var(--lp-assistant-button-offset)',
           width: 'var(--lp-assistant-button)',
           height: 'var(--lp-assistant-button)',
+          borderRadius: 'var(--lp-assistant-button-radius)',
           boxShadow: 'var(--lp-shadow-widget)',
         }}
-        className="fixed z-50 grid place-items-center rounded-full bg-accent text-accent-txt transition-all duration-150 ease-lp hover:-translate-y-0.5 hover:bg-accent-hover hover:[box-shadow:var(--lp-shadow-widget-lift)] active:translate-y-0 active:bg-accent-pressed"
+        className="fixed z-50 grid place-items-center bg-accent text-accent-txt transition-transform duration-200 ease-lp hover:scale-[1.04] active:scale-100"
       >
-        <Icon name="chat" className="size-6" />
+        <Icon name="chatFilled" className="size-[var(--lp-assistant-icon)]" />
       </button>
     )
   }

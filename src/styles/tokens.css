@@ -68,8 +68,9 @@
      which floats above the page and needs to read as lifted off it. The
      rest of the UI stays flat. See the note in CLAUDE.md.
      -------------------------------------------------------------------- */
-  --lp-shadow-widget: 0 4px 14px rgba(22, 22, 29, 0.16);
-  --lp-shadow-widget-lift: 0 8px 22px rgba(22, 22, 29, 0.22);
+  /* Diffuse and soft edged. The launcher lifts on hover by scaling, not by
+     deepening its shadow, so there is only one launcher shadow value. */
+  --lp-shadow-widget: 0 4px 16px rgba(0, 0, 0, 0.16);
   --lp-shadow-panel: 0 14px 44px rgba(22, 22, 29, 0.2);
 
   /* --- Semantic (meaning only, never decoration) ----------------------- */
@@ -117,8 +118,7 @@
 
   /* Deeper and darker, because a soft grey shadow is invisible on a
      near-black canvas. */
-  --lp-shadow-widget: 0 4px 14px rgba(0, 0, 0, 0.55);
-  --lp-shadow-widget-lift: 0 8px 22px rgba(0, 0, 0, 0.65);
+  --lp-shadow-widget: 0 4px 16px rgba(0, 0, 0, 0.5);
   --lp-shadow-panel: 0 14px 44px rgba(0, 0, 0, 0.6);
 
   --lp-ok: #5cc48f;
@@ -149,10 +149,17 @@
      The floating chat bubble and its panel. Change these to move or resize
      it; nothing about its geometry is set in the component.
      -------------------------------------------------------------------- */
-  --lp-assistant-offset: 24px; /* distance from the bottom and right edges */
-  --lp-assistant-button: 56px; /* the closed circular button */
+  --lp-assistant-offset: 24px; /* panel distance from the bottom and right */
   --lp-assistant-w: 380px; /* open panel width */
   --lp-assistant-h: 600px; /* open panel height */
+
+  /* The closed launcher sits slightly further in than the panel, and is a
+     rounded square rather than a circle. It has its own offset token so
+     moving the launcher never moves the panel. */
+  --lp-assistant-button: 60px;
+  --lp-assistant-button-offset: 28px;
+  --lp-assistant-button-radius: 17px;
+  --lp-assistant-icon: 26px; /* leaves even padding inside the 60px button */
 }
 
 /* ==========================================================================

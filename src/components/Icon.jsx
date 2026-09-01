@@ -222,6 +222,21 @@ const paths = {
       <path d="M3.75 3.75 12.25 12.25M12.25 3.75 3.75 12.25" />
     </>
   ),
+  /**
+   * Solid speech bubble with three dots. The dots are holes cut by
+   * fill-rule="evenodd" rather than shapes of their own, so whatever sits
+   * behind the icon shows through them. That keeps the icon free of any
+   * colour and lets it work on the accent in both themes.
+   */
+  chatFilled: (
+    <path
+      fill="currentColor"
+      stroke="none"
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M4.25 2.25h7.5a2.5 2.5 0 0 1 2.5 2.5v4.5a2.5 2.5 0 0 1-2.5 2.5H8l-3.05 2.44a0.5 0.5 0 0 1-0.81-0.39v-2.05a2.5 2.5 0 0 1-2.39-2.5v-4.5a2.5 2.5 0 0 1 2.5-2.5zM5.1 6.05a0.95 0.95 0 1 0 0 1.9 0.95 0.95 0 0 0 0-1.9zM8 6.05a0.95 0.95 0 1 0 0 1.9 0.95 0.95 0 0 0 0-1.9zM10.9 6.05a0.95 0.95 0 1 0 0 1.9 0.95 0.95 0 0 0 0-1.9z"
+    />
+  ),
   send: (
     <>
       <path d="M14.25 1.75 7.5 8.5" />
