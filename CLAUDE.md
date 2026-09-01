@@ -20,6 +20,10 @@ Copied verbatim from section 6 of `BRIEF.md`.
     rule was meant to rule out a server and live API calls, not `<img>` URLs.
     Do not strip these out. Every logo falls back to a monogram tile if the
     image fails, so the prototype still works with no network.
+  - **Sanctioned exception:** the light/dark theme is remembered in
+    `localStorage` under one key, `lp-theme`, holding the string "light" or
+    "dark". Added deliberately so the theme survives navigation and reload.
+    No user data is stored. Do not remove it.
 - Tokens in `src/styles/tokens.css` are the only place colours, radii and font
   sizes are defined. No hex codes in component files.
 - All data lives in `src/data/`. Never move content strings into components.
@@ -47,8 +51,11 @@ Copied verbatim from section 6 of `BRIEF.md`.
   right rail alike, is one file in `src/components/account/`. `SectionCard` in
   `src/components/ui.jsx` is the shared shell (label, icon, divider, padding),
   not a section itself.
-- **No localStorage.** The theme toggle is in-memory only, per the first
-  guardrail. Theme resets on reload. This is deliberate.
+- **Theme.** The theme value lives at module scope in `src/lib/theme.js`, not
+  in a component. Every page renders its own `PageShell` and therefore its own
+  `TopBar`, so state held in the toggle is destroyed on navigation. Read it
+  with `useTheme()`, change it with `toggleTheme()`, and let that module be
+  the only thing that writes `data-theme` on `<html>`.
 
 ## The Window rule
 

@@ -5,27 +5,22 @@
  * The breadcrumb is passed in by each page as an array of strings, e.g.
  * ['Workspace', 'Leads'].
  */
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Icon } from '../Icon'
+import { toggleTheme, useTheme } from '../../lib/theme'
 
 /**
- * Theme is held in memory only and resets on reload. The guardrails for this
- * prototype rule out localStorage, so there is nowhere to persist it.
+ * The theme itself lives in src/lib/theme.js, at module scope, so navigating
+ * between pages cannot unmount it. This button only reads and flips it.
  */
 function ThemeToggle() {
-  const [theme, setTheme] = useState('light')
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-  }, [theme])
-
+  const theme = useTheme()
   const next = theme === 'dark' ? 'light' : 'dark'
 
   return (
     <button
       type="button"
-      onClick={() => setTheme(next)}
+      onClick={toggleTheme}
       aria-label={`Switch to ${next} mode`}
       title={`Switch to ${next} mode`}
       className="flex size-7 items-center justify-center rounded-md border border-line text-txt-3 transition-colors duration-150 ease-lp hover:border-line-strong hover:bg-surface-hover hover:text-txt-2"
