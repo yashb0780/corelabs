@@ -1,7 +1,20 @@
-# LeadPlus prototype: Account Detail page specification
+# LeadPlus prototype: screen specifications
 
-This file is the source of truth for the Account Detail screen. Screen 1 (Leads
-table) is already built and is not in scope here except where noted in section 2.
+This file is the source of truth for the screens it covers.
+
+- Sections 1 to 5: the Account Detail screen.
+- Section 6: guardrails for the whole prototype. `CLAUDE.md` copies these.
+- Section 7: the Vendor Profile screen.
+- Section 8: Refine by ICP on Company Search.
+
+Sections 1 to 5 were written first, when Account Detail was the only screen in
+scope, so they still read as though it is. Screen 1 (the Leads table) is built,
+and is in scope in sections 2 and 8.
+
+A note on direction: the product is going generic. It will serve services firms
+across any technology ecosystem, so no screen should hardcode SAP or ERP
+language. Sections 1 to 5 predate that decision and still contain
+ecosystem-specific examples. They are illustrative, not a licence to add more.
 
 ---
 
@@ -293,9 +306,13 @@ Fully populate **Meridian Foods** with everything above. For the other eight
 companies, populate every field but with lighter, plausible content so each row
 in the table is clickable and lands on a complete-looking page.
 
-Cirrus Software is phase Unclassified. Its account page should visibly degrade:
-show the sections, but with honest empty states saying what was not found,
-rather than fabricated content. This is deliberate and should look intentional.
+CoreWeave is phase Unclassified. Its account page should visibly degrade: show
+the sections, but with honest empty states saying what was not found, rather
+than fabricated content. This is deliberate and should look intentional.
+
+(This was written as "Cirrus Software" before the dataset moved to real company
+names. CoreWeave took the slot: a company founded in 2017 genuinely has no
+legacy estate to find, which makes the empty states believable.)
 
 ---
 
@@ -317,3 +334,130 @@ Copy this section into `CLAUDE.md`, replacing any placeholder note there.
 - Keep the "Prototype · dummy data" pill visible on every screen.
 - When asked for a change, change the smallest number of files possible and
   report which files were touched.
+
+Three exceptions have been granted against these since they were written: logo
+CDN image URLs, remembering the theme in `localStorage`, and a drop shadow on
+the assistant widget. Each is recorded in `CLAUDE.md` with its reasoning. Do
+not remove them on the strength of the rule alone.
+
+---
+
+## 7. Vendor Profile
+
+### What this screen is for
+
+The vendor profile is the input that produces the first account list. Every
+field on it must change which companies get surfaced. If a field does not
+change the list, it does not belong here yet.
+
+That is the test to apply to any proposed addition.
+
+### Layout
+
+One page, one scroll. Two clearly separated groups. Not a stepper, and no
+sections sidebar: the screen is short enough to read in one pass.
+
+### Group one: "What we found about you"
+
+Pre-filled from the website scrape and editable. Helper text says we pulled it
+from their website and they should correct anything wrong.
+
+- Company name
+- Website
+- Headquarters location
+- Other delivery locations (repeatable)
+- Founding year
+- Employee size
+- What you do (multi line, a few plain sentences)
+- Key offerings (repeatable list of services)
+
+### Group two: "Tell us who you sell to"
+
+Asked, not scraped. A website does not reliably state any of these, and these
+are the fields Refine by ICP acts on. Helper text: "This helps us sharpen your
+company search and the signals we surface."
+
+- Technologies and platforms you work with (multi select with free entry,
+  suggested: AWS, Azure, SAP, Oracle, Salesforce, NetSuite, ServiceNow,
+  Snowflake). The suggestions are a shortcut, never a fixed vocabulary.
+- Partner and vendor certifications (repeatable rows: provider, and level or
+  tier)
+- Company size you sell to (revenue band and employee band)
+- Industries you win in (two fields: include and exclude)
+- Key customer wins (3 to 5 free text entries)
+
+### Two behaviours that matter
+
+**Never pre-fill a guess.** If the scrape fails or returns nothing, fields stay
+empty. Size bands sit at "Not set". A plausible looking default reads as
+confirmed to the user and silently produces wrong data, which is worse than a
+blank field. The whole page must be completable by hand. Setting
+`SCRAPE_RESULT` to `null` in `src/data/vendorProfile.js` renders the whole page
+blank and switches the helper text to say the scrape found nothing.
+
+**The primary action reads "Save and continue"** and routes to Company Search.
+Not "Save Changes": this screen is a step towards the list, not a settings page.
+
+### Explicitly out of scope
+
+Not on this screen: profile completeness bar or percentage, any "more
+visibility" nudge, tagline, company video link, scheduling link, admin contact
+phone, social media, languages spoken, About the Team, Certifications as its
+own section, and Portfolio.
+
+These are marketplace directory fields. None of them changes which companies
+get surfaced, so none passes the test at the top of this section. See the
+scoped decision in `CLAUDE.md`.
+
+---
+
+## 8. Refine by ICP, on Company Search
+
+### Default state
+
+Company Search opens on the full unfiltered set. We do not narrow the view
+automatically from what was inferred about the vendor, because that quietly
+hides accounts the user might want with no way for them to know what was
+removed.
+
+The subtitle states the count with no ICP claim: "All companies · N in view".
+No ecosystem-specific wording.
+
+### The control
+
+A single button, top right, above the results list, sized and positioned like
+the Upgrade button in Gmail. Labelled "Refine by ICP". Uses the existing near
+black accent token, not a new colour.
+
+On click it applies filters derived from the vendor profile: technologies,
+revenue band, employee band, industries include and industries exclude.
+
+It refines the view only. It does not create a saved list.
+
+### Narrowing is never invisible
+
+This is the point of the feature, not decoration on it. When refined:
+
+- The button reflects the active state.
+- A strip under the filter row names every filter that was applied, one chip
+  each, in the user's own words from their profile.
+- The strip states how many companies were removed from view.
+- The subtitle changes to "Refined by ICP · N of M in view".
+- Clearing back to the unfiltered view is available from both the strip and
+  the button.
+
+### Filter semantics
+
+**Size bands are a floor, not an exact bracket.** A firm selling to "$1B to
+$10B" also sells above it. Exact-bracket matching would remove nearly
+everything and would surprise the user. Chips read "$10B+" and "5,000+" so
+what was applied is unambiguous.
+
+**Missing data keeps a company in, never removes it.** A company with no
+revenue on record or no technology stack identified cannot be judged against
+those filters. Dropping it would hide an account for a reason the user cannot
+see, which is the exact failure this screen is designed to avoid.
+
+**An empty profile does not silently do nothing.** Group two is never scraped,
+so on a fresh profile there is nothing to filter by. The control says so and
+links to the vendor profile rather than appearing to work and changing nothing.

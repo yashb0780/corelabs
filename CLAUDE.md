@@ -6,8 +6,16 @@ A click-through prototype for a sales intelligence product. All data is dummy.
 It is edited by hand over time, not regenerated. The owner is non-technical,
 so explain changes in plain language and give exact commands to run.
 
-`BRIEF.md` in the project root is the source of truth for the Account Detail
-screen. Read it before changing that screen.
+`BRIEF.md` in the project root is the source of truth for the screens it
+covers: Account Detail (sections 1 to 5), the Vendor Profile (section 7) and
+Refine by ICP on Company Search (section 8). Read the relevant section before
+changing that screen.
+
+The product is going generic. It will serve services firms across any
+technology ecosystem, so do not add SAP or ERP specific language to any new
+screen or copy. The Account Detail sections and the leads dataset predate that
+decision and are still ecosystem-specific. That is known, not a licence to add
+more.
 
 ## Guardrails
 
@@ -74,14 +82,23 @@ not the function. Fix the phase.
 ## Folder structure
 
 ```
-src/data/          all dummy data and empty-state copy
-src/lib/           pure logic with no UI (the window rule)
+src/data/          all dummy data, copy and empty-state text
+src/lib/           pure logic with no UI: window rule, ICP filters, theme,
+                   the vendor profile store
 src/styles/        tokens.css - colours, radii, sizes, weights, density
 src/components/layout/   Sidebar, TopBar, PageShell, AssistantWidget
-src/components/leads/    LeadsTable, FilterBar, ArchetypeSelector
+src/components/leads/    LeadsTable, FilterBar, ArchetypeSelector, IcpRefineBar
 src/components/account/  one file per section of the account page
+src/components/vendor/   one file per group of the vendor profile
+src/components/form.jsx  shared form controls
 src/pages/         one file per screen
 ```
+
+State that has to outlive navigation lives at module scope in `src/lib/`, not
+in a component. Every page renders its own `PageShell`, so anything held in a
+page's state is destroyed the moment you navigate. That is what broke dark
+mode, and it is why `src/lib/profile.js` holds the vendor profile that Company
+Search reads.
 
 ## When making changes
 
@@ -92,6 +109,44 @@ src/pages/         one file per screen
 - Commit after each working milestone with a message that describes the
   visible change.
 - Do not add dependencies without asking.
+
+## Scoped decisions
+
+### Marketplace fields are out of scope for the vendor profile
+
+The vendor profile has one job: be the input that produces a good first
+account list. The test for any field on it is whether it changes which
+companies get surfaced. If it does not, it does not belong there yet.
+
+These fail that test and are deliberately not on the screen: profile
+completeness bar and percentage, any "more visibility" nudge, tagline, company
+video link, scheduling link, admin contact phone, social media, languages
+spoken, About the Team, Certifications as its own section, Portfolio, and a
+sections sidebar. See section 7 of `BRIEF.md`.
+
+**Parked, not rejected.** They are the right fields for a vendor marketplace
+module, where a buyer is browsing vendors and a fuller profile is the product.
+When that module is built, this list is its starting point. Do not treat their
+absence as a judgement that they are bad fields.
+
+**Nothing was deleted from this repo to achieve this.** The instruction that
+produced this decision described removing them from an existing screen, but
+`/vendor/vendor-profile` was a "Not built yet" placeholder here and none of
+those fields had ever been implemented. The screen was built to the new spec
+directly. If those components exist in another build of LeadPlus, the parking
+job still needs doing there.
+
+### Company Search does not auto-narrow
+
+Company Search opens unfiltered. Narrowing by the vendor's inferred ICP is
+something the user asks for, through "Refine by ICP", and when they do it the
+screen names every filter applied and the number of companies removed.
+
+The reasoning is worth keeping: a list that quietly hides accounts, for
+reasons the user cannot see and did not choose, is worse than a long list. Any
+future filtering should hold to the same standard. Section 8 of `BRIEF.md` has
+the detail, including why size bands read as a floor and why missing data
+keeps a company in rather than dropping it.
 
 ## Known gaps
 
