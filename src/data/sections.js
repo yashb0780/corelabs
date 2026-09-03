@@ -112,7 +112,7 @@ export const SECTIONS = [
         label: 'Vendor Profile',
         icon: 'building',
         description:
-          'Company details, capabilities and certifications buyers can see.',
+          'What you do and who you sell to. This is what your account list is built from.',
       },
       {
         id: 'rfqs',

@@ -20,6 +20,7 @@ import SectionLanding from './pages/SectionLanding'
 import SectionPage from './pages/SectionPage'
 import Segments from './pages/Segments'
 import Signals from './pages/Signals'
+import VendorProfile from './pages/VendorProfile'
 import { SECTIONS } from './data/sections'
 
 export default function App() {
@@ -52,6 +53,11 @@ export default function App() {
           <Route path="/campaigns" element={<Campaigns />} />
           <Route path="/generate" element={<Generate />} />
           <Route path="/resources" element={<Resources />} />
+
+          {/* Vendor Profile is a real screen rather than a card placeholder.
+              A static path outranks the dynamic /:sectionId/:cardId below it,
+              so this wins regardless of order. */}
+          <Route path="/vendor/vendor-profile" element={<VendorProfile />} />
 
           {/* Settings, Tenant, Vendor and Customer. Each gets a card landing
               page plus one page per card, built from src/data/sections.js so
