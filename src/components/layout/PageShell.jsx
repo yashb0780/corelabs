@@ -6,7 +6,7 @@
  *   <PageShell
  *     breadcrumb={['Workspace', 'Leads']}
  *     title="Company Search"
- *     subtitle="SAP ECC migration signals · 9 companies matching your ICP"
+ *     subtitle="All companies · 12 in view"
  *   >
  *     ...page content...
  *   </PageShell>
