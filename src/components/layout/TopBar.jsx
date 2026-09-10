@@ -4,9 +4,14 @@
  *
  * The breadcrumb is passed in by each page as an array of strings, e.g.
  * ['Workspace', 'Leads'].
+ *
+ * Anywhere in Settings the search becomes a settings search (see
+ * SettingsSearch.jsx). Everywhere else it is the company search hint.
  */
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { Icon } from '../Icon'
+import { SettingsSearch } from './SettingsSearch'
+import { isSettingsPath } from '../../lib/settings'
 import { toggleTheme, useTheme } from '../../lib/theme'
 
 /**
@@ -31,6 +36,8 @@ function ThemeToggle() {
 }
 
 export function TopBar({ breadcrumb = [] }) {
+  const { pathname } = useLocation()
+
   return (
     <header className="flex h-12 shrink-0 items-center justify-between gap-4 border-b border-line bg-canvas px-4">
       <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1.5">
@@ -42,7 +49,9 @@ export function TopBar({ breadcrumb = [] }) {
           const to = typeof crumb === 'string' ? null : crumb.to
 
           return (
-            <span key={label} className="flex min-w-0 items-center gap-1.5">
+            // Keyed by position as well as label: a trail can repeat a word,
+            // e.g. Admin > Settings > Tenant > Settings.
+            <span key={`${i}-${label}`} className="flex min-w-0 items-center gap-1.5">
               {to && !last ? (
                 <Link
                   to={to}
@@ -71,16 +80,20 @@ export function TopBar({ breadcrumb = [] }) {
       </nav>
 
       <div className="flex shrink-0 items-center gap-2">
-        <button
-          type="button"
-          className="flex h-8 items-center gap-2 rounded-md border border-line bg-surface pl-2.5 pr-1.5 text-xs text-txt-3 transition-colors duration-150 ease-lp hover:border-line-strong hover:bg-surface-hover hover:text-txt-2"
-        >
-          <Icon name="search" className="size-3.5" />
-          <span className="hidden sm:inline">Search companies…</span>
-          <kbd className="rounded border border-line bg-surface-sunken px-1 font-mono text-2xs text-txt-3">
-            ⌘K
-          </kbd>
-        </button>
+        {isSettingsPath(pathname) ? (
+          <SettingsSearch />
+        ) : (
+          <button
+            type="button"
+            className="flex h-8 items-center gap-2 rounded-md border border-line bg-surface pl-2.5 pr-1.5 text-xs text-txt-3 transition-colors duration-150 ease-lp hover:border-line-strong hover:bg-surface-hover hover:text-txt-2"
+          >
+            <Icon name="search" className="size-3.5" />
+            <span className="hidden sm:inline">Search companies…</span>
+            <kbd className="rounded border border-line bg-surface-sunken px-1 font-mono text-2xs text-txt-3">
+              ⌘K
+            </kbd>
+          </button>
+        )}
         <ThemeToggle />
       </div>
     </header>

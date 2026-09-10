@@ -1,23 +1,31 @@
 /* ==========================================================================
-   THE FOUR CARD SECTIONS: Settings, Tenant, Vendor, Customer.
+   SETTINGS: one page, with its own list of sections down the left.
 
-   Each of these is a plain sidebar link. Clicking it opens a landing page in
-   the main content area showing that section's options as a grid of cards.
-   Clicking a card opens that option's own page, with a breadcrumb back up.
+   The sidebar has a single "Settings" link. Clicking it opens the Settings
+   page and switches the whole left sidebar over to the settings list:
+   General, Tenant, Vendor, Customer and Workspace. Picking one swaps the
+   panel on the right. A back chevron at the top of the sidebar returns it to
+   the normal menu and takes you back to where you were.
 
-   Deliberately NOT sidebar dropdowns: no chevrons, no accordions, no nested
-   indented items. Crowding the sidebar is the thing this pattern avoids.
+   Most sections show their options as a grid of cards. Clicking a card opens
+   that option's own page, at the same address it has always had, for example
+   /tenant/users or /vendor/vendor-profile.
 
-   TO ADD AN OPTION: add a card to the section below. The landing page grid,
-   the routes and the breadcrumbs all follow from this file, so there is
-   nothing else to edit.
+   This file holds two lists:
 
-   Fields:
-     id          the section slug, and its URL: /settings, /tenant, ...
-     label       what the sidebar and the breadcrumb call it
-     icon        sidebar icon name (see src/components/Icon.jsx)
-     root        first crumb in the breadcrumb, above the section
-     description sits under the landing page title
+   SECTIONS      the cards. Each group of cards keeps its original id, which
+                 is also the first part of every card's address.
+   SETTINGS_NAV  the column on the Settings page, in the order it appears.
+
+   TO ADD AN OPTION: add a card to the right group in SECTIONS. The grid, the
+   card's page, its address, the breadcrumbs and the settings search all
+   follow from this file, so there is nothing else to edit.
+
+   SECTIONS fields:
+     id          the group slug, and the start of each card's address
+     label, icon the group's own name and icon. The Settings page shows the
+                 name and icon from SETTINGS_NAV below instead.
+     description sits under the section title on the Settings page
      cards[]     id (URL slug), label, icon, description
    ========================================================================== */
 
@@ -26,7 +34,6 @@ export const SECTIONS = [
     id: 'settings',
     label: 'Settings',
     icon: 'settings',
-    root: 'Admin',
     description: 'Workspace-wide configuration and connected systems.',
     cards: [
       {
@@ -70,7 +77,6 @@ export const SECTIONS = [
     id: 'tenant',
     label: 'Tenant',
     icon: 'box',
-    root: 'Admin',
     description: 'Everything scoped to this tenant and the people inside it.',
     cards: [
       {
@@ -104,7 +110,6 @@ export const SECTIONS = [
     id: 'vendor',
     label: 'Vendor',
     icon: 'building',
-    root: 'Admin',
     description: 'Your vendor record and the requests you respond to.',
     cards: [
       {
@@ -132,7 +137,6 @@ export const SECTIONS = [
     id: 'customer',
     label: 'Customer',
     icon: 'users',
-    root: 'Admin',
     description: 'Requests you have issued to vendors.',
     cards: [
       {
@@ -150,6 +154,88 @@ export const SECTIONS = [
     ],
   },
 ]
+
+/* ==========================================================================
+   SETTINGS_NAV: the column down the left of the Settings page.
+
+   Fields:
+     id          the section slug
+     label       what the column, the page title and the breadcrumb call it
+     icon        icon name (see src/components/Icon.jsx)
+     path        its address. Each one can be linked to directly.
+     section     which group in SECTIONS supplies its cards and description.
+                 General shows the cards that used to sit on the old Settings
+                 landing page. null means it has no cards yet.
+     legacyPath  where this section used to live before Settings became one
+                 page. That old address still works and forwards here.
+     empty       for a section with no cards: the placeholder it shows.
+   ========================================================================== */
+
+export const SETTINGS_NAV = [
+  {
+    id: 'general',
+    label: 'General',
+    icon: 'settings',
+    path: '/settings',
+    section: 'settings',
+  },
+  {
+    id: 'tenant',
+    label: 'Tenant',
+    icon: 'box',
+    path: '/settings/tenant',
+    section: 'tenant',
+    legacyPath: '/tenant',
+  },
+  {
+    id: 'vendor',
+    label: 'Vendor',
+    icon: 'building',
+    path: '/settings/vendor',
+    section: 'vendor',
+    legacyPath: '/vendor',
+  },
+  {
+    id: 'customer',
+    label: 'Customer',
+    icon: 'users',
+    path: '/settings/customer',
+    section: 'customer',
+    legacyPath: '/customer',
+  },
+  {
+    id: 'workspace',
+    label: 'Workspace',
+    icon: 'grid',
+    path: '/settings/workspace',
+    section: null,
+    legacyPath: '/admin/workspace',
+    empty: {
+      title: 'Not built yet',
+      body: 'The brief for this screen has not been written. Replace this file when it is.',
+    },
+  },
+]
+
+/* The start of every breadcrumb in Settings: Admin > Settings > Section. */
+export const SETTINGS_BREADCRUMB = {
+  root: 'Admin',
+  label: 'Settings',
+}
+
+/* The top of the left sidebar while you are in Settings. `back` is what a
+   screen reader announces for the chevron. */
+export const SETTINGS_SIDEBAR_COPY = {
+  title: 'Settings',
+  back: 'Leave settings',
+}
+
+/* The search box in the top bar, while you are anywhere in Settings. */
+export const SETTINGS_SEARCH_COPY = {
+  placeholder: 'Search settings…',
+  noMatch: 'No settings match',
+  sectionHint: 'Section',
+}
 
 export function getSection(id) {
   return SECTIONS.find((s) => s.id === id)

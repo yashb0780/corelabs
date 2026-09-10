@@ -16,12 +16,12 @@ import Leads from './pages/Leads'
 import NotFound from './pages/NotFound'
 import Resources from './pages/Resources'
 import SavedLists from './pages/SavedLists'
-import SectionLanding from './pages/SectionLanding'
 import SectionPage from './pages/SectionPage'
 import Segments from './pages/Segments'
+import Settings from './pages/Settings'
 import Signals from './pages/Signals'
 import VendorProfile from './pages/VendorProfile'
-import { SECTIONS } from './data/sections'
+import { SECTIONS, SETTINGS_NAV } from './data/sections'
 
 export default function App() {
   const [collapsed, setCollapsed] = useState(false)
@@ -59,25 +59,43 @@ export default function App() {
               so this wins regardless of order. */}
           <Route path="/vendor/vendor-profile" element={<VendorProfile />} />
 
-          {/* Settings, Tenant, Vendor and Customer. Each gets a card landing
-              page plus one page per card, built from src/data/sections.js so
-              adding a card to that file is all it takes to add a route. */}
-          {SECTIONS.flatMap((s) => [
+          {/* Settings: one page, one address per section (/settings,
+              /settings/tenant, ...). Built from SETTINGS_NAV in
+              src/data/sections.js. These fixed addresses outrank the
+              /settings/:cardId card pages below, and no card shares a
+              section's slug. */}
+          {SETTINGS_NAV.map((n) => (
             <Route
-              key={s.id}
-              path={`/${s.id}`}
-              element={<SectionLanding sectionId={s.id} />}
-            />,
+              key={`settings-${n.id}`}
+              path={n.path}
+              element={<Settings sectionId={n.id} />}
+            />
+          ))}
+
+          {/* One page per card, at the address it has always had, e.g.
+              /tenant/users or /settings/emails. Adding a card to
+              src/data/sections.js is all it takes to add one. */}
+          {SECTIONS.map((s) => (
             <Route
               key={`${s.id}-card`}
               path={`/${s.id}/:cardId`}
               element={<SectionPage sectionId={s.id} />}
-            />,
-          ])}
+            />
+          ))}
 
-          {/* The old /admin/* URLs still resolve, so nothing that linked to
-              them breaks. The sidebar no longer points here except for
-              Workspace, which has no card landing page of its own. */}
+          {/* Before Settings was one page, Tenant, Vendor, Customer and
+              Workspace each had an address of their own. Those still work
+              and forward to the matching section, so no old link breaks. */}
+          {SETTINGS_NAV.filter((n) => n.legacyPath).map((n) => (
+            <Route
+              key={`legacy-${n.id}`}
+              path={n.legacyPath}
+              element={<Navigate to={n.path} replace />}
+            />
+          ))}
+
+          {/* The rest of the old /admin/* addresses forward into Settings
+              too. */}
           <Route path="/admin/:section" element={<AdminSection />} />
 
           <Route path="*" element={<NotFound />} />

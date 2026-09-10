@@ -84,9 +84,10 @@ not the function. Fix the phase.
 ```
 src/data/          all dummy data, copy and empty-state text
 src/lib/           pure logic with no UI: window rule, ICP filters, theme,
-                   the vendor profile store
+                   the vendor profile store, settings paths and search
 src/styles/        tokens.css - colours, radii, sizes, weights, density
-src/components/layout/   Sidebar, TopBar, PageShell, AssistantWidget
+src/components/layout/   Sidebar, TopBar, PageShell, AssistantWidget,
+                         SettingsSearch
 src/components/leads/    LeadsTable, FilterBar, ArchetypeSelector, IcpRefineBar
 src/components/account/  one file per section of the account page
 src/components/vendor/   one file per group of the vendor profile
@@ -150,8 +151,17 @@ keeps a company in rather than dropping it.
 
 ## Known gaps
 
-- `src/pages/AdminSection.jsx` - one file covers all five Admin nav items,
-  because none of them has a brief. Split it up when they do.
+- Settings is one page (`src/pages/Settings.jsx`) with five sections:
+  General, Tenant, Vendor, Customer, Workspace, fed by `SETTINGS_NAV` in
+  `src/data/sections.js`. None of these has a brief. While you are in
+  Settings the left sidebar swaps its menu for that section list, Attio
+  style, with a back chevron that returns to the last screen outside
+  Settings (remembered in `src/lib/settings.js`). Never add a second nav
+  column beside the sidebar. The card pages that open
+  from it (`/tenant/users`, `/vendor/vendor-profile` and so on) kept their
+  original addresses and stay full-width standalone pages. The old addresses
+  `/tenant`, `/vendor`, `/customer` and `/admin/*` forward into Settings;
+  `src/pages/AdminSection.jsx` is now only that redirect.
 - Signals, Saved lists, Campaigns, Generate, Resources - placeholder screens,
   no brief written yet.
 - The assistant widget is visual only. There is no model behind it: it waits a

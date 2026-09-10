@@ -14,7 +14,7 @@ import { VendorFound } from '../components/vendor/VendorFound'
 import { VendorSell } from '../components/vendor/VendorSell'
 import { Button } from '../components/ui'
 import { VENDOR_PROFILE_COPY as COPY } from '../data/vendorProfile'
-import { getSection } from '../data/sections'
+import { settingsCrumbs } from '../lib/settings'
 import {
   scrapeFoundSomething,
   setVendorProfile,
@@ -24,15 +24,10 @@ import {
 export default function VendorProfile() {
   const navigate = useNavigate()
   const profile = useVendorProfile()
-  const section = getSection('vendor')
 
   return (
     <PageShell
-      breadcrumb={[
-        section.root,
-        { label: section.label, to: `/${section.id}` },
-        COPY.title,
-      ]}
+      breadcrumb={[...settingsCrumbs('vendor'), COPY.title]}
       title={COPY.title}
       subtitle={COPY.subtitle}
     >
