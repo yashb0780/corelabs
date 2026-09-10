@@ -91,7 +91,10 @@ src/components/layout/   Sidebar, TopBar, PageShell, AssistantWidget,
 src/components/leads/    LeadsTable, FilterBar, ArchetypeSelector, IcpRefineBar
 src/components/account/  one file per section of the account page
 src/components/vendor/   one file per group of the vendor profile
+src/components/lists/    SavedListsTable, AssignModal, ShareModal
 src/components/form.jsx  shared form controls
+src/components/overlay.jsx  Modal, RowMenu, Toast. No shadows: a modal is
+                         lifted by the --lp-scrim backdrop instead
 src/pages/         one file per screen
 ```
 
@@ -162,8 +165,14 @@ keeps a company in rather than dropping it.
   original addresses and stay full-width standalone pages. The old addresses
   `/tenant`, `/vendor`, `/customer` and `/admin/*` forward into Settings;
   `src/pages/AdminSection.jsx` is now only that redirect.
-- Signals, Saved lists, Campaigns, Generate, Resources - placeholder screens,
-  no brief written yet.
+- Signals, Campaigns, Generate, Resources - placeholder screens, no brief
+  written yet.
+- Saved lists is built but has no brief. It exists to show the Assign and
+  Share interactions to the dev team. Assigning updates the table and shows
+  a toast; nothing persists, so leaving the page resets it to
+  `src/data/savedLists.js`. Its list names are SAP-specific at the owner's
+  request, a deliberate exception to the generic-copy rule, noted at the top
+  of that file.
 - The assistant widget is visual only. There is no model behind it: it waits a
   moment and returns one fixed line from `src/data/assistant.js`, whatever it
   was asked. It is rendered by `App.jsx` outside `<Routes>` so the

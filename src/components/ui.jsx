@@ -137,6 +137,52 @@ export function Chip({ children, title, className }) {
   )
 }
 
+/* --- Person avatar ------------------------------------------------------ */
+
+/**
+ * A round initials avatar for a teammate. Its colour is one of the tones in
+ * tokens.css, set on the person in src/data/teammates.js. Pass no person to
+ * get the empty dashed circle used for "Unassigned".
+ */
+export function Avatar({ person, size = 'sm' }) {
+  const box = size === 'md' ? 'size-7 text-2xs' : 'size-5.5 text-2xs'
+
+  if (!person) {
+    return (
+      <span
+        aria-hidden="true"
+        className={cx(
+          'inline-block shrink-0 rounded-full border border-dashed border-line-strong',
+          box,
+        )}
+      />
+    )
+  }
+
+  const tone = TONES.includes(person.tone) ? person.tone : 'grey'
+  const initials = person.name
+    .split(' ')
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+
+  return (
+    <span
+      aria-hidden="true"
+      className={cx(
+        'grid shrink-0 place-items-center rounded-full font-name',
+        box,
+      )}
+      style={{
+        color: `var(--lp-tone-${tone})`,
+        backgroundColor: `var(--lp-tone-${tone}-bg)`,
+      }}
+    >
+      {initials}
+    </span>
+  )
+}
+
 /* --- Company logo ------------------------------------------------------- */
 
 /**

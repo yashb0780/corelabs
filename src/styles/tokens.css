@@ -18,6 +18,9 @@
   --lp-surface: #ffffff; /* cards, table rows, the content area */
   --lp-surface-hover: #f1f2f5; /* row / button hover */
   --lp-surface-sunken: #eeeff3; /* table headers, inset areas */
+  /* The dimmed page behind a modal. It is what lifts a modal off the page,
+     instead of a shadow. */
+  --lp-scrim: rgba(22, 22, 29, 0.32);
 
   /* --- Borders --------------------------------------------------------- */
   /* Dark enough that a card has a visible edge against the page. */
@@ -87,6 +90,7 @@
   --lp-surface: #101113;
   --lp-surface-hover: #191b1e;
   --lp-surface-sunken: #0c0d0e;
+  --lp-scrim: rgba(0, 0, 0, 0.6);
 
   --lp-line: rgba(255, 255, 255, 0.13);
   --lp-line-strong: rgba(255, 255, 255, 0.22);
@@ -173,6 +177,7 @@
   --color-surface: var(--lp-surface);
   --color-surface-hover: var(--lp-surface-hover);
   --color-surface-sunken: var(--lp-surface-sunken);
+  --color-scrim: var(--lp-scrim);
 
   --color-line: var(--lp-line);
   --color-line-strong: var(--lp-line-strong);

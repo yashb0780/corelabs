@@ -8,7 +8,7 @@
  * empty, which is the whole point on the vendor profile: a guessed value
  * looks confirmed to the user.
  */
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Icon } from './Icon'
 import { cx } from './cx'
 
@@ -51,6 +51,85 @@ export function TextArea({ id, value, onChange, placeholder, rows = 4 }) {
       placeholder={placeholder}
       className={cx(CONTROL, 'resize-y py-2 leading-relaxed')}
     />
+  )
+}
+
+/** A text box with a search icon in front. */
+export function SearchInput({ value, onChange, placeholder, inputRef, ...rest }) {
+  return (
+    <div className="relative">
+      <Icon
+        name="search"
+        className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-txt-3"
+      />
+      <input
+        ref={inputRef}
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={cx(CONTROL, 'h-9 pl-8')}
+        {...rest}
+      />
+    </div>
+  )
+}
+
+/**
+ * A checkbox. `indeterminate` draws the dash used by a "select all" box when
+ * only some rows are ticked, which HTML can only set from script.
+ */
+export function Checkbox({ checked, indeterminate = false, onChange, label }) {
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (ref.current) ref.current.indeterminate = indeterminate
+  }, [indeterminate])
+
+  return (
+    <input
+      ref={ref}
+      type="checkbox"
+      checked={checked}
+      onChange={(e) => onChange(e.target.checked)}
+      aria-label={label}
+      className="size-4 cursor-pointer rounded accent-accent"
+    />
+  )
+}
+
+/**
+ * Two or more options side by side, one chosen. `options` is
+ * [{ value, label }].
+ */
+export function SegmentedControl({ value, onChange, options, label }) {
+  return (
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className="inline-flex rounded-md border border-line bg-surface-sunken p-0.5"
+    >
+      {options.map((o) => {
+        const on = o.value === value
+        return (
+          <button
+            key={o.value}
+            type="button"
+            role="radio"
+            aria-checked={on}
+            onClick={() => onChange(o.value)}
+            className={cx(
+              'h-7 rounded px-3 text-xs font-name transition-colors duration-150 ease-lp',
+              on
+                ? 'border border-line bg-surface text-txt'
+                : 'border border-transparent text-txt-3 hover:text-txt-2',
+            )}
+          >
+            {o.label}
+          </button>
+        )
+      })}
+    </div>
   )
 }
 

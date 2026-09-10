@@ -243,6 +243,39 @@ const paths = {
       <path d="M14.25 1.75 9.9 14.25l-2.4-5.75-5.75-2.4z" />
     </>
   ),
+  /* Vertical three dots, the "more actions" menu on a table row. */
+  more: (
+    <>
+      <circle cx="8" cy="3.5" r="0.9" fill="currentColor" stroke="none" />
+      <circle cx="8" cy="8" r="0.9" fill="currentColor" stroke="none" />
+      <circle cx="8" cy="12.5" r="0.9" fill="currentColor" stroke="none" />
+    </>
+  ),
+  userPlus: (
+    <>
+      <circle cx="6.25" cy="5.25" r="2.75" />
+      <path d="M1.75 13.75c.5-2.4 2.2-3.75 4.5-3.75s4 1.35 4.5 3.75" />
+      <path d="M12.75 5.25v4M10.75 7.25h4" />
+    </>
+  ),
+  share: (
+    <>
+      <path d="M8 10V1.75M5 4.75l3-3 3 3" />
+      <path d="M5.25 7H4a1.25 1.25 0 0 0-1.25 1.25V13A1.25 1.25 0 0 0 4 14.25h8A1.25 1.25 0 0 0 13.25 13V8.25A1.25 1.25 0 0 0 12 7h-1.25" />
+    </>
+  ),
+  link: (
+    <>
+      <path d="M6.75 9.25a2.75 2.75 0 0 0 3.9 0l2.1-2.1a2.75 2.75 0 0 0-3.9-3.9l-.85.85" />
+      <path d="M9.25 6.75a2.75 2.75 0 0 0-3.9 0l-2.1 2.1a2.75 2.75 0 0 0 3.9 3.9l.85-.85" />
+    </>
+  ),
+  copy: (
+    <>
+      <rect x="5.25" y="5.25" width="9" height="9" rx="1.25" />
+      <path d="M10.75 5.25V3a1.25 1.25 0 0 0-1.25-1.25H3A1.25 1.25 0 0 0 1.75 3v6.5A1.25 1.25 0 0 0 3 10.75h2.25" />
+    </>
+  ),
 }
 
 export function Icon({ name, className = 'size-4' }) {
