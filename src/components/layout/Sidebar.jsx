@@ -30,6 +30,7 @@ const NAV_SECTIONS = [
       { to: '/signals', label: 'Signals', icon: 'activity' },
       { to: '/saved-lists', label: 'Saved lists', icon: 'bookmark' },
       { to: '/campaigns', label: 'Campaigns', icon: 'megaphone' },
+      { to: '/reports', label: 'Reports', icon: 'barChart' },
     ],
   },
   {

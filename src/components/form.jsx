@@ -28,7 +28,14 @@ export function Field({ label, hint, htmlFor, children }) {
   )
 }
 
-export function TextInput({ id, value, onChange, placeholder, type = 'text' }) {
+export function TextInput({
+  id,
+  value,
+  onChange,
+  placeholder,
+  type = 'text',
+  ...rest
+}) {
   return (
     <input
       id={id}
@@ -37,6 +44,7 @@ export function TextInput({ id, value, onChange, placeholder, type = 'text' }) {
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       className={cx(CONTROL, 'h-9')}
+      {...rest}
     />
   )
 }

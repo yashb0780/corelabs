@@ -14,6 +14,8 @@ import Campaigns from './pages/Campaigns'
 import Generate from './pages/Generate'
 import Leads from './pages/Leads'
 import NotFound from './pages/NotFound'
+import ReportDetail from './pages/ReportDetail'
+import Reports from './pages/Reports'
 import Resources from './pages/Resources'
 import SavedLists from './pages/SavedLists'
 import SectionPage from './pages/SectionPage'
@@ -51,6 +53,8 @@ export default function App() {
           <Route path="/signals" element={<Signals />} />
           <Route path="/saved-lists" element={<SavedLists />} />
           <Route path="/campaigns" element={<Campaigns />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/reports/:reportId" element={<ReportDetail />} />
           <Route path="/generate" element={<Generate />} />
           <Route path="/resources" element={<Resources />} />
 

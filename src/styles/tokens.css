@@ -76,6 +76,26 @@
   --lp-shadow-widget: 0 4px 16px rgba(0, 0, 0, 0.16);
   --lp-shadow-panel: 0 14px 44px rgba(22, 22, 29, 0.2);
 
+  /* --- Chart series ----------------------------------------------------
+     For charts that need to tell several series apart (the pie and line
+     reports). A chart with one series uses the accent instead.
+
+     Keep them in this order: the order is what keeps neighbouring colours
+     distinguishable for colour-blind readers. They were checked as a set,
+     in light and dark, for that and for contrast. Change one and the set
+     needs checking again.
+
+     The yellow and aqua sit below 3:1 on white, so any chart using them
+     must also show its values as text: a legend with numbers, or a table.
+     "Other" and "Unknown" deliberately use the neutral grey, so they read
+     as absent rather than as one more category.
+     -------------------------------------------------------------------- */
+  --lp-chart-1: #2a78d6; /* blue */
+  --lp-chart-2: #eb6834; /* orange */
+  --lp-chart-3: #1baf7a; /* aqua */
+  --lp-chart-4: #eda100; /* yellow */
+  --lp-chart-other: var(--lp-tone-grey);
+
   /* --- Semantic (meaning only, never decoration) ----------------------- */
   --lp-ok: #14764a;
   --lp-warn: #8a6300;
@@ -124,6 +144,13 @@
      near-black canvas. */
   --lp-shadow-widget: 0 4px 16px rgba(0, 0, 0, 0.5);
   --lp-shadow-panel: 0 14px 44px rgba(0, 0, 0, 0.6);
+
+  /* The same four hues, stepped for the dark canvas and checked against it.
+     Not an automatic flip. */
+  --lp-chart-1: #3987e5;
+  --lp-chart-2: #d95926;
+  --lp-chart-3: #199e70;
+  --lp-chart-4: #c98500;
 
   --lp-ok: #5cc48f;
   --lp-warn: #f4cf60;

@@ -62,7 +62,9 @@ export function Modal({ title, subtitle, onClose, footer, children }) {
     window.addEventListener('keydown', onKey)
     return () => {
       window.removeEventListener('keydown', onKey)
-      opener?.focus?.()
+      // Without scrolling, so it cannot yank the page back up while
+      // something else is scrolling a new item into view.
+      opener?.focus?.({ preventScroll: true })
     }
   }, [])
 

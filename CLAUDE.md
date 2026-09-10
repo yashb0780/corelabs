@@ -92,6 +92,7 @@ src/components/leads/    LeadsTable, FilterBar, ArchetypeSelector, IcpRefineBar
 src/components/account/  one file per section of the account page
 src/components/vendor/   one file per group of the vendor profile
 src/components/lists/    SavedListsTable, AssignModal, ShareModal
+src/components/reports/  report cards, modals, and the hand-drawn SVG charts
 src/components/form.jsx  shared form controls
 src/components/overlay.jsx  Modal, RowMenu, Toast. No shadows: a modal is
                          lifted by the --lp-scrim backdrop instead
@@ -167,6 +168,16 @@ keeps a company in rather than dropping it.
   `src/pages/AdminSection.jsx` is now only that redirect.
 - Signals, Campaigns, Generate, Resources - placeholder screens, no brief
   written yet.
+- Reports (`/reports`, `/reports/<id>`) is built but has no brief. It is
+  modelled on Attio's Business Metrics screen. Charts are plain SVG drawn
+  in `src/components/reports/`, not a library: none was installed, and
+  adding one needs the owner's say-so. Multi-series charts use the
+  `--lp-chart-*` tokens, which were checked as a set for colour-blind
+  separation and contrast in both themes; keep their order, and re-check
+  if one changes. The dashboard lives at module scope in
+  `src/lib/reports.js` so renames and added reports survive opening a
+  report and coming back; a reload resets it. Some report copy is
+  SAP-specific at the owner's request, noted in `src/data/reports.js`.
 - Saved lists is built but has no brief. It exists to show the Assign and
   Share interactions to the dev team. Assigning updates the table and shows
   a toast; nothing persists, so leaving the page resets it to
