@@ -58,28 +58,38 @@ export const STEP_TYPES = [
   { value: 'linkedin-message', label: 'LinkedIn message' },
 ]
 
-/* The steps a new sequence starts with. `day` is how many days after launch
-   the step goes out. {{company}} fills in for each account. */
+/* The steps a new sequence starts with. `day` is how many days after the
+   sequence starts the step goes out, and `time` is when on that day, as
+   24 hour "HH:MM" (shown as "9:00 AM"). {{company}} fills in for each
+   account. */
 export const CAMPAIGN_SEQUENCE = [
   {
     type: 'email',
     day: 0,
+    time: '09:00',
     subject: 'A quick question about {{company}}’s roadmap',
   },
   {
     type: 'linkedin-connect',
     day: 3,
+    time: '09:00',
     subject: 'Following up on my note',
   },
   {
     type: 'email',
     day: 7,
+    time: '09:00',
     subject: 'How a team like {{company}}’s cut its rollout time',
   },
 ]
 
-/* What "Add step" appends: an email, a few days after the last step. */
-export const NEW_STEP = { type: 'email', gapDays: 3, subject: '' }
+/* What "Add step" appends: an email, a few days after the last step, at
+   9:00 AM. */
+export const NEW_STEP = { type: 'email', gapDays: 3, time: '09:00', subject: '' }
+
+/* When a sequence starts, or a scheduled email sends, if nobody changes it:
+   tomorrow at this time. Time pickers step in 15 minutes. */
+export const DEFAULT_SEND_TIME = '09:00'
 
 /* The most steps a sequence can have. */
 export const MAX_STEPS = 6
@@ -174,25 +184,41 @@ export const CAMPAIGN_COPY = {
     back: 'Back',
 
     sequence: {
+      startLabel: 'Sequence starts',
+      startDate: 'Start date',
+      startTime: 'Start time',
+      startPast: 'Pick a start date and time that has not passed yet.',
       stepsLabel: 'Steps',
       stepType: 'Step type',
       day: 'Day',
+      time: 'Time',
+      sends: 'Sends',
+      noDay: 'Set a day',
+      stepPast: 'Already passed',
       subject: 'Subject line',
       subjectPlaceholder: 'What the step says first',
       step: (n) => `Step ${n}`,
       remove: (n) => `Remove step ${n}`,
       add: 'Add step',
       max: (n) => `A sequence can have up to ${n} steps.`,
-      note: 'Creates a draft sequence. Nothing is sent until it is scheduled.',
-      confirm: 'Launch sequence',
+      note: 'Nothing is sent or scheduled from the prototype.',
+      confirm: 'Schedule sequence',
     },
 
     email: {
       subject: 'Subject line',
       body: 'Email',
       bodyHint: '{{first_name}}, {{company}} and {{sender_name}} fill in for each contact.',
-      note: 'Creates a draft email. Nothing is sent from the prototype.',
+      whenLabel: 'When to send',
+      now: 'Send now',
+      later: 'Schedule for later',
+      date: 'Date',
+      time: 'Time',
+      summary: (when) => `Sends ${when}`,
+      past: 'Pick a date and time that has not passed yet.',
+      note: 'Nothing is sent or scheduled from the prototype.',
       confirm: 'Send email',
+      confirmScheduled: 'Schedule email',
     },
   },
 
@@ -205,8 +231,9 @@ export const CAMPAIGN_COPY = {
   },
 
   toast: {
-    sequence: (name) => `“${name}” created as a draft sequence`,
+    sequence: (name, start) => `“${name}” scheduled to start ${start}`,
     email: (name) => `“${name}” created as a draft email`,
+    emailScheduled: (name, when) => `“${name}” scheduled for ${when}`,
     saved: (name) => `Saved “${name}” to Saved lists`,
     enriched: (n) => `Enrichment queued for ${plural(n, 'account', 'accounts')}`,
   },

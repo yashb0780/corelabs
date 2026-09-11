@@ -200,7 +200,11 @@ keeps a company in rather than dropping it.
   hold counts, so their accounts and people are generated to exactly those
   counts by `src/lib/listMembers.js` from the word lists in
   `src/data/listMembers.js`; they are fictional, unlike the 12 real
-  companies. Nothing runs: both paths end in a "draft" toast. "Send email" exists only
+  companies. Both paths can be scheduled: a sequence has a start date and
+  time plus a time per step, with each step's send date worked out live;
+  a single email is sent now or scheduled. Dates and times are handled in
+  `src/lib/schedule.js` (local time, 15 minute steps, nothing in the past).
+  Nothing runs or schedules: every path ends in a toast. "Send email" exists only
   as the final button of the Single email path, at the owner's request; do
   not add it as an action anywhere else. Its list names are SAP-specific at the owner's
   request, a deliberate exception to the generic-copy rule, noted at the top

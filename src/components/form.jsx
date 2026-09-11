@@ -154,7 +154,7 @@ export function Select({ id, value, onChange, options, ...rest }) {
         {...rest}
       >
         {options.map((o) => (
-          <option key={o.value} value={o.value}>
+          <option key={o.value} value={o.value} disabled={o.disabled}>
             {o.label}
           </option>
         ))}

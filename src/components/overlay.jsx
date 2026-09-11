@@ -22,10 +22,10 @@ const FOCUSABLE =
  * contents start fresh every time.
  *
  * `title` and `subtitle` sit in the header, `footer` is the button row.
- * `size` is 'md' by default; 'lg' and 'xl' give more room to a modal with
- * more to show, such as the sequence builder.
+ * `size` is 'md' by default; 'lg', 'xl' and '2xl' give more room to a modal
+ * with more to show, such as the sequence builder.
  */
-const MODAL_WIDTHS = { md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-2xl' }
+const MODAL_WIDTHS = { md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-2xl', '2xl': 'max-w-4xl' }
 
 export function Modal({ title, subtitle, onClose, footer, size = 'md', children }) {
   const panelRef = useRef(null)

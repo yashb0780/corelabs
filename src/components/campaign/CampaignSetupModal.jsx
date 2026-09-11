@@ -5,18 +5,21 @@
  *             choice of Multi-step sequence or Single email
  *   accounts  pick which accounts are in scope (opened from the Accounts card)
  *   contacts  pick which contacts are in scope (opened from the Contacts card)
- *   sequence  the sequence builder: editable steps (type, day, subject),
- *             Add step, remove a step, and the sending inbox
- *   email     compose one email: subject, body from a template, inbox
+ *   sequence  the sequence builder: when it starts, editable steps (type,
+ *             day, time, subject) each showing the date it will send, Add
+ *             step, remove a step, and the sending inbox
+ *   email     compose one email: subject, body from a template, inbox, and
+ *             when to send it (now, or scheduled for a date and time)
  *
  * The scope starts with every account and contact ticked. Both pickers edit
  * one set of selected contacts (see ScopePickers.jsx), so the Accounts and
  * Contacts numbers always agree, and every later screen reads the narrowed
  * numbers. If nothing is left, the two campaign options are disabled.
  *
- * Back returns to the first screen without losing what was typed. Launch
- * sequence and Send email run nothing: the caller closes the modal and
- * confirms with a toast that a draft was created.
+ * Back returns to the first screen without losing what was typed or
+ * scheduled. Nothing sends or schedules: the caller closes the modal and
+ * confirms with a toast. Dates that have passed cannot be picked, and a
+ * schedule that has passed disables the primary button.
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Icon } from '../Icon'
@@ -25,6 +28,7 @@ import {
   AddButton,
   Field,
   RemoveButton,
+  SegmentedControl,
   Select,
   TextArea,
   TextInput,
@@ -37,12 +41,23 @@ import {
   CAMPAIGN_INBOXES,
   CAMPAIGN_SEQUENCE,
   CAMPAIGN_TYPES,
+  DEFAULT_SEND_TIME,
   EMAIL_TEMPLATE,
   MAX_STEPS,
   NEW_STEP,
   STEP_TYPES,
 } from '../../data/campaigns'
 import { scopeMembers } from '../../lib/listMembers'
+import {
+  addDays,
+  formatLongDate,
+  formatLongDateTime,
+  formatShortDateTime,
+  isPast,
+  timeOptions,
+  todayIso,
+  tomorrowIso,
+} from '../../lib/schedule'
 
 const COPY = CAMPAIGN_COPY.campaignModal
 const INBOX_OPTIONS = CAMPAIGN_INBOXES.map((i) => ({ value: i, label: i }))
@@ -131,13 +146,43 @@ function ChooseView({ name, onNameChange, counts, totals, onOpen, onPick }) {
   )
 }
 
+/* A date picker and a time picker side by side. Past dates cannot be picked,
+   and on today's date the times that have gone by are disabled. */
+function DateTime({ id, value, onChange, dateLabel, timeLabel }) {
+  return (
+    <div className="grid grid-cols-[minmax(0,11rem)_minmax(0,8.5rem)] gap-2">
+      <TextInput
+        id={id}
+        type="date"
+        min={todayIso()}
+        value={value.date}
+        onChange={(date) => onChange({ ...value, date })}
+        aria-label={dateLabel}
+      />
+      <Select
+        value={value.time}
+        onChange={(time) => onChange({ ...value, time })}
+        options={timeOptions(value.date)}
+        aria-label={timeLabel}
+      />
+    </div>
+  )
+}
+
 /* --- Screen 2a: sequence builder ----------------------------------------- */
 
 // Number, step type (wide enough for "LinkedIn connection request"), day,
-// subject line, remove.
-const ROW = 'grid grid-cols-[1.25rem_minmax(0,14.5rem)_4.5rem_minmax(0,1fr)_2.25rem] items-center gap-2'
+// time, subject line, the date it sends, remove.
+const ROW =
+  'grid grid-cols-[1.25rem_minmax(0,14.5rem)_4rem_7.5rem_minmax(0,1fr)_8.5rem_2.25rem] items-center gap-2'
 
-function SequenceView({ counts, steps, onStepsChange, inbox, onInboxChange }) {
+/** When a step sends: the start date plus its day offset, at its time. */
+function stepSend(start, step) {
+  if (step.day === '') return null
+  return { date: addDays(start.date, Number(step.day)), time: step.time }
+}
+
+function SequenceView({ counts, start, onStartChange, steps, onStepsChange, inbox, onInboxChange }) {
   const S = COPY.sequence
   // Start above every key in use: this screen remounts after Back, possibly
   // with some steps removed, and a reused key would confuse the rows.
@@ -157,6 +202,7 @@ function SequenceView({ counts, steps, onStepsChange, inbox, onInboxChange }) {
         key: nextKey.current++,
         type: NEW_STEP.type,
         day: lastDay + NEW_STEP.gapDays,
+        time: NEW_STEP.time,
         subject: NEW_STEP.subject,
       },
     ])
@@ -164,54 +210,88 @@ function SequenceView({ counts, steps, onStepsChange, inbox, onInboxChange }) {
 
   return (
     <div className="space-y-4">
+      <Field label={S.startLabel} htmlFor="sequence-start">
+        <DateTime
+          id="sequence-start"
+          value={start}
+          onChange={onStartChange}
+          dateLabel={S.startDate}
+          timeLabel={S.startTime}
+        />
+        {isPast(start.date, start.time) && (
+          <p className="mt-1.5 text-2xs text-bad">{S.startPast}</p>
+        )}
+      </Field>
+
       <div>
         <p className="lp-label">{S.stepsLabel}</p>
-        <div className="mt-[var(--lp-label-gap)] rounded-lg border border-line">
-          <div
-            aria-hidden="true"
-            className={cx(ROW, 'border-b border-line bg-surface-sunken px-3 py-1.5')}
-          >
-            <span />
-            <span className="lp-label">{S.stepType}</span>
-            <span className="lp-label">{S.day}</span>
-            <span className="lp-label">{S.subject}</span>
-            <span />
-          </div>
+        {/* Scrolls sideways on a narrow screen rather than squashing rows. */}
+        <div className="mt-[var(--lp-label-gap)] overflow-x-auto rounded-lg border border-line">
+          <div className="min-w-[48rem]">
+            <div
+              aria-hidden="true"
+              className={cx(ROW, 'border-b border-line bg-surface-sunken px-3 py-1.5')}
+            >
+              <span />
+              <span className="lp-label">{S.stepType}</span>
+              <span className="lp-label">{S.day}</span>
+              <span className="lp-label">{S.time}</span>
+              <span className="lp-label">{S.subject}</span>
+              <span className="lp-label">{S.sends}</span>
+              <span />
+            </div>
 
-          <ol className="divide-y divide-line">
-            {steps.map((step, i) => {
-              const n = i + 1
-              return (
-                <li key={step.key} className={cx(ROW, 'px-3 py-2')}>
-                  <span className="text-2xs font-num tabular-nums text-txt-3">{n}</span>
-                  <Select
-                    value={step.type}
-                    onChange={(type) => update(step.key, { type })}
-                    options={STEP_TYPES}
-                    aria-label={`${S.step(n)}: ${S.stepType}`}
-                  />
-                  <TextInput
-                    type="number"
-                    min="0"
-                    value={step.day}
-                    onChange={(day) => update(step.key, { day: day === '' ? '' : Math.max(0, Number(day)) })}
-                    aria-label={`${S.step(n)}: ${S.day}`}
-                  />
-                  <TextInput
-                    value={step.subject}
-                    onChange={(subject) => update(step.key, { subject })}
-                    placeholder={S.subjectPlaceholder}
-                    aria-label={`${S.step(n)}: ${S.subject}`}
-                  />
-                  <RemoveButton
-                    onClick={() => remove(step.key)}
-                    label={S.remove(n)}
-                    disabled={steps.length === 1}
-                  />
-                </li>
-              )
-            })}
-          </ol>
+            <ol className="divide-y divide-line">
+              {steps.map((step, i) => {
+                const n = i + 1
+                const send = stepSend(start, step)
+                const past = send && isPast(send.date, send.time)
+                return (
+                  <li key={step.key} className={cx(ROW, 'px-3 py-2')}>
+                    <span className="text-2xs font-num tabular-nums text-txt-3">{n}</span>
+                    <Select
+                      value={step.type}
+                      onChange={(type) => update(step.key, { type })}
+                      options={STEP_TYPES}
+                      aria-label={`${S.step(n)}: ${S.stepType}`}
+                    />
+                    <TextInput
+                      type="number"
+                      min="0"
+                      value={step.day}
+                      onChange={(day) => update(step.key, { day: day === '' ? '' : Math.max(0, Number(day)) })}
+                      aria-label={`${S.step(n)}: ${S.day}`}
+                    />
+                    <Select
+                      value={step.time}
+                      onChange={(time) => update(step.key, { time })}
+                      options={timeOptions(send?.date ?? start.date)}
+                      aria-label={`${S.step(n)}: ${S.time}`}
+                    />
+                    <TextInput
+                      value={step.subject}
+                      onChange={(subject) => update(step.key, { subject })}
+                      placeholder={S.subjectPlaceholder}
+                      aria-label={`${S.step(n)}: ${S.subject}`}
+                    />
+                    <span
+                      className={cx(
+                        'text-2xs tabular-nums whitespace-nowrap',
+                        !send ? 'text-txt-3' : past ? 'text-bad' : 'text-txt-2',
+                      )}
+                    >
+                      {!send ? S.noDay : past ? S.stepPast : formatShortDateTime(send.date, send.time)}
+                    </span>
+                    <RemoveButton
+                      onClick={() => remove(step.key)}
+                      label={S.remove(n)}
+                      disabled={steps.length === 1}
+                    />
+                  </li>
+                )
+              })}
+            </ol>
+          </div>
         </div>
 
         <div className="mt-2.5 flex items-center gap-3">
@@ -241,8 +321,9 @@ function SequenceView({ counts, steps, onStepsChange, inbox, onInboxChange }) {
 
 /* --- Screen 2b: single email --------------------------------------------- */
 
-function EmailView({ counts, email, onEmailChange, inbox, onInboxChange }) {
+function EmailView({ counts, email, onEmailChange, schedule, onScheduleChange, inbox, onInboxChange }) {
   const E = COPY.email
+  const later = schedule.mode === 'later'
 
   return (
     <div className="space-y-4">
@@ -272,6 +353,41 @@ function EmailView({ counts, email, onEmailChange, inbox, onInboxChange }) {
         />
       </Field>
 
+      <div>
+        <p className="lp-label">{E.whenLabel}</p>
+        <div className="mt-[var(--lp-label-gap)] space-y-2.5">
+          <SegmentedControl
+            label={E.whenLabel}
+            value={schedule.mode}
+            onChange={(mode) => onScheduleChange({ ...schedule, mode })}
+            options={[
+              { value: 'now', label: E.now },
+              { value: 'later', label: E.later },
+            ]}
+          />
+          {later && (
+            <>
+              <DateTime
+                value={schedule}
+                onChange={onScheduleChange}
+                dateLabel={E.date}
+                timeLabel={E.time}
+              />
+              <p
+                className={cx(
+                  'text-xs',
+                  isPast(schedule.date, schedule.time) ? 'text-bad' : 'text-txt-2',
+                )}
+              >
+                {isPast(schedule.date, schedule.time)
+                  ? E.past
+                  : E.summary(formatLongDateTime(schedule.date, schedule.time))}
+              </p>
+            </>
+          )}
+        </div>
+      </div>
+
       <div className="space-y-1">
         <p className="text-xs text-txt-2">{COPY.recipients(counts.contacts, counts.accounts)}</p>
         <p className="text-2xs text-txt-3">{E.note}</p>
@@ -292,6 +408,24 @@ export function CampaignSetupModal({ scope, onLaunch, onClose }) {
     CAMPAIGN_SEQUENCE.map((s, key) => ({ ...s, key })),
   )
   const [email, setEmail] = useState(EMAIL_TEMPLATE)
+  // Scheduling lives up here with everything else, so Back keeps it.
+  const [start, setStart] = useState(() => ({ date: tomorrowIso(), time: DEFAULT_SEND_TIME }))
+  const [schedule, setSchedule] = useState(() => ({
+    mode: 'now',
+    date: tomorrowIso(),
+    time: DEFAULT_SEND_TIME,
+  }))
+
+  const sequenceReady =
+    steps.length > 0 &&
+    !isPast(start.date, start.time) &&
+    steps.every((st) => {
+      const send = stepSend(start, st)
+      return send && !isPast(send.date, send.time)
+    })
+  const emailLater = schedule.mode === 'later'
+  const emailReady =
+    email.subject.trim() !== '' && (!emailLater || !isPast(schedule.date, schedule.time))
   const bodyRef = useRef(null)
 
   // Every account in scope, with its contacts, and which contacts are
@@ -380,6 +514,8 @@ export function CampaignSetupModal({ scope, onLaunch, onClose }) {
       body: (
         <SequenceView
           counts={counts}
+          start={start}
+          onStartChange={setStart}
           steps={steps}
           onStepsChange={setSteps}
           inbox={inbox}
@@ -391,9 +527,9 @@ export function CampaignSetupModal({ scope, onLaunch, onClose }) {
           {back}
           <Button
             variant="primary"
-            icon="megaphone"
-            disabled={steps.length === 0}
-            onClick={() => onLaunch('sequence', trimmed)}
+            icon="clock"
+            disabled={!sequenceReady}
+            onClick={() => onLaunch('sequence', trimmed, formatLongDate(start.date))}
           >
             {COPY.sequence.confirm}
           </Button>
@@ -408,6 +544,8 @@ export function CampaignSetupModal({ scope, onLaunch, onClose }) {
           counts={counts}
           email={email}
           onEmailChange={setEmail}
+          schedule={schedule}
+          onScheduleChange={setSchedule}
           inbox={inbox}
           onInboxChange={setInbox}
         />
@@ -417,11 +555,15 @@ export function CampaignSetupModal({ scope, onLaunch, onClose }) {
           {back}
           <Button
             variant="primary"
-            icon="send"
-            disabled={!email.subject.trim()}
-            onClick={() => onLaunch('email', trimmed)}
+            icon={emailLater ? 'clock' : 'send'}
+            disabled={!emailReady}
+            onClick={() =>
+              emailLater
+                ? onLaunch('emailScheduled', trimmed, formatLongDateTime(schedule.date, schedule.time))
+                : onLaunch('email', trimmed)
+            }
           >
-            {COPY.email.confirm}
+            {emailLater ? COPY.email.confirmScheduled : COPY.email.confirm}
           </Button>
         </>
       ),
@@ -435,7 +577,7 @@ export function CampaignSetupModal({ scope, onLaunch, onClose }) {
       title={screen.title}
       subtitle={screen.subtitle}
       onClose={onClose}
-      size={view === 'sequence' ? 'xl' : 'lg'}
+      size={view === 'sequence' ? '2xl' : 'lg'}
       footer={<div className="flex w-full items-center justify-between gap-2">{screen.footer}</div>}
     >
       <div ref={bodyRef}>{screen.body}</div>

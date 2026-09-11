@@ -8,7 +8,8 @@
  *   {actions.overlay}                        // render once, anywhere
  *
  * Start a campaign opens the campaign setup (sequence or single email);
- * launching either shows a toast that a draft was created.
+ * finishing either shows a toast saying it was scheduled, or for an email
+ * sent now, created as a draft.
  * Save as a list opens the naming modal, then adds the list to Saved lists
  * for the rest of the session and shows a toast.
  * Enrich contacts only shows a toast.
@@ -50,7 +51,7 @@ export function useListActions() {
         <CampaignSetupModal
           scope={open.scope}
           onClose={() => setOpen(null)}
-          onLaunch={(kind, name) => finish(COPY.toast[kind](name))}
+          onLaunch={(kind, name, when) => finish(COPY.toast[kind](name, when))}
         />
       )}
 
