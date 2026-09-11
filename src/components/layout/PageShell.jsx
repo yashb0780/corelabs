@@ -10,12 +10,16 @@
  *   >
  *     ...page content...
  *   </PageShell>
+ *
+ * The frame is positioned, so a page can anchor something to the bottom of
+ * the content area that does not scroll with it, such as the selection bar
+ * on Company Search.
  */
 import { TopBar } from './TopBar'
 
 export function PageShell({ breadcrumb, title, subtitle, actions, children }) {
   return (
-    <div className="flex h-full min-w-0 flex-col">
+    <div className="relative flex h-full min-w-0 flex-col">
       <TopBar breadcrumb={breadcrumb} />
 
       <main className="flex-1 overflow-y-auto bg-surface">

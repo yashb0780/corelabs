@@ -72,6 +72,10 @@ export const TEAMMATES = [
   },
 ]
 
+/* The person using the prototype. A list they save from Company Search or
+   the assistant is "Created By" them, and campaigns send from their inbox. */
+export const CURRENT_USER_ID = 'priya-raman'
+
 export function getTeammate(id) {
   return TEAMMATES.find((t) => t.id === id)
 }

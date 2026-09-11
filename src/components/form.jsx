@@ -49,7 +49,7 @@ export function TextInput({
   )
 }
 
-export function TextArea({ id, value, onChange, placeholder, rows = 4 }) {
+export function TextArea({ id, value, onChange, placeholder, rows = 4, ...rest }) {
   return (
     <textarea
       id={id}
@@ -58,6 +58,7 @@ export function TextArea({ id, value, onChange, placeholder, rows = 4 }) {
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       className={cx(CONTROL, 'resize-y py-2 leading-relaxed')}
+      {...rest}
     />
   )
 }
@@ -87,7 +88,7 @@ export function SearchInput({ value, onChange, placeholder, inputRef, ...rest })
  * A checkbox. `indeterminate` draws the dash used by a "select all" box when
  * only some rows are ticked, which HTML can only set from script.
  */
-export function Checkbox({ checked, indeterminate = false, onChange, label }) {
+export function Checkbox({ checked, indeterminate = false, onChange, label, disabled = false }) {
   const ref = useRef(null)
 
   useEffect(() => {
@@ -99,9 +100,10 @@ export function Checkbox({ checked, indeterminate = false, onChange, label }) {
       ref={ref}
       type="checkbox"
       checked={checked}
+      disabled={disabled}
       onChange={(e) => onChange(e.target.checked)}
       aria-label={label}
-      className="size-4 cursor-pointer rounded accent-accent"
+      className="size-4 shrink-0 cursor-pointer rounded accent-accent disabled:cursor-default disabled:opacity-40"
     />
   )
 }
@@ -141,7 +143,7 @@ export function SegmentedControl({ value, onChange, options, label }) {
   )
 }
 
-export function Select({ id, value, onChange, options }) {
+export function Select({ id, value, onChange, options, ...rest }) {
   return (
     <div className="relative">
       <select
@@ -149,6 +151,7 @@ export function Select({ id, value, onChange, options }) {
         value={value ?? ''}
         onChange={(e) => onChange(e.target.value)}
         className={cx(CONTROL, 'h-9 appearance-none pr-8')}
+        {...rest}
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
@@ -165,20 +168,22 @@ export function Select({ id, value, onChange, options }) {
 }
 
 /** A small square button for removing a row. */
-function RemoveButton({ onClick, label }) {
+export function RemoveButton({ onClick, label, disabled = false }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       aria-label={label}
-      className="grid size-9 shrink-0 place-items-center rounded-md text-txt-3 transition-colors duration-150 ease-lp hover:bg-surface-hover hover:text-txt"
+      className="grid size-9 shrink-0 place-items-center rounded-md text-txt-3 transition-colors duration-150 ease-lp hover:bg-surface-hover hover:text-txt disabled:pointer-events-none disabled:opacity-30"
     >
       <Icon name="close" className="size-3.5" />
     </button>
   )
 }
 
-function AddButton({ onClick, children, disabled }) {
+/** The small text button under a list of rows that adds another. */
+export function AddButton({ onClick, children, disabled }) {
   return (
     <button
       type="button"

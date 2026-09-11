@@ -2,7 +2,7 @@
  * Rename a report. The current name starts selected, so typing replaces it.
  * Save stays disabled while the name is blank or unchanged; Enter saves.
  */
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Field, TextInput } from '../form'
 import { Modal } from '../overlay'
 import { Button } from '../ui'
@@ -12,6 +12,10 @@ const COPY = REPORTS_COPY.renameModal
 
 export function RenameReportModal({ report, onRename, onClose }) {
   const [name, setName] = useState(report.title)
+  const inputRef = useRef(null)
+
+  // The modal has already focused the box by now; select the current name.
+  useEffect(() => inputRef.current?.select(), [])
   const trimmed = name.trim()
   const canSave = trimmed !== '' && trimmed !== report.title
 
@@ -41,10 +45,10 @@ export function RenameReportModal({ report, onRename, onClose }) {
       >
         <Field label={COPY.label} htmlFor="report-name">
           <TextInput
+            ref={inputRef}
             id="report-name"
             value={name}
             onChange={setName}
-            onFocus={(e) => e.target.select()}
           />
         </Field>
       </form>

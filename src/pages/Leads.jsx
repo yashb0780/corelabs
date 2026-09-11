@@ -8,27 +8,40 @@
  * do the strip under the filter row says exactly what was applied and how
  * many companies it removed.
  *
+ * Ticking accounts brings up a bar at the bottom of the page with the
+ * campaign actions: Start a campaign, Save as a list, Enrich contacts. They
+ * act only on ticked accounts that are still in view, so a refinement that
+ * hides some never leaves them silently in scope.
+ *
  * The pieces this page uses:
- *   src/components/leads/FilterBar.jsx     the filter row
- *   src/components/leads/IcpRefineBar.jsx  what the refinement did
- *   src/components/leads/LeadsTable.jsx    the table
- *   src/lib/icp.js                         profile to filters, and applying them
+ *   src/components/leads/FilterBar.jsx         the filter row
+ *   src/components/leads/IcpRefineBar.jsx      what the refinement did
+ *   src/components/leads/LeadsTable.jsx        the table
+ *   src/components/leads/SelectionBar.jsx      the bar for ticked accounts
+ *   src/components/campaign/useListActions.jsx what the action pills do
+ *   src/lib/icp.js                             profile to filters, and applying them
  */
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { PageShell } from '../components/layout/PageShell'
 import { FilterBar } from '../components/leads/FilterBar'
 import { IcpRefineBar } from '../components/leads/IcpRefineBar'
 import { LeadsTable } from '../components/leads/LeadsTable'
+import { SelectionBar } from '../components/leads/SelectionBar'
+import { useListActions } from '../components/campaign/useListActions'
 import { Button } from '../components/ui'
 import { companies, DEFAULT_ARCHETYPE } from '../data/companies'
 import { ICP_REFINE_COPY as COPY } from '../data/vendorProfile'
 import { applyIcpFilters, deriveIcpFilters } from '../lib/icp'
+import { setLeadsInView } from '../lib/leadsView'
+import { scopeForCompanies } from '../lib/listActions'
 import { useVendorProfile } from '../lib/profile'
 
 export default function Leads() {
   const [activeSegment, setActiveSegment] = useState(null)
   const [archetype, setArchetype] = useState(DEFAULT_ARCHETYPE)
   const [refined, setRefined] = useState(false)
+  const [selected, setSelected] = useState(() => new Set())
+  const actions = useListActions()
 
   const profile = useVendorProfile()
   const icpFilters = useMemo(() => deriveIcpFilters(profile), [profile])
@@ -42,6 +55,15 @@ export default function Leads() {
   const { kept, removed } = refined
     ? applyIcpFilters(inSegment, icpFilters)
     : { kept: inSegment, removed: [] }
+
+  const ticked = kept.filter((c) => selected.has(c.id))
+
+  // Tell the assistant what is in view, so its pills can act on it. On
+  // leaving, it falls back to the unfiltered set this page opens with.
+  useEffect(() => {
+    setLeadsInView(kept)
+    return () => setLeadsInView(null)
+  }, [kept])
 
   const subtitle = refined
     ? `${COPY.applied} · ${kept.length} of ${inSegment.length} in view`
@@ -80,8 +102,31 @@ export default function Leads() {
           />
         )}
 
-        <LeadsTable companies={kept} archetype={archetype} />
+        <LeadsTable
+          companies={kept}
+          archetype={archetype}
+          selected={selected}
+          onSelectedChange={setSelected}
+        />
+
+        {/* Room under the table so the floating bar never covers the last
+            row. */}
+        {ticked.length > 0 && <div aria-hidden="true" className="h-16" />}
       </div>
+
+      {ticked.length > 0 && (
+        <SelectionBar
+          count={ticked.length}
+          onClear={() => setSelected(new Set())}
+          onAction={(action) =>
+            actions.run(action, scopeForCompanies(ticked), () =>
+              setSelected(new Set()),
+            )
+          }
+        />
+      )}
+
+      {actions.overlay}
     </PageShell>
   )
 }

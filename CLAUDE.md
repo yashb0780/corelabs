@@ -92,6 +92,7 @@ src/components/leads/    LeadsTable, FilterBar, ArchetypeSelector, IcpRefineBar
 src/components/account/  one file per section of the account page
 src/components/vendor/   one file per group of the vendor profile
 src/components/lists/    SavedListsTable, AssignModal, ShareModal
+src/components/campaign/ the action pills, campaign preview, save-as-list
 src/components/reports/  report cards, modals, and the hand-drawn SVG charts
 src/components/form.jsx  shared form controls
 src/components/overlay.jsx  Modal, RowMenu, Toast. No shadows: a modal is
@@ -179,14 +180,34 @@ keeps a company in rather than dropping it.
   report and coming back; a reload resets it. Some report copy is
   SAP-specific at the owner's request, noted in `src/data/reports.js`.
 - Saved lists is built but has no brief. It exists to show the Assign and
-  Share interactions to the dev team. Assigning updates the table and shows
-  a toast; nothing persists, so leaving the page resets it to
-  `src/data/savedLists.js`. Its list names are SAP-specific at the owner's
+  Share interactions to the dev team. The lists live at module scope in
+  `src/lib/savedLists.js`, because lists can also be saved from Company
+  Search and the assistant and must appear there; a reload resets them to
+  `src/data/savedLists.js`.
+- Campaign flow: the floating bar on Company Search (when accounts are
+  ticked) has Start a campaign, Save as a list and Enrich contacts. Every
+  assistant reply has two pills: Start a campaign from this list, and Save
+  as a list. They act on a saved list the message names, or else on what
+  is in view on Company Search, which the Leads page reports to
+  `src/lib/leadsView.js` (the unfiltered set when Leads is not open). Both
+  places use `src/components/campaign/useListActions.jsx`, so they behave
+  the same. Start a campaign opens `CampaignSetupModal`: a choice of
+  Multi-step sequence (an editable step builder) or Single email (a compose
+  view). Its Accounts and Contacts cards open pickers (`ScopePickers.jsx`)
+  that both edit one set of selected contacts, so the two counts always
+  agree: an account counts only while one of its contacts is ticked.
+  Company Search scopes use the real companies' contacts. Saved lists only
+  hold counts, so their accounts and people are generated to exactly those
+  counts by `src/lib/listMembers.js` from the word lists in
+  `src/data/listMembers.js`; they are fictional, unlike the 12 real
+  companies. Nothing runs: both paths end in a "draft" toast. "Send email" exists only
+  as the final button of the Single email path, at the owner's request; do
+  not add it as an action anywhere else. Its list names are SAP-specific at the owner's
   request, a deliberate exception to the generic-copy rule, noted at the top
   of that file.
 - The assistant widget is visual only. There is no model behind it: it waits a
-  moment and returns one fixed line from `src/data/assistant.js`, whatever it
-  was asked. It is rendered by `App.jsx` outside `<Routes>` so the
+  moment and replies from `src/data/assistant.js`, recognising only the name
+  of a saved list. It is rendered by `App.jsx` outside `<Routes>` so the
   conversation survives navigation.
 - CoreWeave is phase Unclassified and renders honest empty states across most
   of its account page. That is deliberate, not a bug. Its data fields are

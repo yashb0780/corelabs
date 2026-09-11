@@ -89,6 +89,29 @@ export function FilterPill({ active, count, children, ...rest }) {
 }
 
 /**
+ * The rounded suggestion pill first used under the assistant's greeting.
+ * The campaign action pills (Start a campaign, Save as a list, Enrich
+ * contacts) use it too, in the assistant and on Company Search, so the two
+ * read as one system. With an `icon` it lays the icon out in front.
+ */
+export function ActionPill({ icon, children, className, ...rest }) {
+  return (
+    <button
+      type="button"
+      className={cx(
+        'rounded-full border border-line bg-surface px-3 py-1.5 text-left text-xs text-txt-2 transition-colors duration-150 ease-lp hover:border-accent hover:bg-accent-quiet hover:text-accent',
+        icon && 'inline-flex items-center gap-1.5 whitespace-nowrap',
+        className,
+      )}
+      {...rest}
+    >
+      {icon && <Icon name={icon} className="size-3.5 shrink-0" />}
+      {children}
+    </button>
+  )
+}
+
+/**
  * A status pill. Used for both Decision Phase and Window, which share the
  * tone palette in tokens.css.
  *

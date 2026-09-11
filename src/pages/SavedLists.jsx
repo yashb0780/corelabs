@@ -5,10 +5,11 @@
  * Share are on each row's menu, and appear at the top of the page as soon as
  * one or more rows are ticked.
  *
- * Everything here is local to this page on purpose: assignments show up
- * straight away and a toast confirms them, but nothing is saved, so leaving
- * the page resets the lists to src/data/savedLists.js. It is for showing the
- * interaction, not for keeping data.
+ * The lists live in src/lib/savedLists.js rather than in this page, because
+ * lists saved from Company Search or the assistant have to appear here.
+ * Assignments show up straight away and a toast confirms them. Nothing is
+ * persisted: a reload resets the lists to src/data/savedLists.js. It is for
+ * showing the interaction, not for keeping data.
  *
  * The pieces this page uses:
  *   src/components/lists/SavedListsTable.jsx  the table
@@ -22,11 +23,12 @@ import { SavedListsTable } from '../components/lists/SavedListsTable'
 import { ShareModal } from '../components/lists/ShareModal'
 import { Toast } from '../components/overlay'
 import { Button } from '../components/ui'
-import { SAVED_LISTS, SAVED_LISTS_COPY as COPY } from '../data/savedLists'
+import { SAVED_LISTS_COPY as COPY } from '../data/savedLists'
 import { getTeammate } from '../data/teammates'
+import { assignSavedLists, useSavedLists } from '../lib/savedLists'
 
 export default function SavedLists() {
-  const [lists, setLists] = useState(SAVED_LISTS)
+  const lists = useSavedLists()
   const [selected, setSelected] = useState(() => new Set())
   // Which lists a modal is acting on, and whether they came from the ticked
   // rows (then a finished assign clears the ticks) or one row's menu.
@@ -40,9 +42,7 @@ export default function SavedLists() {
     const { ids, fromSelection } = assigning
     const person = getTeammate(teammateId)
 
-    setLists((all) =>
-      all.map((l) => (ids.includes(l.id) ? { ...l, assignedTo: teammateId } : l)),
-    )
+    assignSavedLists(ids, teammateId)
 
     let message =
       ids.length === 1

@@ -22,8 +22,12 @@ const FOCUSABLE =
  * contents start fresh every time.
  *
  * `title` and `subtitle` sit in the header, `footer` is the button row.
+ * `size` is 'md' by default; 'lg' and 'xl' give more room to a modal with
+ * more to show, such as the sequence builder.
  */
-export function Modal({ title, subtitle, onClose, footer, children }) {
+const MODAL_WIDTHS = { md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-2xl' }
+
+export function Modal({ title, subtitle, onClose, footer, size = 'md', children }) {
   const panelRef = useRef(null)
   const closeRef = useRef(onClose)
   closeRef.current = onClose
@@ -59,9 +63,12 @@ export function Modal({ title, subtitle, onClose, footer, children }) {
       }
     }
 
-    window.addEventListener('keydown', onKey)
+    // Listened for on the way down (capture), so Escape closes only this
+    // modal and never reaches the assistant panel underneath, which would
+    // close too.
+    window.addEventListener('keydown', onKey, true)
     return () => {
-      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('keydown', onKey, true)
       // Without scrolling, so it cannot yank the page back up while
       // something else is scrolling a new item into view.
       opener?.focus?.({ preventScroll: true })
@@ -81,7 +88,10 @@ export function Modal({ title, subtitle, onClose, footer, children }) {
         aria-modal="true"
         aria-label={title}
         tabIndex={-1}
-        className="w-full max-w-md overflow-hidden rounded-xl border border-line bg-surface focus:outline-none"
+        className={cx(
+          'w-full overflow-hidden rounded-xl border border-line bg-surface focus:outline-none',
+          MODAL_WIDTHS[size] ?? MODAL_WIDTHS.md,
+        )}
       >
         <header className="flex items-start gap-3 border-b border-line px-4 py-3.5">
           <div className="min-w-0 flex-1">

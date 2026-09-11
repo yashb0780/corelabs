@@ -1,9 +1,9 @@
 /* ==========================================================================
    SAVED LISTS: the lists on the Saved lists screen, and every word on it.
 
-   Dummy lists for the prototype. Nothing is saved: assigning or sharing a
-   list changes the screen until you navigate away, then it resets to what is
-   written here.
+   Dummy lists for the prototype. Nothing is saved: assigning a list, or
+   saving a new one from Company Search or the assistant, lasts until the
+   page is reloaded, then the lists go back to what is written here.
 
    DELIBERATE EXCEPTION: these list names use SAP terms (ECC, S/4HANA,
    LeanIX, BTP). The product is going generic and new copy normally avoids
@@ -17,6 +17,8 @@
      id            unique slug
      name          the list's name
      records       how many companies are on it
+     contacts      how many contacts those companies have between them.
+                   Shown when you start a campaign from the list.
      createdBy     a teammate id from src/data/teammates.js
      assignedTo    a teammate id, or null for "Unassigned"
      lastModified  the date, written YYYY-MM-DD
@@ -27,6 +29,7 @@ export const SAVED_LISTS = [
     id: 'tx-manufacturing-under-500',
     name: 'TX Manufacturing under 500',
     records: 214,
+    contacts: 598,
     createdBy: 'marcus-webb',
     assignedTo: 'priya-raman',
     lastModified: '2026-09-09',
@@ -35,6 +38,7 @@ export const SAVED_LISTS = [
     id: 'legacy-ecc-healthcare',
     name: 'Confirmed legacy ECC · Healthcare',
     records: 87,
+    contacts: 263,
     createdBy: 'elena-sokolova',
     assignedTo: 'elena-sokolova',
     lastModified: '2026-09-08',
@@ -43,6 +47,7 @@ export const SAVED_LISTS = [
     id: 'leanix-signal-q3',
     name: 'LeanIX signal · Q3',
     records: 38,
+    contacts: 104,
     createdBy: 'jordan-reyes',
     assignedTo: null,
     lastModified: '2026-09-02',
@@ -51,6 +56,7 @@ export const SAVED_LISTS = [
     id: 's4hana-2027-mid-market',
     name: 'S/4HANA 2027 deadline · Mid-market',
     records: 1284,
+    contacts: 3410,
     createdBy: 'sam-okafor',
     assignedTo: 'tomas-alvarez',
     lastModified: '2026-08-27',
@@ -59,6 +65,7 @@ export const SAVED_LISTS = [
     id: 'btp-postings-30-days',
     name: 'BTP job postings · last 30 days',
     records: 57,
+    contacts: 171,
     createdBy: 'dev-malhotra',
     assignedTo: null,
     lastModified: '2026-08-19',
@@ -67,6 +74,7 @@ export const SAVED_LISTS = [
     id: 'ohio-food-beverage',
     name: 'Ohio food and beverage · 1,000 to 5,000 staff',
     records: 142,
+    contacts: 389,
     createdBy: 'hannah-cho',
     assignedTo: 'hannah-cho',
     lastModified: '2026-08-11',
@@ -75,6 +83,7 @@ export const SAVED_LISTS = [
     id: 'clean-core-chemicals',
     name: 'Clean core candidates · Chemicals',
     records: 19,
+    contacts: 61,
     createdBy: 'dev-malhotra',
     assignedTo: 'aisha-bello',
     lastModified: '2026-07-30',
@@ -83,6 +92,7 @@ export const SAVED_LISTS = [
     id: 'rise-evaluators-midwest',
     name: 'RISE evaluators · Midwest',
     records: 406,
+    contacts: 1122,
     createdBy: 'marcus-webb',
     assignedTo: null,
     lastModified: '2026-07-14',

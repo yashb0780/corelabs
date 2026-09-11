@@ -2,9 +2,11 @@
  * The leads table.
  *
  * Columns, in order:
- *   Company | Industry | Employees | ICP Fit Score | Decision Phase | Window | Contacts
+ *   checkbox | Company | Industry | Employees | ICP Fit Score | Decision Phase | Window | Contacts
  *
- * Clicking a row opens that company's account page.
+ * Clicking a row opens that company's account page. Ticking its checkbox
+ * selects it instead, which brings up the action bar at the bottom of the
+ * page. The checkbox handles its own clicks so it never opens the account.
  *
  * Row padding comes from --lp-row-pad-x / --lp-row-pad-y in
  * src/styles/tokens.css. Change the density there, not here.
@@ -15,6 +17,7 @@ import { formatEmployees, getPhase } from '../../data/companies'
 import { computeWindow } from '../../lib/window'
 import { Icon } from '../Icon'
 import { cx } from '../cx'
+import { Checkbox } from '../form'
 import { CompanyLogo, TonePill } from '../ui'
 
 /* --- Company cell ------------------------------------------------------- */
@@ -92,8 +95,23 @@ const CELL_PAD = 'px-[var(--lp-row-pad-x)] py-[var(--lp-row-pad-y)]'
 const TH = `lp-label ${CELL_PAD} text-left whitespace-nowrap`
 const TD = `${CELL_PAD} align-middle`
 
-export function LeadsTable({ companies, archetype }) {
+export function LeadsTable({ companies, archetype, selected, onSelectedChange }) {
   const navigate = useNavigate()
+
+  const allOn = companies.length > 0 && companies.every((c) => selected.has(c.id))
+  const someOn = !allOn && companies.some((c) => selected.has(c.id))
+
+  // Works from the latest selection, so two quick clicks never lose one.
+  const toggle = (id) =>
+    onSelectedChange((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+
+  const toggleAll = () =>
+    onSelectedChange(allOn ? new Set() : new Set(companies.map((c) => c.id)))
   // Highest fit score first. Click the header to flip it.
   const [descending, setDescending] = useState(true)
 
@@ -108,6 +126,16 @@ export function LeadsTable({ companies, archetype }) {
       <table className="w-full min-w-[980px] border-collapse">
         <thead className="bg-surface-sunken">
           <tr className="border-b border-line">
+            <th scope="col" className={cx(CELL_PAD, 'w-10 pr-0')}>
+              <span className="flex items-center">
+                <Checkbox
+                  checked={allOn}
+                  indeterminate={someOn}
+                  onChange={toggleAll}
+                  label="Select all companies"
+                />
+              </span>
+            </th>
             <th scope="col" className={TH}>Company</th>
             <th scope="col" className={TH}>Industry</th>
             <th scope="col" className={cx(TH, 'text-right')}>Employees</th>
@@ -138,13 +166,30 @@ export function LeadsTable({ companies, archetype }) {
           {rows.map((company) => {
             const phase = getPhase(company.phase)
             const window = computeWindow(company.phase, archetype)
+            const on = selected.has(company.id)
 
             return (
               <tr
                 key={company.id}
                 onClick={() => navigate(`/leads/${company.id}`)}
-                className="cursor-pointer border-b border-line bg-surface transition-colors duration-150 ease-lp last:border-b-0 hover:bg-accent-quiet"
+                aria-selected={on}
+                className={cx(
+                  'cursor-pointer border-b border-line transition-colors duration-150 ease-lp last:border-b-0 hover:bg-accent-quiet',
+                  on ? 'bg-accent-quiet' : 'bg-surface',
+                )}
               >
+                <td
+                  className={cx(TD, 'pr-0')}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span className="flex items-center">
+                    <Checkbox
+                      checked={on}
+                      onChange={() => toggle(company.id)}
+                      label={`Select ${company.name}`}
+                    />
+                  </span>
+                </td>
                 <td className={cx(TD, 'w-[26%]')}>
                   <CompanyCell company={company} />
                 </td>
