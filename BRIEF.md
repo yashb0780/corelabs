@@ -1103,7 +1103,7 @@ step.
   - the funnel's typed stages, Signal matched 3,172, Enriched 2,486 and
     Meeting booked 41
   - `example.com` for every email address and website
-- **Step 2, the Campaigns screen** (commit `6966e0a`, on main).
+- **Step 2, the Campaigns screen** (commit `6966e0a`, pushed to main).
   - `/campaigns` has the header, the five metric cards, and the campaign
     table with search, status filters and the row menu (View, Launch,
     Pause or Resume, Duplicate), each confirmed by a toast.
@@ -1127,9 +1127,8 @@ step.
   checks every seed case in this section, the metrics and funnel rules,
   and every change the screens can make. The step 1 script was never
   saved, so this one was rewritten from this section.
-
-- **Step 3, the campaign detail page** (committed on main, not yet
-  pushed).
+- **Step 3, the campaign detail page** (commit `bb5e9b7`, pushed to main).
+  Done.
   - First, the owner's table changes: Last activity and Next send show the
     date only, Last step sent shows "Step 2 of 4" only, and the campaign
     name took the freed width. See "Campaign table" above.
@@ -1153,8 +1152,8 @@ step.
     header, a draft, a single email, the 200-company limit on the biggest
     list, and dark mode. Mark as out of office and Mark as not interested
     were not clicked through.
-
-- **Step 3 follow-up: seeing what a step says** (not yet committed).
+- **Step content viewing**, added after step 3 at the owner's request
+  (commit `146bb45`, pushed to main).
   - Clicking a step opens its subject and body read only
     (`src/components/campaign/StepEmailModal.jsx`), from the Email
     sequence tab, contact rows, reply rows and unsubscribe rows. See
@@ -1169,6 +1168,9 @@ step.
     it is changing a campaign's setting on its page: pauses decided under
     the old setting stay, as this section specifies. The banner now says
     so. The check script tests both.
+  - Checked in the browser: the window opens with the right step from all
+    four places, its fields cannot be edited, and a LinkedIn step says
+    "Message".
 
 **Decided on 15 September 2026**
 
@@ -1191,9 +1193,15 @@ rather than by calendar days. It only shows when a pause spans the change
 
 **Next: step 4, Reports reading from campaigns.**
 
-- The "Campaign reply rate" bars from `replyRateBars()` and the Account
-  funnel's Contacted and Replied from `funnelCounts()`, both already in
-  `src/lib/campaignActivity.js`. See "Where the numbers come from".
+- The "Campaign reply rate" bars come from `replyRateBars()`, replacing
+  the typed bars in `src/data/reports.js`.
+- The Account funnel's Contacted and Replied stages come from
+  `funnelCounts()`, replacing the typed 864 and 173. Both functions are
+  already in `src/lib/campaignActivity.js`. See "Where the numbers come
+  from" for the rules, including that no input is tuned to match a report.
+- When it is done, Reports and the Campaigns screen show the same numbers
+  (about 2,059 contacted, 104 replied), and decision 2 above no longer
+  applies. Add a check for it to `scripts/check-campaigns.mjs`.
 
 **After that**
 
