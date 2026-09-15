@@ -332,6 +332,11 @@ Copy this section into `CLAUDE.md`, replacing any placeholder note there.
   Body text never below weight 400. Primary text near-black, not grey. No
   gradients, no shadows, no colours outside the token set.
 - Do not use em dashes in UI copy. Use a middot, a colon, or restructure.
+- No real or plausibly real domains in email addresses, sending or receiving.
+  Every address uses `example.com`, which is reserved and can never reach
+  anyone. A fictional name at a real domain could be a real person's address,
+  and the prototype goes into demos. Company logos still load from real
+  company domains: that is an image URL, not an address.
 - Keep the "Prototype · dummy data" pill visible on every screen.
 - When asked for a change, change the smallest number of files possible and
   report which files were touched.
@@ -776,9 +781,10 @@ option:
 ### Data shape
 
 The screen receives the objects below. Fields marked "worked out" are filled
-in by `src/lib/campaigns.js` from the rest, never typed into the data file,
-so they cannot contradict each other. This is the same rule as the Window and
-the segment counts.
+in by `src/lib/campaignActivity.js` from the rest, never typed into the data
+file, so they cannot contradict each other. This is the same rule as the
+Window and the segment counts. The store itself, which holds the campaigns
+and changes them, is `src/lib/campaigns.js`.
 
 ```js
 // A campaign
@@ -786,7 +792,7 @@ the segment counts.
   id, name,
   listName,          // the saved list it runs against, or null (Company Search)
   type,              // 'sequence' or 'email'
-  status,            // 'active' | 'scheduled' | 'paused' | 'completed' | 'draft'
+  status,            // worked out: 'active' | 'scheduled' | 'paused' | 'completed' | 'draft'
   createdAt,
   startedAt,         // null for a draft
   suppressionRule,   // 'stop_company' (default) | 'stop_contact' | 'keep_sending'
@@ -799,11 +805,11 @@ the segment counts.
 {
   id, campaignId, companyId,
   companyName, contactName, role, email,
-  lastStepIndex,     // null until the first step is sent
+  lastStepIndex,     // worked out: null until the first step is sent
   lastStepName,      // worked out from the sequence
   lastSentAt,        // worked out from startedAt and the sequence
   nextSendAt,        // worked out: null when nothing is due
-  status,            // participation status, above
+  status,            // worked out: participation status, above
   replyType,         // 'interested' | 'ooo' | 'not_interested' | 'unclear' | null
   replySnippet,
   replyReceivedAt,
@@ -817,6 +823,27 @@ the segment counts.
 `stats`, worked out per campaign: accounts, contacts, emails sent, accounts
 contacted, accounts replied, replies by type, last activity, the last send
 (step, contact, company, when) and the next send.
+
+**What is stored, and what is worked out.** Only the things that happen are
+stored. For a campaign: whether it is a draft, when it starts, when it was
+paused, how far resuming pushed its sends back, and its suppression setting
+with the time of any change. For a contact: who they are, their reply (type,
+when, which step it followed, snippet, return date), when they unsubscribed,
+and when outreach was resumed for them. Everything else is worked out from
+those and the current time:
+
+- A campaign's status. A person sets Draft and Paused. Scheduled, Active and
+  Completed follow from the dates: Scheduled until its first step is due,
+  Completed once every step has passed and nothing more is due, Active in
+  between.
+- Each contact's last step, next send and participation status. A contact's
+  status and last step are worked out rather than typed, for the same reason
+  as the Window: typed, they could contradict the dates.
+- The suppression setting in force when a reply was decided, so changing the
+  setting applies from then on and never rewrites a pause that already
+  happened. A reply corrected in the review queue is decided when it is
+  corrected, not when it arrived, so marking it interested pauses colleagues
+  from that moment and never un-sends a step they already had.
 
 These fields go beyond the list agreed for this section, each for a reason:
 
@@ -840,6 +867,8 @@ fake on screen and can never reach anyone. The real company's domain is never
 used in an address: a fictional name at a real domain could be a real
 person's address, and these screens go into demos. Two generated people can
 share a name, and so an address. Nothing relies on addresses being unique.
+The sending inboxes follow the same rule (`priya.raman@example.com`), as
+does every address anywhere in the prototype. See section 6.
 
 **Dates and times** use the `src/lib/schedule.js` style throughout, since
 sends have a time of day: "Mon 14 Sep, 9:00 AM" in tables, "Monday, 14
@@ -854,10 +883,11 @@ passed.
 
 **What happens when a campaign is scheduled in the session:** it enters the
 store with every contact from the Start a campaign window at Not started, and
-status Scheduled. The prototype does not advance time, so it stays Scheduled
-until the page is reloaded, at which point it is gone like everything else
-added in the session. A single email sent now enters as Completed instead
-(see "Changes to Start a campaign").
+shows as Scheduled. Because status is worked out from the dates, it turns
+Active if its first step comes due while the page is open, and its steps show
+as sent as their times pass. Nothing is actually sent. A single email sent
+now shows as Completed straight away (see "Changes to Start a campaign"). A
+reload removes it, like everything else added in the session.
 
 ### Where the numbers come from
 
@@ -887,10 +917,32 @@ value. The old values could not all have survived anyway: three of the six
 reply rates cannot be produced from their list sizes at all. For example,
 9.8 percent of 19 accounts would need 1.86 accounts to reply.
 
-The funnel stages that campaigns cannot calculate (Sourced, Signal matched,
-Enriched, Meeting booked) stay as typed numbers for now. That causes a
-problem, recorded under Open questions, and it has to be settled before the
-funnel is changed.
+**The funnel keeps all six stages and still starts at Sourced.** A funnel
+should start wide. Contacted and Replied are calculated. Sourced, Signal
+matched, Enriched and Meeting booked have no campaign data behind them and
+stay typed. The trouble was never that Contacted is too big: the typed stages
+above it were too small. So they were raised, and the funnel now reads:
+
+| Stage | Value | Where it comes from |
+|---|---|---|
+| Sourced | 4,820 | typed, unchanged |
+| Signal matched | 3,172 | typed, raised from 1,936 |
+| Enriched | 2,486 | typed, raised from 1,412 |
+| Contacted | about 2,059 | calculated |
+| Replied | calculated | calculated |
+| Meeting booked | 58 | typed, unchanged |
+
+Neither raised figure was used anywhere else in the prototype. Two rules keep
+the funnel descending:
+
+- **Enriched must stay above the most Contacted can ever reach in a session.**
+  Contacted counts each account once, however many campaigns reach it, so
+  its ceiling is every saved list account plus the 11 real companies with
+  contacts: 2,258. Enriched at 2,486 clears it. It also clears the 2,006 saved
+  list accounts the Enrichment coverage report says have contacts, which the
+  old 1,412 did not.
+- **Meeting booked must stay below the calculated Replied.** Check this
+  whenever seed replies change.
 
 ### Seed campaigns
 
@@ -903,7 +955,7 @@ names of the campaigns on real companies, is generic.
 
 | Campaign | Runs against | Type and status | Suppression | What it demonstrates |
 |---|---|---|---|---|
-| Priority accounts · September | Company Search: Coca-Cola, Cummins, Whirlpool, Colgate-Palmolive, Caterpillar | Sequence, active, step 2 of 4 | Stop for the whole company | The hero campaign, see below |
+| Priority accounts | Company Search: Coca-Cola, Cummins, Whirlpool, Colgate-Palmolive, Caterpillar | Sequence, active, step 2 of 4 | Stop for the whole company | The hero campaign, see below |
 | LeanIX signal · Q3 | saved list | Sequence, active, step 3 of 4 | Stop for the whole company | A mid-sequence campaign on a generated list |
 | Confirmed legacy ECC · Healthcare | saved list | Sequence, active, step 2 of 3 | Stop for that contact only | Colleagues carrying on after an interested reply |
 | S/4HANA 2027 deadline · Mid-market | saved list | Sequence, active, step 1 of 3 | Keep sending to everyone | The largest list, and the third setting |
@@ -911,11 +963,16 @@ names of the campaigns on real companies, is generic.
 | RISE evaluators · Midwest | saved list | Sequence, completed | Stop for the whole company | A completed sequence |
 | Clean core candidates · Chemicals | saved list | Single email, completed | not used | A completed single email |
 | Warm accounts · re-engage | Company Search: Kimberly-Clark, Emerson Electric | Sequence, active | Stop for the whole company | Every company suppressed |
-| Industrial accounts · October | Company Search: Sherwin-Williams, Illinois Tool Works, Air Products, Avery Dennison | Sequence, active, step 1 sent yesterday | Stop for the whole company | Sent, zero replies |
+| Industrial accounts · first touch | Company Search: Sherwin-Williams, Illinois Tool Works, Air Products, Avery Dennison | Sequence, active, step 1 sent yesterday | Stop for the whole company | Sent, zero replies |
 | BTP job postings · last 30 days | saved list | Sequence, scheduled, starts in 3 days | Stop for the whole company | A scheduled campaign with a next send |
 | Ohio food and beverage · 1,000 to 5,000 staff | saved list | Sequence, draft | Stop for the whole company | A draft with zero sends |
 
-**The hero campaign, Priority accounts · September,** holds the four named
+No seed campaign names a month or a quarter of its own. Seed dates move with
+today, so "September" would be wrong by October. The saved list names that
+already carry a quarter ("LeanIX signal · Q3") are the owner's and are left
+alone.
+
+**The hero campaign, Priority accounts,** holds the four named
 cases on real companies, with real logos and links to account pages:
 
 - **Cummins.** Helena Voss replied interested after step 1. Raymond Cho and
@@ -984,32 +1041,3 @@ New pieces:
 - Writing anything back to a CRM.
 - Open tracking.
 - Editing a sequence after it has started.
-
-### Open questions
-
-1. **The funnel will rise at Contacted.** Counting every seed campaign,
-   Contacted comes to about 2,059 accounts: 2,048 in the six saved list
-   campaigns that have sent, plus 11 real companies. The typed stages above
-   it are smaller: Signal matched is 1,936 and Enriched is 1,412. The chart
-   would show more accounts contacted than enriched, which a funnel cannot
-   do. Below it, the typed Meeting booked (58) must also stay under the
-   calculated Replied, which is not guaranteed.
-
-   There is no data in the prototype to calculate the upper stages from, and
-   shrinking the seed campaigns until the numbers fit would be tuning under
-   another name. The choices:
-
-   - **Start the funnel where campaigns can calculate it** (recommended). The
-     stages become In a campaign, Contacted, Replied, Interested, all worked
-     out. Sourced, Signal matched and Enriched leave this report, and so does
-     Meeting booked, since campaigns record no meetings. The report is then
-     honest end to end, but it no longer starts at "first sourced".
-   - **Calculate the upper stages from the saved lists and the company
-     dataset.** This exposes a deeper mismatch: the other reports put the
-     dataset at 1,712 companies, fewer than the 2,059 contacted, and the
-     saved lists alone hold 2,247 accounts.
-   - **Keep the typed upper stages** and let the funnel rise at Contacted.
-     Not recommended: it looks like a bug in a demo.
-
-   Settle this before building the funnel change. Calculating Contacted on
-   its own produces the rising chart.

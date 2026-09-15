@@ -87,8 +87,8 @@ export const REPORTS = [
     data: {
       stages: [
         { label: 'Sourced', value: 4820 },
-        { label: 'Signal matched', value: 1936 },
-        { label: 'Enriched', value: 1412 },
+        { label: 'Signal matched', value: 3172 },
+        { label: 'Enriched', value: 2486 },
         { label: 'Contacted', value: 864 },
         { label: 'Replied', value: 173 },
         { label: 'Meeting booked', value: 58 },

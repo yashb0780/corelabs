@@ -45,6 +45,11 @@ Copied verbatim from section 6 of `BRIEF.md`.
     three shadow values are tokens (`--lp-shadow-widget`, `-lift`, `-panel`)
     and are the only shadows in the product. Everything else stays flat.
 - Do not use em dashes in UI copy. Use a middot, a colon, or restructure.
+- No real or plausibly real domains in email addresses, sending or receiving.
+  Every address uses `example.com`, which is reserved and can never reach
+  anyone. A fictional name at a real domain could be a real person's address,
+  and the prototype goes into demos. Company logos still load from real
+  company domains: that is an image URL, not an address.
 - Keep the "Prototype · dummy data" pill visible on every screen.
 - When asked for a change, change the smallest number of files possible and
   report which files were touched.

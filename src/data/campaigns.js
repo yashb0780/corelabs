@@ -114,11 +114,14 @@ Best,
 }
 
 /* The inboxes a campaign can send from. The first one is picked to start
-   with. The domain is the dummy vendor's, from src/data/vendorProfile.js. */
+   with. Every email address in the prototype, sending or receiving, uses
+   example.com: it is reserved, so it can never reach a real person, and it
+   reads as obviously fake in a demo. Never use a real or real-looking
+   domain here. */
 export const CAMPAIGN_INBOXES = [
-  'priya.raman@northbeam.consulting',
-  'outbound@northbeam.consulting',
-  'partnerships@northbeam.consulting',
+  'priya.raman@example.com',
+  'outbound@example.com',
+  'partnerships@example.com',
 ]
 
 /* Every word in the flow. The ones written as `(a) => ...` build a
