@@ -160,6 +160,57 @@ export function Chip({ children, title, className }) {
   )
 }
 
+/* --- Tabs --------------------------------------------------------------- */
+
+/**
+ * A row of tabs that switches what a page shows, first used on a
+ * campaign's page. Navigation, not a form choice, so it is not the
+ * SegmentedControl. `tabs` is [{ id, label, count }]; `count` is optional.
+ *
+ * Each panel the page renders should carry
+ *   role="tabpanel" id={`${idPrefix}-panel-${id}`} aria-labelledby={`${idPrefix}-tab-${id}`}
+ * The arrow keys move between tabs, as screen reader users expect.
+ */
+export function Tabs({ tabs, value, onChange, label, idPrefix = 'tabs' }) {
+  const onKey = (e) => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
+    e.preventDefault()
+    const i = tabs.findIndex((t) => t.id === value)
+    const next = tabs[(i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length]
+    onChange(next.id)
+    e.currentTarget.querySelector(`#${idPrefix}-tab-${next.id}`)?.focus()
+  }
+
+  return (
+    <div role="tablist" aria-label={label} onKeyDown={onKey} className="flex gap-5 overflow-x-auto border-b border-line">
+      {tabs.map((t) => {
+        const on = t.id === value
+        return (
+          <button
+            key={t.id}
+            id={`${idPrefix}-tab-${t.id}`}
+            type="button"
+            role="tab"
+            aria-selected={on}
+            aria-controls={`${idPrefix}-panel-${t.id}`}
+            tabIndex={on ? 0 : -1}
+            onClick={() => onChange(t.id)}
+            className={cx(
+              '-mb-px inline-flex shrink-0 items-center gap-1.5 border-b-2 pt-1 pb-2.5 text-sm font-name whitespace-nowrap transition-colors duration-150 ease-lp',
+              on ? 'border-accent text-txt' : 'border-transparent text-txt-3 hover:text-txt-2',
+            )}
+          >
+            {t.label}
+            {t.count !== undefined && (
+              <span className="text-2xs font-num tabular-nums text-txt-3">{t.count.toLocaleString('en-US')}</span>
+            )}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 /* --- Person avatar ------------------------------------------------------ */
 
 /**

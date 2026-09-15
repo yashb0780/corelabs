@@ -19,53 +19,32 @@
  *   src/components/campaign/CampaignMetrics.jsx   the five cards
  *   src/components/campaign/CampaignTable.jsx     the table
  *   src/components/campaign/ListPickerModal.jsx   "Choose a saved list"
- *   src/components/campaign/useListActions.jsx    Start a campaign, and toasts
+ *   src/components/campaign/useCampaignActions.jsx  what the menu does, and toasts
  */
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { PageShell } from '../components/layout/PageShell'
 import { CampaignMetrics } from '../components/campaign/CampaignMetrics'
 import { CampaignTable } from '../components/campaign/CampaignTable'
 import { ListPickerModal } from '../components/campaign/ListPickerModal'
-import { useListActions } from '../components/campaign/useListActions'
+import { useCampaignActions } from '../components/campaign/useCampaignActions'
 import { SearchInput } from '../components/form'
 import { Button, EmptyState, FilterPill } from '../components/ui'
 import { CAMPAIGN_SCREEN_COPY as COPY, CAMPAIGN_STATUSES } from '../data/campaigns'
 import { campaignMetrics, campaignView } from '../lib/campaignActivity'
-import {
-  duplicateCampaign,
-  getCampaigns,
-  pauseCampaign,
-  resumeCampaign,
-  useCampaigns,
-} from '../lib/campaigns'
+import { useCampaignClock, useCampaigns } from '../lib/campaigns'
 import { scopeForList } from '../lib/listActions'
-import { atMs, formatLongDateTime, splitAt } from '../lib/schedule'
+import { atMs } from '../lib/schedule'
 
 const STATUS_ORDER = ['active', 'scheduled', 'paused', 'completed', 'draft']
-
-/* Sends go out and statuses change as time passes, so the page redraws
-   every half minute: a scheduled campaign turns Active while you watch. */
-function useClockTick() {
-  const [, setTick] = useState(0)
-  useEffect(() => {
-    const t = window.setInterval(() => setTick((n) => n + 1), 30 * 1000)
-    return () => window.clearInterval(t)
-  }, [])
-}
 
 /* Newest first by last activity. A campaign with none yet sorts by when it
    was created, which is also the date its row shows. */
 const sortKey = (v) => atMs(v.stats.lastActivityAt ?? v.createdAt)
 
-const longAt = (at) => {
-  const { date, time } = splitAt(at)
-  return formatLongDateTime(date, time)
-}
-
 export default function Campaigns() {
-  useClockTick()
+  useCampaignClock()
   const campaigns = useCampaigns()
-  const actions = useListActions()
+  const actions = useCampaignActions()
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState(null)
   const [picking, setPicking] = useState(false)
@@ -79,14 +58,6 @@ export default function Campaigns() {
     .sort((a, b) => sortKey(b) - sortKey(a))
 
   const countOf = (s) => views.filter((v) => v.status === s).length
-
-  const find = (id) => getCampaigns().find((c) => c.id === id)
-
-  const resume = (id) => {
-    resumeCampaign(id)
-    const v = campaignView(find(id))
-    actions.say(v.stats.nextSendAt ? COPY.toast.resumedNext(v.name, longAt(v.stats.nextSendAt)) : COPY.toast.resumed(v.name))
-  }
 
   return (
     <PageShell
@@ -150,13 +121,10 @@ export default function Campaigns() {
           ) : (
             <CampaignTable
               campaigns={shown}
-              onLaunch={(id) => actions.launch(find(id))}
-              onPause={(id) => {
-                pauseCampaign(id)
-                actions.say(COPY.toast.paused(find(id).name))
-              }}
-              onResume={resume}
-              onDuplicate={(id) => actions.say(COPY.toast.duplicated(duplicateCampaign(id).name))}
+              onLaunch={actions.launch}
+              onPause={actions.pause}
+              onResume={actions.resume}
+              onDuplicate={actions.duplicate}
             />
           )}
         </div>

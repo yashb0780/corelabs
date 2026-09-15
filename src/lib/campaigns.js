@@ -20,7 +20,7 @@
    object, which is how campaignView() knows to work it out again.
    ========================================================================== */
 
-import { useSyncExternalStore } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import {
   CAMPAIGN_COPY,
   CAMPAIGN_INBOXES,
@@ -252,6 +252,19 @@ export function useCampaigns() {
 
 export function useCampaign(id) {
   return useCampaigns().find((c) => c.id === id) ?? null
+}
+
+/**
+ * Redraws the screen every half minute. Sends go out and statuses change as
+ * time passes, not only when the store changes, so a scheduled campaign
+ * turns Active, and a step shows as sent, while the page is open.
+ */
+export function useCampaignClock() {
+  const [, setTick] = useState(0)
+  useEffect(() => {
+    const t = window.setInterval(() => setTick((n) => n + 1), 30 * 1000)
+    return () => window.clearInterval(t)
+  }, [])
 }
 
 /** Replaces one campaign with a changed copy. */

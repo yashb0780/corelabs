@@ -545,15 +545,20 @@ Columns, in order:
    has gone out yet, which matches how the dashed style already means "absent"
    elsewhere. The accent tone is not used: it means Mobilizing.
 3. **Accounts / Contacts.** Two figures, e.g. "38 / 104".
-4. **Last activity.** The most recent send, reply or unsubscribe, e.g.
-   "Mon 14 Sep, 9:00 AM". A campaign with no activity yet shows its creation
-   date prefixed "Created".
-5. **Last step sent.** The most recent send in the campaign, e.g. "Step 2 of
-   4, Follow up", and under it, muted, who it went to: "to Raymond Cho ·
-   Cummins". A dash if nothing has been sent.
-6. **Next send.** The earliest upcoming send, e.g. "Tue 15 Sep, 9:00 AM". A
-   dash when nothing is due: paused, completed, draft, or every contact
-   stopped or paused.
+4. **Last activity.** The date of the most recent send, reply or
+   unsubscribe, e.g. "Mon 14 Sep", with no time. A campaign with no
+   activity yet shows its creation date prefixed "Created".
+5. **Last step sent.** How far the most recent send got, e.g. "Step 2 of
+   4", and nothing else. A dash if nothing has been sent.
+6. **Next send.** The date of the earliest upcoming send, e.g. "Tue 15
+   Sep", with no time. A dash when nothing is due: paused, completed,
+   draft, or every contact stopped or paused.
+
+   Columns 4 to 6 were cut down at the owner's request on 15 September
+   2026, and the width they freed went to the campaign name. The step's
+   name, its time, and who it went to were not dropped: each contact's row
+   on the campaign's own page shows the last step sent to them ("Step 2 of
+   4, Follow up") and when.
 7. **Replies.** The total, and under it the breakdown with zero types left
    out: "3 interested · 2 out of office · 1 not interested · 1 needs review".
    The total counts every reply including out of office. That differs from
@@ -1081,7 +1086,7 @@ step.
   - the funnel's typed stages, Signal matched 3,172, Enriched 2,486 and
     Meeting booked 41
   - `example.com` for every email address and website
-- **Step 2, the Campaigns screen** (committed on main, not yet pushed).
+- **Step 2, the Campaigns screen** (commit `6966e0a`, on main).
   - `/campaigns` has the header, the five metric cards, and the campaign
     table with search, status filters and the row menu (View, Launch,
     Pause or Resume, Duplicate), each confirmed by a toast.
@@ -1093,15 +1098,9 @@ step.
   - A campaign remembers the list or companies it came from (`source`, see
     "Data shape"), so a launched draft reopens on the whole list with its
     own contacts ticked.
-  - `/campaigns/<id>` exists and shows the campaign's name over an honest
-    "Not built yet" panel, or the "Campaign not found" message.
   - New files: `src/components/campaign/CampaignMetrics.jsx`,
-    `CampaignTable.jsx` and `ListPickerModal.jsx`, and
-    `src/pages/CampaignDetail.jsx`. The words are in
+    `CampaignTable.jsx` and `ListPickerModal.jsx`. The words are in
     `CAMPAIGN_SCREEN_COPY` in `src/data/campaigns.js`.
-  - Dates in the table put the time on a second, muted line ("Mon 14 Sep"
-    over "9:00 AM"). Eight single-line columns did not fit a laptop screen
-    without squeezing the campaign name to a few characters.
   - Checked in the browser: every menu action, the list picker, launching
     and cancelling a draft, send now, a campaign scheduled from Company
     Search, dark mode and a tablet width.
@@ -1112,15 +1111,43 @@ step.
   and every change the screens can make. The step 1 script was never
   saved, so this one was rewritten from this section.
 
+- **Step 3, the campaign detail page** (committed on main, not yet
+  pushed).
+  - First, the owner's table changes: Last activity and Next send show the
+    date only, Last step sent shows "Step 2 of 4" only, and the campaign
+    name took the freed width. See "Campaign table" above.
+  - `/campaigns/<id>` is built: header with status, Launch, Pause or
+    Resume, Duplicate, the suppression setting (sequences only), and the
+    four tabs, each its own file in `src/components/campaign/`:
+    `CampaignCompanies.jsx`, `CampaignSequence.jsx`,
+    `CampaignReplies.jsx`, `CampaignUnsubscribed.jsx`.
+  - Companies are grouped and ordered by `companyGroups()` in
+    `src/lib/campaignActivity.js`. Collapsed by default, with Expand all.
+  - The actions are shared by the table menu and the page header through
+    `src/components/campaign/useCampaignActions.jsx`, so the two cannot
+    behave differently. The tabs control is `Tabs` in
+    `src/components/ui.jsx`.
+  - Fixed along the way: an interested reply paused colleagues who had
+    already been sent every step, which put a pause banner on a single
+    email and on the completed RISE campaign. The brief says it pauses only
+    colleagues "who still had steps to come". No headline number changed.
+  - Checked in the browser: every tab, Resume outreach, Mark as
+    interested in the review queue, changing the setting, Launch from the
+    header, a draft, a single email, the 200-company limit on the biggest
+    list, and dark mode. Mark as out of office and Mark as not interested
+    were not clicked through.
+
 **Decided on 15 September 2026**
 
-1. View goes to `/campaigns/<id>`, which says "Not built yet" until step 3.
+1. View goes to `/campaigns/<id>`. Built in step 3.
 2. Reports stays as it is until step 4. Until then the Campaigns screen
    shows a 5.1 percent reply rate while Reports still shows the old typed
    bars and a funnel with 864 contacted. Do not demo the two side by side
    before step 4.
 3. Step 1's time follows the start time. Built in step 2.
 4. The checks are kept in the repo. Done in step 2.
+5. The campaign table shows dates without times and the last step without
+   its name or recipient. Done in step 3.
 
 **Known issue, found in step 2.** Resuming a paused campaign, or resuming
 outreach, across a daylight-saving change moves a send off its step time
@@ -1129,18 +1156,14 @@ by an hour: a 10:00 AM step comes back at 9:00 AM. `applyDelays()` and
 rather than by calendar days. It only shows when a pause spans the change
 (next on 1 November 2026). Not fixed yet.
 
-**Next: step 3, the campaign detail page.**
+**Next: step 4, Reports reading from campaigns.**
 
-- Replace the placeholder in `src/pages/CampaignDetail.jsx` with the
-  header (with Launch, Pause or Resume, Duplicate, and the suppression
-  setting) and the four tabs described under "Campaign detail".
-- The empty states for the detail page are already written in
-  `src/data/campaigns.js`.
+- The "Campaign reply rate" bars from `replyRateBars()` and the Account
+  funnel's Contacted and Replied from `funnelCounts()`, both already in
+  `src/lib/campaignActivity.js`. See "Where the numbers come from".
 
 **After that**
 
-- Step 4: Reports reading from campaigns, meaning the reply rate bars and
-  the funnel's Contacted and Replied.
 - Step 5: update `CLAUDE.md` to describe the built screens and the check
   script. Until then its "Known gaps" entry still calls Campaigns a
   placeholder.

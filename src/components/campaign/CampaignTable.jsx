@@ -14,61 +14,52 @@
  * sees them, already searched, filtered and sorted. Every figure in a row is
  * worked out there; this file only lays them out.
  *
- * Eight columns share about 1,150px on a laptop, so the widths are fixed
- * below and the campaign name takes what is left. Dates put their time on
- * a second, muted line: a row is two lines tall anyway, and a date on one
- * line would take the room the name needs.
+ * Kept short on purpose, at the owner's request: dates without a time, and
+ * the last step as "Step 2 of 4" only. The step's name, when it went, and
+ * who it went to are on each contact's row on the campaign's own page. The
+ * widths are fixed below and the campaign name takes everything left.
  */
 import { Link, useNavigate } from 'react-router-dom'
 import { cx } from '../cx'
 import { RowMenu } from '../overlay'
 import { TonePill } from '../ui'
+import { actionsFor } from './useCampaignActions'
 import { CAMPAIGN_SCREEN_COPY as COPY, CAMPAIGN_STATUSES } from '../../data/campaigns'
-import { formatShortDate, formatTime, splitAt } from '../../lib/schedule'
+import { formatShortDate, splitAt } from '../../lib/schedule'
 
 const CELL_PAD = 'px-[var(--lp-row-pad-x)] py-[var(--lp-row-pad-y)]'
 const TH = `lp-label ${CELL_PAD} text-left align-bottom`
 const TD = `${CELL_PAD} align-top`
 
 // Every column but the name, in order. The name takes the rest.
-const WIDTHS = ['w-[6.75rem]', 'w-[6.5rem]', 'w-[10rem]', 'w-[11rem]', 'w-[7rem]', 'w-[12.25rem]', 'w-[3.25rem]']
+const WIDTHS = ['w-[6.75rem]', 'w-[6.5rem]', 'w-[10rem]', 'w-[7.5rem]', 'w-[7rem]', 'w-[12.25rem]', 'w-[3.25rem]']
 
 // The reply kinds in the order the breakdown lists them.
 const REPLY_ORDER = ['interested', 'ooo', 'not_interested', 'unclear']
 
 const None = () => <span className="text-sm text-txt-3">{COPY.none}</span>
 
-/* The main line of a cell, and an optional muted line under it. */
-function Stacked({ main, sub, mainClass = 'text-sm text-txt', title }) {
-  return (
-    <div className="min-w-0 leading-tight" title={title}>
-      <p className={cx('truncate', mainClass)}>{main}</p>
-      {sub && <p className="mt-1 truncate text-2xs text-txt-3">{sub}</p>}
-    </div>
-  )
-}
-
-/* "Mon 14 Sep" over "9:00 AM". `label` wraps the date, for "Created". */
+/* "Mon 14 Sep". `label` wraps the date, for "Created Mon 14 Sep". */
 function When({ at, label = (d) => d }) {
-  const { date, time } = splitAt(at)
-  return <Stacked main={label(formatShortDate(date))} sub={formatTime(time)} mainClass="text-sm text-txt-2" />
+  return (
+    <span className="block truncate text-sm text-txt-2">{label(formatShortDate(splitAt(at).date))}</span>
+  )
 }
 
 export function CampaignTable({ campaigns, onLaunch, onPause, onResume, onDuplicate }) {
   const navigate = useNavigate()
   const open = (id) => navigate(`/campaigns/${id}`)
 
-  const menuFor = (c) => [
-    { label: COPY.menu.view, icon: 'arrowRight', onSelect: () => open(c.id) },
-    c.status === 'draft' && { label: COPY.menu.launch, icon: 'clock', onSelect: () => onLaunch(c.id) },
-    (c.status === 'active' || c.status === 'scheduled') && {
-      label: COPY.menu.pause,
-      icon: 'pause',
-      onSelect: () => onPause(c.id),
-    },
-    c.status === 'paused' && { label: COPY.menu.resume, icon: 'play', onSelect: () => onResume(c.id) },
-    { label: COPY.menu.duplicate, icon: 'copy', onSelect: () => onDuplicate(c.id) },
-  ].filter(Boolean)
+  const menuFor = (c) => {
+    const can = actionsFor(c.status)
+    return [
+      { label: COPY.menu.view, icon: 'arrowRight', onSelect: () => open(c.id) },
+      can.launch && { label: COPY.menu.launch, icon: 'clock', onSelect: () => onLaunch(c.id) },
+      can.pause && { label: COPY.menu.pause, icon: 'pause', onSelect: () => onPause(c.id) },
+      can.resume && { label: COPY.menu.resume, icon: 'play', onSelect: () => onResume(c.id) },
+      { label: COPY.menu.duplicate, icon: 'copy', onSelect: () => onDuplicate(c.id) },
+    ].filter(Boolean)
+  }
 
   return (
     <div className="overflow-x-auto rounded-lg border border-line">
@@ -99,8 +90,6 @@ export function CampaignTable({ campaigns, onLaunch, onPause, onResume, onDuplic
             const { stats } = c
             const status = CAMPAIGN_STATUSES[c.status]
             const last = stats.lastSend
-            const stepLine = last && COPY.lastStep(last.stepIndex + 1, c.sequence.length, last.stepName)
-            const toLine = last && COPY.sentTo(last.contactName, last.companyName)
             const breakdown = REPLY_ORDER.filter((k) => stats.replies[k] > 0)
               .map((k) => COPY.replyKinds[k](stats.replies[k]))
               .join(' · ')
@@ -151,7 +140,9 @@ export function CampaignTable({ campaigns, onLaunch, onPause, onResume, onDuplic
 
                 <td className={TD}>
                   {last ? (
-                    <Stacked main={stepLine} sub={toLine} title={`${stepLine} ${toLine}`} />
+                    <span className="block truncate text-sm text-txt">
+                      {COPY.stepOf(last.stepIndex + 1, c.sequence.length)}
+                    </span>
                   ) : (
                     <None />
                   )}

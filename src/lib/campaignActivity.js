@@ -98,11 +98,14 @@ function deriveContact(campaign, contact, stepTimes, companyStops, pausedMs, now
   }
 
   // A colleague's interested reply pauses them, unless outreach was resumed
-  // for them from that reply.
+  // for them from that reply. Only if they still had a step to come: someone
+  // who has already been sent every step is finished, not paused, which is
+  // always the case in a single email.
   const colleague = (companyStops.get(contact.companyId) ?? [])
     .filter((s) => s.by !== contact.id && !contact.resumedFrom.includes(s.by))
     .sort((a, b) => a.at - b.at)[0]
-  const colleagueStop = colleague ? colleague.at : Infinity
+  const hadStepsLeft = colleague && times.some((t) => t !== null && t >= colleague.at)
+  const colleagueStop = hadStepsLeft ? colleague.at : Infinity
 
   // Nothing goes out at or after the first thing that stops it.
   const cutoff = Math.min(ownStop, unsubMs, colleagueStop, pausedMs)
@@ -273,6 +276,52 @@ export function campaignView(campaign, now = Date.now()) {
   const view = derive(campaign, now)
   cache.set(campaign, { minute, view })
   return view
+}
+
+/* --- Companies and Activity ----------------------------------------------- */
+
+// Which reply a company row shows when its contacts replied differently:
+// the one most worth acting on.
+const REPLY_RANK = { interested: 4, unclear: 3, not_interested: 2, ooo: 1 }
+
+/**
+ * A campaign's contacts grouped under their companies, for the Companies and
+ * Activity tab. Each company comes back as:
+ *   { id, name, contacts, furthestStepIndex, topReply, needsReview,
+ *     suppression: { by, paused } | null }
+ * `suppression` is set while colleagues there are paused by an interested
+ * reply: `by` is the contact whose reply paused them, `paused` how many.
+ *
+ * Companies that need attention come first: suppressed, then those with an
+ * unclear reply waiting for review, then the rest in alphabetical order.
+ */
+export function companyGroups(view) {
+  const byId = new Map()
+  for (const a of view.activity) {
+    if (!byId.has(a.companyId)) byId.set(a.companyId, { id: a.companyId, name: a.companyName, contacts: [] })
+    byId.get(a.companyId).contacts.push(a)
+  }
+
+  const groups = [...byId.values()].map((g) => {
+    const paused = g.contacts.filter((a) => a.status === 'paused_colleague')
+    const by = paused.length ? g.contacts.find((a) => a.id === paused[0].suppressedBy) : null
+    const furthest = Math.max(-1, ...g.contacts.map((a) => a.lastStepIndex ?? -1))
+    const topReply =
+      g.contacts
+        .map((a) => a.replyType)
+        .filter(Boolean)
+        .sort((x, y) => REPLY_RANK[y] - REPLY_RANK[x])[0] ?? null
+    return {
+      ...g,
+      furthestStepIndex: furthest < 0 ? null : furthest,
+      topReply,
+      needsReview: g.contacts.some((a) => a.replyType === 'unclear'),
+      suppression: by ? { by, paused: paused.length } : null,
+    }
+  })
+
+  const rank = (g) => (g.suppression ? 0 : g.needsReview ? 1 : 2)
+  return groups.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name))
 }
 
 /* --- Across every campaign ------------------------------------------------ */

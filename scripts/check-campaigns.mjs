@@ -224,6 +224,26 @@ async function checkSeeds(label, now) {
     }
   })
 
+  section('an interested reply pauses only colleagues who still had steps to come', () => {
+    for (const v of views) {
+      for (const a of v.activity.filter((a) => a.status === 'paused_colleague')) {
+        check(a.lastStepIndex === null || a.lastStepIndex < v.sequence.length - 1, `${v.id}: ${a.contactName} is paused after every step was sent`)
+      }
+    }
+    check(byId['clean-core-chemicals-email'].activity.every((a) => a.status !== 'paused_colleague'), 'a single email paused someone')
+  })
+
+  section('Companies and Activity lists companies needing attention first', () => {
+    const groups = activity.companyGroups(byId['priority-accounts'])
+    const order = groups.map((g) => g.id).join(', ')
+    check(order === 'cummins, colgate-palmolive, caterpillar, coca-cola, whirlpool', `order is ${order}`)
+    const cummins = groups[0]
+    check(cummins.suppression?.by.contactName === 'Helena Voss' && cummins.suppression.paused === 2, 'the Cummins banner does not name Helena Voss and 2 paused colleagues')
+    check(cummins.topReply === 'interested', `Cummins shows ${cummins.topReply}`)
+    check(groups.find((g) => g.id === 'caterpillar').topReply === null, 'Caterpillar shows a reply badge for an unsubscribe')
+    check(activity.companyGroups(byId['warm-accounts']).every((g) => g.suppression), 'a Warm accounts company has no banner')
+  })
+
   section('step 1 of every seed campaign goes out at its start time', () => {
     for (const c of store.getCampaigns().filter((c) => c.start)) {
       check(c.start.time === c.sequence[0].time, `${c.id} starts at ${c.start.time} but step 1 goes at ${c.sequence[0].time}`)

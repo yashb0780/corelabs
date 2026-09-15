@@ -374,8 +374,10 @@ export const CAMPAIGN_SCREEN_COPY = {
     actions: 'Actions', // read out by screen readers, not shown
   },
   created: (when) => `Created ${when}`,
+  // The table shows only how far a campaign has got. The step's name, and
+  // who it went to, are on each contact's row on the campaign's own page.
+  stepOf: (n, total) => `Step ${n} of ${total}`,
   lastStep: (n, total, name) => `Step ${n} of ${total}, ${name}`,
-  sentTo: (contact, company) => `to ${contact} · ${company}`,
   // The breakdown under the reply total. Kinds with no replies are left out.
   replyKinds: {
     interested: (n) => `${n.toLocaleString('en-US')} interested`,
@@ -420,17 +422,116 @@ export const CAMPAIGN_SCREEN_COPY = {
     continue: 'Continue',
   },
 
-  // One campaign's page, /campaigns/<id>. Not built yet: it is step 3 in
-  // "Build progress" at the end of section 9 of BRIEF.md.
+  // One campaign's page, /campaigns/<id>.
   detail: {
-    notBuilt: {
-      title: 'Not built yet',
-      body: 'This campaign’s page comes next: its companies and activity, email sequence, replies and unsubscribes.',
-    },
     notFound: {
       title: 'Campaign not found',
       body: 'That campaign is not here. It may have been added in an earlier visit: campaigns reset when the page reloads.',
       back: 'Back to Campaigns',
+    },
+    types: { sequence: 'Multi-step sequence', email: 'Single email' },
+
+    // The suppression setting under the header. A single email does not
+    // show it: after its one send there is nothing left to stop.
+    rule: {
+      label: 'When someone replies interested',
+      note: 'A change applies to replies from now on. Colleagues already paused stay paused until someone resumes outreach.',
+    },
+
+    // Shown at the top of every tab while the campaign is a draft.
+    draftNote: 'Nothing has been sent from this draft yet. Launch it to schedule it.',
+
+    tabs: {
+      label: 'Campaign sections',
+      companies: 'Companies and Activity',
+      sequence: 'Email sequence',
+      replies: 'Replies',
+      unsubscribed: 'Unsubscribed',
+    },
+
+    companies: {
+      search: 'Search companies or contacts…',
+      expandAll: 'Expand all',
+      collapseAll: 'Collapse all',
+      toggle: (name) => `Contacts at ${name}`,
+      accountPage: (name) => `${name} account page`,
+      contacts: (n) => plural(n, 'contact', 'contacts'),
+      furthest: (n, total) => `Furthest step ${n} of ${total}`,
+      notStarted: 'No step sent yet',
+      columns: {
+        contact: 'Contact',
+        lastStep: 'Last step sent',
+        lastSent: 'Last sent',
+        nextSend: 'Next send',
+        status: 'Status',
+        reply: 'Reply',
+      },
+      // Under an out of office badge, when the reply gave a return date.
+      back: (date) => `Back ${date}`,
+      banner: (who, when, paused) =>
+        `${who} replied interested on ${when}. Outreach to ${plural(paused, 'colleague', 'colleagues')} is paused.`,
+      resumeOutreach: 'Resume outreach',
+      allSuppressed:
+        'Every company in this campaign is paused because someone there replied. Nothing more will send until outreach is resumed.',
+      limited: (shown, total) =>
+        `Showing the first ${shown.toLocaleString('en-US')} of ${plural(total, 'company', 'companies')}. Search to find the rest.`,
+      noMatch: 'No companies or contacts match',
+    },
+
+    sequence: {
+      columns: {
+        step: 'Step',
+        type: 'Type',
+        when: 'Goes out',
+        subject: 'Subject line',
+        sent: 'Sent to',
+        replies: 'Replies after',
+      },
+      day: (day, time) => `Day ${day}, ${time}`,
+      firstSent: (when) => `First sent ${when}`,
+      due: (when) => `Due ${when}`,
+      onHold: 'On hold while paused',
+      draftNote: 'To change these steps, launch the draft.',
+      startedNote: 'Steps cannot be edited once a campaign has started.',
+    },
+
+    replies: {
+      filterLabel: 'Filter replies',
+      filters: {
+        all: 'All',
+        interested: 'Interested',
+        ooo: 'Out of office',
+        not_interested: 'Not interested',
+        unclear: 'Needs review',
+      },
+      after: (n, name) => `After step ${n}, ${name}`,
+      // One button for every label the classifier could have given.
+      mark: {
+        interested: 'Mark as interested',
+        ooo: 'Mark as out of office',
+        not_interested: 'Mark as not interested',
+      },
+      none: (contacts) => `Sent to ${plural(contacts, 'contact', 'contacts')}, no replies yet.`,
+      nothingSent: 'Nothing has been sent, so there are no replies.',
+      noneToReview: 'No replies need review.',
+      noneOfKind: (label) => `No replies marked ${label.toLowerCase()}.`,
+    },
+
+    unsubscribed: {
+      columns: { contact: 'Contact', company: 'Company', after: 'Unsubscribed after', when: 'When' },
+      none: 'No one has unsubscribed from this campaign.',
+    },
+
+    toast: {
+      rule: (label) => `Interested replies now: ${label}. Colleagues already paused stay paused.`,
+      markedCompany: (who, paused, company) =>
+        `${who} marked interested. Outreach to ${plural(paused, 'colleague', 'colleagues')} at ${company} is paused.`,
+      markedStopped: (who) => `${who} marked interested. Their sequence has stopped.`,
+      markedKeepSending: (who) => `${who} marked interested. Everyone keeps getting the remaining steps.`,
+      markedOoo: (who) => `${who} marked out of office. Nothing stops.`,
+      markedNotInterested: (who) => `${who} marked not interested. Their sequence has stopped. Colleagues carry on.`,
+      outreachResumed: (paused, company, who) =>
+        `Outreach resumed for ${plural(paused, 'colleague', 'colleagues')} at ${company}. ${who} stays out of the sequence.`,
     },
   },
 }
