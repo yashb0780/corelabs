@@ -10,13 +10,16 @@ import { logoSrc } from '../lib/logo'
 
 /* --- Buttons ------------------------------------------------------------ */
 
-// Buttons and badges both sit at text-xs, which the scale defines as 14px.
+// Fully rounded pills with generous side padding and a medium weight
+// label, modelled on dust.tt's header buttons: the shape, padding and
+// weight only. The colours are still ours, and there is no shadow. Buttons
+// and badges both sit at text-xs, which the scale defines as 14px.
 const BUTTON_BASE =
-  'inline-flex items-center gap-1.5 rounded-md text-xs font-name transition-colors duration-150 ease-lp disabled:pointer-events-none'
+  'inline-flex items-center justify-center gap-1.5 rounded-full text-xs font-button whitespace-nowrap transition-colors duration-150 ease-lp disabled:pointer-events-none'
 
 const BUTTON_SIZES = {
-  sm: 'h-7 px-2.5',
-  md: 'h-9 px-3',
+  sm: 'h-7 px-3.5',
+  md: 'h-9 px-4.5',
 }
 
 const BUTTON_VARIANTS = {
@@ -125,13 +128,16 @@ const TONES = ['grey', 'blue', 'accent', 'amber', 'green', 'teal']
  * Unknown: no fill, dashed outline, so they read as absent rather than as
  * just another status.
  */
-export function TonePill({ tone = 'grey', dashed = false, children, title }) {
+export function TonePill({ tone = 'grey', dashed = false, size = 'md', children, title }) {
   const safe = TONES.includes(tone) ? tone : 'grey'
   return (
     <span
       title={title}
       className={cx(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-name whitespace-nowrap',
+        'inline-flex items-center rounded-full font-name whitespace-nowrap',
+        // 'compact' is for compact table rows: tighter padding, at the
+        // row's own 15px text size.
+        size === 'compact' ? 'px-2 py-px text-sm' : 'px-2.5 py-0.5 text-xs',
         dashed && 'border border-dashed',
       )}
       style={{

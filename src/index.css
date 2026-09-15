@@ -5,6 +5,7 @@
 
 /* The font itself is loaded from Google Fonts by a <link> in index.html,
    which is faster than an @import here because the browser can start
-   fetching it before this stylesheet has parsed. Inter Tight is the primary
-   face, Inter the fallback, both as variable fonts so the in-between weights
-   (450 body, 550 names) render exactly rather than snapping to 400 or 500. */
+   fetching it before this stylesheet has parsed. It is Inter, as a variable
+   font so the in-between weights (450 body, 550 names) render exactly
+   rather than snapping to 400 or 500. The family itself is set once, as
+   --font-sans in tokens.css. */

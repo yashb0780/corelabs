@@ -505,10 +505,17 @@ visible.
 
 ### Metrics row
 
-Five cards in one row, wrapping on a narrow screen. Each card has a small
-label, one large figure, and one muted line that says what the figure counts.
-Every figure is worked out from the campaign and activity data. None is typed
-into a data file.
+Five cards in one row, wrapping on a narrow screen. Each card is compact: a
+small label and one figure, with nothing under it. The two figures that need
+explaining carry a hint on their label, shown when you hover it, and a dotted
+underline says one is there: Emails sent ("Email steps only, not LinkedIn")
+and Reply rate ("Of accounts contacted, not counting out of office"). Every
+figure is worked out from the campaign and activity data. None is typed into
+a data file.
+
+The muted line that used to sit under each figure ("N scheduled", "N need
+review" and the rest) was removed at the owner's request on 15 September
+2026 in a density pass.
 
 The cards cover every campaign. They do not change with the table's search or
 status filter, so the numbers never shift under the user while they look for
@@ -516,11 +523,11 @@ something.
 
 | Card | What it counts |
 |---|---|
-| Active campaigns | Campaigns with status active. Muted line: "N scheduled". |
+| Active campaigns | Campaigns with status active. |
 | Contacts in sequence | Contacts in active campaigns who still have steps to come: status Not started or In sequence. Paused, stopped, finished and unsubscribed contacts do not count. |
 | Emails sent · last 30 days | Email steps sent in the last 30 days, across every campaign. LinkedIn steps are not emails and do not count. |
 | Reply rate | Accounts with at least one reply, as a share of accounts contacted. Out of office replies do not count, because an auto reply is not a person answering. Unclear replies do count. |
-| Interested replies | Replies classified interested, across every campaign. Muted line: "N need review" when any replies are unclear. |
+| Interested replies | Replies classified interested, across every campaign. |
 
 Reply rate is counted per account, not per contact, to match the "Campaign
 reply rate" report, which is defined as "replies as a share of accounts
@@ -544,7 +551,9 @@ Columns, in order:
    Completed (grey), Draft (grey, dashed). Draft is dashed because nothing
    has gone out yet, which matches how the dashed style already means "absent"
    elsewhere. The accent tone is not used: it means Mobilizing.
-3. **Accounts / Contacts.** Two figures, e.g. "38 / 104".
+3. **Accounts.** The number of accounts, e.g. "38". Contacts were dropped
+   from this column at the owner's request on 15 September 2026; they are
+   on the campaign's own page.
 4. **Last activity.** The date of the most recent send, reply or
    unsubscribe, e.g. "Mon 14 Sep", with no time. A campaign with no
    activity yet shows its creation date prefixed "Created".
@@ -559,11 +568,13 @@ Columns, in order:
    name, its time, and who it went to were not dropped: each contact's row
    on the campaign's own page shows the last step sent to them ("Step 2 of
    4, Follow up") and when.
-7. **Replies.** The total, and under it the breakdown with zero types left
-   out: "3 interested · 2 out of office · 1 not interested · 1 needs review".
-   The total counts every reply including out of office. That differs from
-   the Reply rate card on purpose, and the breakdown makes the difference
-   visible.
+7. **Replies.** The total, centred in its column, with a chevron beside it
+   when there are any replies. Clicking it opens the breakdown underneath, one kind per line,
+   with zero types left out: "3 interested", "2 out of office", "1 not
+   interested", "1 needs review". It is the same chevron disclosure as the
+   company rows on a campaign's page. The total counts every reply
+   including out of office. That differs from the Reply rate card on
+   purpose, and the breakdown makes the difference visible.
 8. **Menu.** View, then Launch, Pause or Resume, then Duplicate.
    - Launch shows for drafts only (see "Launching a draft").
    - Pause shows for active and scheduled campaigns. Resume shows for paused
@@ -583,6 +594,15 @@ Above the table:
   Draft, each with its count, as on Company Search.
 
 Sort is fixed: last activity, newest first. There is no sort control.
+
+The table is compact: 15px row text, 14px for the grey line under each
+name and for the column headers, and a 15px status pill with tight
+padding, all on the existing type scale. Cells have 6px of padding top and
+bottom rather than the usual 10px, so a row is about 51px tall. The longer
+headers (Last activity, Last step sent) wrap onto two
+lines rather than take width from the campaign names. The owner first had
+the text taken down to 12px and 11px, found it too small, and set these
+sizes while keeping the tighter padding.
 
 ### Starting a campaign from this screen
 

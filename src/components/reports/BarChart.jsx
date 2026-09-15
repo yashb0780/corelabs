@@ -151,9 +151,12 @@ function Bars({ report, height }) {
                 show(e, tipFor(report, b))
               }}
             >
+              {/* 45% so the longest campaign name fits beside its bar in
+                  Inter on a laptop screen; narrower cards still cut it
+                  with "…", and the full name is in the hover title. */}
               <span
                 className={cx(
-                  'w-2/5 shrink-0 truncate text-right text-2xs transition-colors duration-150',
+                  'w-[45%] shrink-0 truncate text-right text-2xs transition-colors duration-150',
                   dim ? 'text-txt-3' : 'text-txt-2',
                 )}
                 title={b.label}

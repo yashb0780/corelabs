@@ -364,20 +364,17 @@ export const CAMPAIGN_SCREEN_COPY = {
   none: '–',
 
   // The five cards above the table. They count every campaign and do not
-  // follow the search or the status filter.
+  // follow the search or the status filter. No line under the numbers: the
+  // two that need explaining carry a hint, shown when you hover the title.
   metrics: {
     label: 'Campaign totals',
     active: 'Active campaigns',
-    activeNote: (scheduled) => `${scheduled.toLocaleString('en-US')} scheduled`,
     inSequence: 'Contacts in sequence',
-    inSequenceNote: 'In active campaigns, with steps still to come',
     emailsSent: 'Emails sent · last 30 days',
-    emailsSentNote: 'Email steps only, not LinkedIn',
+    emailsSentHint: 'Email steps only, not LinkedIn',
     replyRate: 'Reply rate',
-    replyRateNote: 'Of accounts contacted, not counting out of office',
+    replyRateHint: 'Of accounts contacted, not counting out of office',
     interested: 'Interested replies',
-    interestedNote: 'Across every campaign',
-    needReview: (n) => `${n.toLocaleString('en-US')} ${n === 1 ? 'needs' : 'need'} review`,
   },
 
   search: 'Search campaigns…',
@@ -387,7 +384,7 @@ export const CAMPAIGN_SCREEN_COPY = {
   columns: {
     campaign: 'Campaign',
     status: 'Status',
-    size: 'Accounts / Contacts',
+    accounts: 'Accounts',
     lastActivity: 'Last activity',
     lastStep: 'Last step sent',
     nextSend: 'Next send',
@@ -399,7 +396,9 @@ export const CAMPAIGN_SCREEN_COPY = {
   // who it went to, are on each contact's row on the campaign's own page.
   stepOf: (n, total) => `Step ${n} of ${total}`,
   lastStep: (n, total, name) => `Step ${n} of ${total}, ${name}`,
-  // The breakdown under the reply total. Kinds with no replies are left out.
+  // The reply total opens its breakdown, one kind per line. Kinds with no
+  // replies are left out.
+  repliesToggle: (total, name) => `${total.toLocaleString('en-US')} replies to ${name}: show the breakdown`,
   replyKinds: {
     interested: (n) => `${n.toLocaleString('en-US')} interested`,
     ooo: (n) => `${n.toLocaleString('en-US')} out of office`,
