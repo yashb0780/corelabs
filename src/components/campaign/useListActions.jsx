@@ -8,8 +8,9 @@
  *   {actions.overlay}                        // render once, anywhere
  *
  * Start a campaign opens the campaign setup (sequence or single email);
- * finishing either shows a toast saying it was scheduled, or for an email
- * sent now, created as a draft.
+ * finishing either adds the campaign to the Campaigns store, so it is on
+ * the Campaigns screen from then on, and shows a toast saying it was
+ * scheduled, or for an email sent now, sent.
  * Save as a list opens the naming modal, then adds the list to Saved lists
  * for the rest of the session and shows a toast.
  * Enrich contacts only shows a toast.
@@ -22,6 +23,7 @@ import { Toast } from '../overlay'
 import { CampaignSetupModal } from './CampaignSetupModal'
 import { SaveListModal } from './SaveListModal'
 import { CAMPAIGN_COPY as COPY } from '../../data/campaigns'
+import { addCampaign } from '../../lib/campaigns'
 import { addSavedList } from '../../lib/savedLists'
 
 export function useListActions() {
@@ -51,7 +53,14 @@ export function useListActions() {
         <CampaignSetupModal
           scope={open.scope}
           onClose={() => setOpen(null)}
-          onLaunch={(kind, name, when) => finish(COPY.toast[kind](name, when))}
+          onLaunch={({ kind, name, when, campaign }) => {
+            addCampaign(campaign)
+            finish(
+              kind === 'email'
+                ? COPY.toast.email(name, campaign.contacts.length)
+                : COPY.toast[kind](name, when),
+            )
+          }}
         />
       )}
 

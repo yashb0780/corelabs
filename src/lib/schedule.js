@@ -31,6 +31,45 @@ export function addDays(dateIso, days) {
 
 export const tomorrowIso = () => addDays(todayIso(), 1)
 
+/** The current minute as a date and a time, for something that happens now. */
+export function nowParts() {
+  const d = new Date()
+  return { date: iso(d), time: `${pad(d.getHours())}:${pad(d.getMinutes())}` }
+}
+
+/*
+ * A moment, stored as one "YYYY-MM-DDTHH:MM" string in local time: a sent
+ * step, a reply, a pause. `joinAt` and `splitAt` convert to and from the
+ * date and time pair the formatters below take.
+ */
+export const joinAt = (dateIso, time) => `${dateIso}T${time}`
+
+export function splitAt(at) {
+  const [date, time] = at.split('T')
+  return { date, time }
+}
+
+/** Milliseconds since 1970 for a moment, so moments can be compared. */
+export function atMs(at) {
+  const { date, time } = splitAt(at)
+  return toDate(date, time).getTime()
+}
+
+/** The moment for a number of milliseconds, to the minute. */
+export function msToAt(ms) {
+  const d = new Date(ms)
+  return joinAt(iso(d), `${pad(d.getHours())}:${pad(d.getMinutes())}`)
+}
+
+export const nowAt = () => msToAt(Date.now())
+
+/** When a sequence step sends: the start date plus the step's day offset,
+    at the step's own time. Null while the step's day is blank. */
+export function stepSend(start, step) {
+  if (step.day === '') return null
+  return { date: addDays(start.date, Number(step.day)), time: step.time }
+}
+
 /** True if the date and time have already gone by, or the date is blank. */
 export function isPast(dateIso, time) {
   if (!dateIso) return true

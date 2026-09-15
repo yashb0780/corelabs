@@ -91,7 +91,7 @@ export const REPORTS = [
         { label: 'Enriched', value: 2486 },
         { label: 'Contacted', value: 864 },
         { label: 'Replied', value: 173 },
-        { label: 'Meeting booked', value: 58 },
+        { label: 'Meeting booked', value: 41 },
       ],
     },
   },

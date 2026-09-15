@@ -40,8 +40,9 @@ export function membersFromCompanies(ids) {
 
 /* --- Generated for a saved list ------------------------------------------ */
 
-/** A small seeded random number generator, so output is repeatable. */
-function seededRandom(seed) {
+/** A small seeded random number generator, so output is repeatable. Also
+    used to place the replies on a saved list's seed campaign. */
+export function seededRandom(seed) {
   let h = 1779033703 ^ seed.length
   for (let i = 0; i < seed.length; i++) {
     h = Math.imul(h ^ seed.charCodeAt(i), 3432918353)

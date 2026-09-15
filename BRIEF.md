@@ -332,11 +332,13 @@ Copy this section into `CLAUDE.md`, replacing any placeholder note there.
   Body text never below weight 400. Primary text near-black, not grey. No
   gradients, no shadows, no colours outside the token set.
 - Do not use em dashes in UI copy. Use a middot, a colon, or restructure.
-- No real or plausibly real domains in email addresses, sending or receiving.
-  Every address uses `example.com`, which is reserved and can never reach
-  anyone. A fictional name at a real domain could be a real person's address,
-  and the prototype goes into demos. Company logos still load from real
-  company domains: that is an image URL, not an address.
+- No real or plausibly real domains anywhere: not in email addresses,
+  sending or receiving, and not in websites, including the vendor's own and
+  placeholder hints. Use `example.com`, which is reserved and can never reach
+  or belong to anyone. A fictional name at a real domain could be a real
+  person's address, and the prototype goes into demos. Company logos still
+  load from the real companies' domains: that is an image URL, the
+  sanctioned logo exception, not an address or a website.
 - Keep the "Prototype · dummy data" pill visible on every screen.
 - When asked for a change, change the smallest number of files possible and
   report which files were touched.
@@ -826,11 +828,11 @@ contacted, accounts replied, replies by type, last activity, the last send
 
 **What is stored, and what is worked out.** Only the things that happen are
 stored. For a campaign: whether it is a draft, when it starts, when it was
-paused, how far resuming pushed its sends back, and its suppression setting
-with the time of any change. For a contact: who they are, their reply (type,
-when, which step it followed, snippet, return date), when they unsubscribed,
-and when outreach was resumed for them. Everything else is worked out from
-those and the current time:
+paused, how far resuming pushed its sends back, and its current suppression
+setting. For a contact: who they are, their reply (type, when, which step it
+followed, snippet, return date, and the suppression setting it was decided
+under), when they unsubscribed, and whose replies outreach was resumed from.
+Everything else is worked out from those and the current time:
 
 - A campaign's status. A person sets Draft and Paused. Scheduled, Active and
   Completed follow from the dates: Scheduled until its first step is due,
@@ -839,11 +841,12 @@ those and the current time:
 - Each contact's last step, next send and participation status. A contact's
   status and last step are worked out rather than typed, for the same reason
   as the Window: typed, they could contradict the dates.
-- The suppression setting in force when a reply was decided, so changing the
-  setting applies from then on and never rewrites a pause that already
-  happened. A reply corrected in the review queue is decided when it is
-  corrected, not when it arrived, so marking it interested pauses colleagues
-  from that moment and never un-sends a step they already had.
+- What each reply does, from the setting written onto it when it was
+  decided. Changing the setting therefore applies from then on and never
+  rewrites a pause that already happened, even seconds later. A reply
+  corrected in the review queue is decided when it is corrected, not when it
+  arrived, so marking it interested pauses colleagues from that moment and
+  never un-sends a step they already had.
 
 These fields go beyond the list agreed for this section, each for a reason:
 
@@ -929,11 +932,11 @@ above it were too small. So they were raised, and the funnel now reads:
 | Signal matched | 3,172 | typed, raised from 1,936 |
 | Enriched | 2,486 | typed, raised from 1,412 |
 | Contacted | about 2,059 | calculated |
-| Replied | calculated | calculated |
-| Meeting booked | 58 | typed, unchanged |
+| Replied | about 104 | calculated |
+| Meeting booked | 41 | typed, lowered from 58 |
 
-Neither raised figure was used anywhere else in the prototype. Two rules keep
-the funnel descending:
+None of the three changed figures was used anywhere else in the prototype.
+Two rules keep the funnel descending and believable:
 
 - **Enriched must stay above the most Contacted can ever reach in a session.**
   Contacted counts each account once, however many campaigns reach it, so
@@ -941,8 +944,12 @@ the funnel descending:
   contacts: 2,258. Enriched at 2,486 clears it. It also clears the 2,006 saved
   list accounts the Enrichment coverage report says have contacts, which the
   old 1,412 did not.
-- **Meeting booked must stay below the calculated Replied.** Check this
-  whenever seed replies change.
+- **Meeting booked must stay below the number of interested replies**
+  across all campaigns, which is 52 with the seed data. A meeting follows an
+  interested reply, so more meetings than interested replies reads as
+  impossible in a demo. That also keeps it below Replied. Interested
+  replies only go up during a session (correcting an unclear reply), so the
+  seed count is the one to check whenever seed replies change.
 
 ### Seed campaigns
 

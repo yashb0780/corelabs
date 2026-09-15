@@ -2,8 +2,10 @@
  * What an action pill acts on: its "scope". Pure logic, no UI.
  *
  * Every pill, wherever it is shown, is handed one of these:
- *   { name, nameFor, saveName, accounts, contacts, companyIds | seed }
+ *   { name, nameFor, saveName, listName, accounts, contacts, companyIds | seed }
  *     name        what a campaign is called by default
+ *     listName    the saved list behind it, or null for Company Search. A
+ *                 campaign keeps it, to show under its name.
  *     nameFor(n)  the same default for n accounts, so the name can follow
  *                 the Accounts picker. Absent when the name has no count
  *                 in it, such as a saved list's name.
@@ -27,6 +29,7 @@ export function scopeForCompanies(companies) {
     name,
     nameFor: COPY.selectionName,
     saveName: name,
+    listName: null,
     accounts: companies.length,
     contacts: contactsOf(companies),
     companyIds: companies.map((c) => c.id),
@@ -42,6 +45,7 @@ export function scopeForList(list) {
   return {
     name: list.name,
     saveName: COPY.listCopyName(list.name),
+    listName: list.name,
     accounts: list.records,
     contacts: list.contacts ?? 0,
     ...(list.companyIds ? { companyIds: list.companyIds } : { seed: list.seed ?? list.id }),
@@ -58,6 +62,7 @@ export function scopeForView(companies) {
     name,
     nameFor: COPY.viewName,
     saveName: name,
+    listName: null,
     accounts: companies.length,
     contacts: contactsOf(companies),
     companyIds: companies.map((c) => c.id),

@@ -133,7 +133,7 @@ export const EMPTY_VENDOR_PROFILE = {
  */
 export const SCRAPE_RESULT = {
   companyName: 'Northbeam Consulting',
-  website: 'northbeam.consulting',
+  website: 'example.com',
   headquarters: 'Chicago, IL',
   deliveryLocations: ['Austin, TX', 'Toronto, ON', 'Pune, MH'],
   foundingYear: '2009',
@@ -151,7 +151,7 @@ export const SCRAPE_RESULT = {
 /** Placeholder and helper text for each control, kept out of the components. */
 export const VENDOR_FIELDS = {
   companyName: { label: 'Company name' },
-  website: { label: 'Website', placeholder: 'yourcompany.com' },
+  website: { label: 'Website', placeholder: 'example.com' },
   headquarters: {
     label: 'Headquarters location',
     placeholder: 'City, State or City, Country',

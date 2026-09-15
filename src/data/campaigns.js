@@ -12,9 +12,9 @@
    to set up: a multi-step sequence or a single email. Each has its own
    screen in the same modal.
 
-   Nothing runs. Launching a sequence or sending the email only creates a
-   draft and shows a toast; enrichment only shows a toast. Saving a list
-   really adds it to Saved lists, until the page is reloaded.
+   Nothing is actually sent. Scheduling a sequence or an email adds the
+   campaign to the Campaigns screen, and saving a list adds it to Saved
+   lists, both until the page is reloaded. Enrichment only shows a toast.
 
    "Send email" appears in exactly one place: the final button of the
    Single email path, where the owner asked for it. It is not an action
@@ -235,9 +235,329 @@ export const CAMPAIGN_COPY = {
 
   toast: {
     sequence: (name, start) => `“${name}” scheduled to start ${start}`,
-    email: (name) => `“${name}” created as a draft email`,
+    email: (name, contacts) => `“${name}” sent to ${plural(contacts, 'contact', 'contacts')}`,
     emailScheduled: (name, when) => `“${name}” scheduled for ${when}`,
     saved: (name) => `Saved “${name}” to Saved lists`,
     enriched: (n) => `Enrichment queued for ${plural(n, 'account', 'accounts')}`,
   },
 }
+
+/* ==========================================================================
+   THE CAMPAIGNS SCREEN: the campaigns already running when the prototype
+   opens, and the words for their states. See section 9 of BRIEF.md.
+
+   Nothing is saved. Scheduling, pausing, duplicating or correcting a reply
+   lasts until the page is reloaded, then the campaigns go back to what is
+   written here.
+
+   DATES MOVE WITH TODAY. Every date below is written as a number of days
+   ago or from now, never as a calendar date, so an active campaign never
+   ends up with a next send that has already passed. For the same reason no
+   campaign names a month.
+
+   ONLY WHAT HAPPENED IS WRITTEN HERE. Each campaign's status, how far each
+   contact has got, when they next get a step and every count on the screen
+   are worked out by src/lib/campaignActivity.js from these dates and
+   replies. Do not add those as fields: typed in, they could contradict the
+   dates.
+
+   DELIBERATE EXCEPTION: a campaign on a saved list takes that list's name,
+   and those names use SAP terms at the owner's request (see
+   src/data/savedLists.js). The campaigns on real companies have generic
+   names, as should any new one.
+   ========================================================================== */
+
+/* Every contact's email address is made from their name at this domain.
+   It is reserved, so it can never reach a real person. Never swap in a real
+   company's domain: see section 6 of BRIEF.md. */
+export const CONTACT_EMAIL_DOMAIN = 'example.com'
+
+/* A campaign's status, as a pill. Draft is dashed because nothing has gone
+   out yet, the same way dashed means "absent" on the Phase and Window pills.
+   The accent tone is never used here: it means Mobilizing. */
+export const CAMPAIGN_STATUSES = {
+  active: { label: 'Active', tone: 'green' },
+  scheduled: { label: 'Scheduled', tone: 'blue' },
+  paused: { label: 'Paused', tone: 'amber' },
+  completed: { label: 'Completed', tone: 'grey' },
+  draft: { label: 'Draft', tone: 'grey', dashed: true },
+}
+
+/* How a reply was classified, as a badge. Unclear is dashed because it is
+   the state where we could not tell. */
+export const REPLY_TYPES = {
+  interested: { label: 'Interested', tone: 'green' },
+  ooo: { label: 'Out of office', tone: 'amber' },
+  not_interested: { label: 'Not interested', tone: 'grey' },
+  unclear: { label: 'Unclear', tone: 'grey', dashed: true },
+}
+
+/* Where a contact is in their campaign. */
+export const PARTICIPATION = {
+  not_started: 'Not started',
+  in_sequence: 'In sequence',
+  finished: 'Finished',
+  stopped: 'Stopped, replied',
+  paused_colleague: 'Paused, colleague replied',
+  unsubscribed: 'Unsubscribed',
+}
+
+/* What an interested reply does, set per campaign. The first is the
+   default. Whatever is picked, a not interested reply or an unsubscribe
+   always stops that contact, and out of office or unclear stops no one. */
+export const SUPPRESSION_RULES = [
+  {
+    id: 'stop_company',
+    label: 'Stop for the whole company',
+    hint: 'An interested reply stops that person and pauses their colleagues.',
+  },
+  {
+    id: 'stop_contact',
+    label: 'Stop for that contact only',
+    hint: 'An interested reply stops that person. Their colleagues carry on.',
+  },
+  {
+    id: 'keep_sending',
+    label: 'Keep sending to everyone',
+    hint: 'An interested reply stops no one. Everyone keeps getting the remaining steps, including the person who replied.',
+  },
+]
+
+export const DEFAULT_SUPPRESSION_RULE = 'stop_company'
+
+/* The sequences the seed campaigns use. `name` is what the step is called
+   on screen: "Step 2 of 4, Follow up". */
+export const SEED_SEQUENCES = {
+  fourSteps: [
+    { name: 'Intro', type: 'email', day: 0, time: '09:00', subject: 'A quick question about {{company}}’s roadmap' },
+    { name: 'Follow up', type: 'email', day: 3, time: '09:00', subject: 'Following up on my note' },
+    { name: 'Connect', type: 'linkedin-connect', day: 6, time: '10:00', subject: 'Connecting after my emails' },
+    { name: 'Last note', type: 'email', day: 10, time: '09:00', subject: 'Should I close the loop?' },
+  ],
+  threeSteps: [
+    { name: 'Intro', type: 'email', day: 0, time: '09:00', subject: 'A quick question about {{company}}’s roadmap' },
+    { name: 'Follow up', type: 'email', day: 4, time: '09:00', subject: 'Following up on my note' },
+    { name: 'Case study', type: 'email', day: 9, time: '09:00', subject: 'How a team like {{company}}’s cut its rollout time' },
+  ],
+  singleEmail: [
+    { type: 'email', day: 0, time: '10:00', subject: EMAIL_TEMPLATE.subject, body: EMAIL_TEMPLATE.body },
+  ],
+}
+
+/* What generated replies say. A campaign on a saved list picks from these
+   at random, the same pick every time. Plain, generic language. */
+export const REPLY_SNIPPETS = {
+  interested: [
+    'Thanks for reaching out. The timing is good for us. Could we find 30 minutes next week?',
+    'This is on our list for next quarter. Happy to talk, send over a few times.',
+    'Yes, worth a conversation. I will bring the person who owns our roadmap.',
+    'Interested. Could you share a short case study before we meet?',
+  ],
+  ooo: [
+    'I am out of the office with limited access to email. I will reply when I am back.',
+    'Thank you for your message. I am away and will respond on my return.',
+    'I am currently on leave. For anything urgent, please contact the main office.',
+  ],
+  not_interested: [
+    'Thanks, but we are not looking at this right now.',
+    'We have this covered for the next year. Not a fit at the moment.',
+    'Not a priority for us this year.',
+  ],
+  unclear: [
+    'Who else in our industry have you worked with?',
+    'Can you send this to our procurement inbox instead?',
+    'Maybe. What does something like this usually cost?',
+  ],
+}
+
+/*
+   THE SEED CAMPAIGNS, in no particular order: the table sorts itself.
+
+   TO ADD ONE: copy an entry and change it. Fields:
+     id              unique slug, and its address: /campaigns/<id>
+     name            what it is called. A campaign on a saved list may leave
+                     this out to take the list's name.
+     list            the id of a saved list in src/data/savedLists.js, OR
+     companies       the ids of real companies in src/data/companies.js,
+                     for a campaign started from Company Search
+     type            'sequence' or 'email'
+     sequence        a key of SEED_SEQUENCES above
+     suppression     a SUPPRESSION_RULES id. Leave out for the default.
+     createdDaysAgo  when it was created
+     startedDaysAgo  when its first step went out, OR
+     startsInDays    when it will start, for a scheduled campaign. Leave both
+                     out, and set `draft: true`, for a draft.
+     pausedDaysAgo   when it was paused, for a paused campaign
+
+   What happened, for a campaign on real companies, as `events`. Each is a
+   reply or an unsubscribe from one named contact, `hoursLater` hours after
+   the step it followed (`afterStep`, counting from 1). `backInDays` is an
+   out of office's return date, in days from today.
+
+   What happened, for a campaign on a saved list: `replies` gives how many of
+   each kind, and `unsubscribes` how many. They are spread across the list's
+   accounts at random, the same way every time, one per account. These are
+   written once as plausible numbers. Never adjust them to make a report
+   figure come out at a particular value.
+*/
+export const SEED_CAMPAIGNS = [
+  {
+    id: 'priority-accounts',
+    name: 'Priority accounts',
+    companies: ['coca-cola', 'cummins', 'whirlpool', 'colgate-palmolive', 'caterpillar'],
+    type: 'sequence',
+    sequence: 'fourSteps',
+    createdDaysAgo: 5,
+    startedDaysAgo: 4,
+    events: [
+      {
+        company: 'cummins',
+        contact: 'Helena Voss',
+        reply: 'interested',
+        afterStep: 1,
+        hoursLater: 27,
+        snippet:
+          'Good timing. We are planning this for early next year and have not picked a partner. Could you do Thursday afternoon?',
+      },
+      {
+        company: 'whirlpool',
+        contact: 'Jonah Weiss',
+        reply: 'ooo',
+        afterStep: 2,
+        hoursLater: 1,
+        backInDays: 6,
+        snippet: 'I am out of the office with limited access to email and will reply when I am back.',
+      },
+      {
+        company: 'colgate-palmolive',
+        contact: 'Tobias Nguyen',
+        reply: 'unclear',
+        afterStep: 2,
+        hoursLater: 3,
+        snippet: 'Thanks. Is this something you would run through our procurement team, or directly with finance?',
+      },
+      {
+        company: 'caterpillar',
+        contact: 'Neil Vasquez',
+        unsubscribe: true,
+        afterStep: 1,
+        hoursLater: 30,
+      },
+    ],
+  },
+  {
+    id: 'leanix-signal-q3-outreach',
+    list: 'leanix-signal-q3',
+    type: 'sequence',
+    sequence: 'fourSteps',
+    createdDaysAgo: 10,
+    startedDaysAgo: 8,
+    replies: { interested: 3, ooo: 2, not_interested: 1, unclear: 1 },
+    unsubscribes: 1,
+  },
+  {
+    id: 'legacy-ecc-healthcare-outreach',
+    list: 'legacy-ecc-healthcare',
+    type: 'sequence',
+    sequence: 'threeSteps',
+    suppression: 'stop_contact',
+    createdDaysAgo: 7,
+    startedDaysAgo: 6,
+    replies: { interested: 4, ooo: 3, not_interested: 3, unclear: 1 },
+    unsubscribes: 2,
+  },
+  {
+    id: 's4hana-2027-mid-market-outreach',
+    list: 's4hana-2027-mid-market',
+    type: 'sequence',
+    sequence: 'threeSteps',
+    suppression: 'keep_sending',
+    createdDaysAgo: 3,
+    startedDaysAgo: 2,
+    replies: { interested: 21, ooo: 34, not_interested: 17, unclear: 5 },
+    unsubscribes: 11,
+  },
+  {
+    id: 'tx-manufacturing-outreach',
+    list: 'tx-manufacturing-under-500',
+    type: 'sequence',
+    sequence: 'fourSteps',
+    createdDaysAgo: 22,
+    startedDaysAgo: 20,
+    pausedDaysAgo: 15,
+    replies: { interested: 7, ooo: 6, not_interested: 5, unclear: 2 },
+    unsubscribes: 3,
+  },
+  {
+    id: 'rise-evaluators-midwest-outreach',
+    list: 'rise-evaluators-midwest',
+    type: 'sequence',
+    sequence: 'fourSteps',
+    createdDaysAgo: 48,
+    startedDaysAgo: 45,
+    replies: { interested: 13, ooo: 15, not_interested: 12, unclear: 3 },
+    unsubscribes: 6,
+  },
+  {
+    id: 'clean-core-chemicals-email',
+    list: 'clean-core-chemicals',
+    type: 'email',
+    sequence: 'singleEmail',
+    createdDaysAgo: 22,
+    startedDaysAgo: 21,
+    replies: { interested: 1, ooo: 1, not_interested: 1, unclear: 0 },
+    unsubscribes: 0,
+  },
+  {
+    id: 'warm-accounts',
+    name: 'Warm accounts · re-engage',
+    companies: ['kimberly-clark', 'emerson-electric'],
+    type: 'sequence',
+    sequence: 'threeSteps',
+    createdDaysAgo: 7,
+    startedDaysAgo: 6,
+    events: [
+      {
+        company: 'kimberly-clark',
+        contact: 'Rosalind Fyfe',
+        reply: 'interested',
+        afterStep: 2,
+        hoursLater: 5,
+        snippet: 'We are revisiting this now. Can you send times for a call with me and Owen?',
+      },
+      {
+        company: 'emerson-electric',
+        contact: 'Holly Vance',
+        reply: 'interested',
+        afterStep: 1,
+        hoursLater: 50,
+        snippet: 'Yes, let us talk. I will bring our solution architect.',
+      },
+    ],
+  },
+  {
+    id: 'industrial-first-touch',
+    name: 'Industrial accounts · first touch',
+    companies: ['sherwin-williams', 'illinois-tool-works', 'air-products', 'avery-dennison'],
+    type: 'sequence',
+    sequence: 'threeSteps',
+    createdDaysAgo: 2,
+    startedDaysAgo: 1,
+  },
+  {
+    id: 'btp-postings-outreach',
+    list: 'btp-postings-30-days',
+    type: 'sequence',
+    sequence: 'threeSteps',
+    createdDaysAgo: 1,
+    startsInDays: 3,
+  },
+  {
+    id: 'ohio-food-beverage-draft',
+    list: 'ohio-food-beverage',
+    type: 'sequence',
+    sequence: 'fourSteps',
+    createdDaysAgo: 2,
+    draft: true,
+  },
+]

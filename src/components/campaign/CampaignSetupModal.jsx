@@ -17,9 +17,12 @@
  * numbers. If nothing is left, the two campaign options are disabled.
  *
  * Back returns to the first screen without losing what was typed or
- * scheduled. Nothing sends or schedules: the caller closes the modal and
- * confirms with a toast. Dates that have passed cannot be picked, and a
- * schedule that has passed disables the primary button.
+ * scheduled. Nothing is sent. On confirm, `onLaunch` is handed
+ * { kind, name, when, campaign }: `campaign` is everything the Campaigns
+ * store needs (see addCampaign in src/lib/campaigns.js), and the caller adds
+ * it, closes the modal and confirms with a toast. Dates that have passed
+ * cannot be picked, and a schedule that has passed disables the primary
+ * button.
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Icon } from '../Icon'
@@ -49,11 +52,12 @@ import {
 } from '../../data/campaigns'
 import { scopeMembers } from '../../lib/listMembers'
 import {
-  addDays,
   formatLongDate,
   formatLongDateTime,
   formatShortDateTime,
   isPast,
+  nowParts,
+  stepSend,
   timeOptions,
   todayIso,
   tomorrowIso,
@@ -175,12 +179,6 @@ function DateTime({ id, value, onChange, dateLabel, timeLabel }) {
 // time, subject line, the date it sends, remove.
 const ROW =
   'grid grid-cols-[1.25rem_minmax(0,14.5rem)_4rem_7.5rem_minmax(0,1fr)_8.5rem_2.25rem] items-center gap-2'
-
-/** When a step sends: the start date plus its day offset, at its time. */
-function stepSend(start, step) {
-  if (step.day === '') return null
-  return { date: addDays(start.date, Number(step.day)), time: step.time }
-}
 
 function SequenceView({ counts, start, onStartChange, steps, onStepsChange, inbox, onInboxChange }) {
   const S = COPY.sequence
@@ -469,6 +467,58 @@ export function CampaignSetupModal({ scope, onLaunch, onClose }) {
     </Button>
   )
 
+  // What the Campaigns store keeps: the ticked contacts with their
+  // companies, and the rest of what was set up.
+  const setup = (fields) => ({
+    name: trimmed,
+    listName: scope.listName ?? null,
+    inbox,
+    contacts: members.flatMap((a) =>
+      a.contacts
+        .filter((c) => selected.has(c.id))
+        .map((c) => ({ id: c.id, name: c.name, title: c.title, companyId: a.id, companyName: a.name })),
+    ),
+    ...fields,
+  })
+  const emailStep = (time) => ({ type: 'email', day: 0, time, subject: email.subject, body: email.body })
+
+  const launchSequence = () =>
+    onLaunch({
+      kind: 'sequence',
+      name: trimmed,
+      when: formatLongDate(start.date),
+      campaign: setup({
+        type: 'sequence',
+        start,
+        // `key` only tells the step rows apart on screen; it is not kept.
+        sequence: steps.map(({ key: _key, ...s }) => ({ ...s, day: Number(s.day) })),
+      }),
+    })
+
+  const launchEmail = () => {
+    if (emailLater) {
+      onLaunch({
+        kind: 'emailScheduled',
+        name: trimmed,
+        when: formatLongDateTime(schedule.date, schedule.time),
+        campaign: setup({
+          type: 'email',
+          start: { date: schedule.date, time: schedule.time },
+          sequence: [emailStep(schedule.time)],
+        }),
+      })
+      return
+    }
+    // Sent now: it goes out this minute, so it is recorded as sent.
+    const now = nowParts()
+    onLaunch({
+      kind: 'email',
+      name: trimmed,
+      when: null,
+      campaign: setup({ type: 'email', start: now, sequence: [emailStep(now.time)] }),
+    })
+  }
+
   const pickerFooter = (text) => (
     <>
       {back}
@@ -529,7 +579,7 @@ export function CampaignSetupModal({ scope, onLaunch, onClose }) {
             variant="primary"
             icon="clock"
             disabled={!sequenceReady}
-            onClick={() => onLaunch('sequence', trimmed, formatLongDate(start.date))}
+            onClick={launchSequence}
           >
             {COPY.sequence.confirm}
           </Button>
@@ -557,11 +607,7 @@ export function CampaignSetupModal({ scope, onLaunch, onClose }) {
             variant="primary"
             icon={emailLater ? 'clock' : 'send'}
             disabled={!emailReady}
-            onClick={() =>
-              emailLater
-                ? onLaunch('emailScheduled', trimmed, formatLongDateTime(schedule.date, schedule.time))
-                : onLaunch('email', trimmed)
-            }
+            onClick={launchEmail}
           >
             {emailLater ? COPY.email.confirmScheduled : COPY.email.confirm}
           </Button>
