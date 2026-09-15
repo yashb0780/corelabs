@@ -7,9 +7,9 @@ It is edited by hand over time, not regenerated. The owner is non-technical,
 so explain changes in plain language and give exact commands to run.
 
 `BRIEF.md` in the project root is the source of truth for the screens it
-covers: Account Detail (sections 1 to 5), the Vendor Profile (section 7) and
-Refine by ICP on Company Search (section 8). Read the relevant section before
-changing that screen.
+covers: Account Detail (sections 1 to 5), the Vendor Profile (section 7),
+Refine by ICP on Company Search (section 8) and Campaigns (section 9). Read the
+relevant section before changing that screen.
 
 The product is going generic. It will serve services firms across any
 technology ecosystem, so do not add SAP or ERP specific language to any new
@@ -174,8 +174,11 @@ keeps a company in rather than dropping it.
   original addresses and stay full-width standalone pages. The old addresses
   `/tenant`, `/vendor`, `/customer` and `/admin/*` forward into Settings;
   `src/pages/AdminSection.jsx` is now only that redirect.
-- Signals, Campaigns, Generate, Resources - placeholder screens, no brief
-  written yet.
+- Signals, Generate, Resources - placeholder screens, no brief written yet.
+- Campaigns has a brief (section 9 of `BRIEF.md`) and is being built in
+  steps. Its data and store exist but the screen is still a placeholder.
+  Read "Build progress" at the end of section 9 before continuing: it says
+  which step is next and what the owner has to decide first.
 - Reports (`/reports`, `/reports/<id>`) is built but has no brief. It is
   modelled on Attio's Business Metrics screen. Charts are plain SVG drawn
   in `src/components/reports/`, not a library: none was installed, and

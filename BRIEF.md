@@ -1048,3 +1048,66 @@ New pieces:
 - Writing anything back to a CRM.
 - Open tracking.
 - Editing a sequence after it has started.
+
+### Build progress
+
+Handoff note, last updated 15 September 2026. Update it at the end of every
+step.
+
+**Done**
+
+- **The brief:** this section.
+- **Step 1, campaign data and store** (commit `220d00f`, pushed to main).
+  - The seed campaigns are in `src/data/campaigns.js`.
+  - The session store is `src/lib/campaigns.js`, and everything worked out
+    from it is in `src/lib/campaignActivity.js`.
+  - Start a campaign now hands its full campaign to the store, so a
+    campaign scheduled on Company Search or from the assistant survives
+    navigation. It was checked in the browser.
+  - The store already has every change the screens will need: launch a
+    draft, pause, resume, duplicate, change the setting, correct a reply,
+    resume outreach.
+  - Nothing on screen uses it yet. `/campaigns` still shows "Not built yet".
+- **Data fixes alongside it:**
+  - the funnel's typed stages, Signal matched 3,172, Enriched 2,486 and
+    Meeting booked 41
+  - `example.com` for every email address and website
+
+**Next: step 2, the Campaigns screen.**
+
+- The header, metrics row and campaign table, with search, status filters
+  and the row menu.
+- "New campaign" with its saved list picker.
+- The two changes to Start a campaign that the menu depends on: the
+  suppression field, and opening on a draft for Launch.
+
+**After that**
+
+- Step 3: the campaign detail page and its four tabs.
+- Step 4: Reports reading from campaigns, meaning the reply rate bars and
+  the funnel's Contacted and Replied.
+- Step 5: update `CLAUDE.md` to describe the built screen.
+
+**Decide before step 2**
+
+1. **Where View goes before the detail page exists.** Clicking a campaign
+   row, or View, leads to a page step 2 does not build. Recommendation: step
+   2 adds the `/campaigns/<id>` address showing an honest "Not built yet"
+   panel, the same as the other unbuilt screens. The alternative is
+   building steps 2 and 3 together.
+2. **When Reports starts reading from campaigns.** Until step 4, the
+   Campaigns screen will show a 5.1 percent reply rate while Reports still
+   shows the old typed bars and a funnel with 864 contacted. The two would
+   disagree in a demo. Recommendation: bring step 4 into step 2. The
+   calculations already exist, so it is small.
+3. **The sequence start time.** In Start a campaign, "Sequence starts" has
+   a date and a time, but the time is only used to check it has not passed.
+   Each step goes out at its own time, so a sequence "starting" at 2:00 PM
+   can send step 1 at 9:00 AM that morning, and the Campaigns screen would
+   show both. Recommendation: step 1's time follows the start time, and
+   stops being a separate field.
+4. **Keeping the checks.** Step 1 was checked by a script that loads the
+   store through Vite and tests every seed case at several times of day. It
+   is not in the repo. Recommendation: keep it as
+   `scripts/check-campaigns.mjs`, run with `node`. It needs nothing new
+   installed.
