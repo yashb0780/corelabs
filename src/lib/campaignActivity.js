@@ -144,6 +144,9 @@ function deriveContact(campaign, contact, stepTimes, companyStops, pausedMs, now
     replySnippet: reply ? reply.snippet : null,
     replyReceivedAt: reply ? reply.receivedAt : null,
     replyStepIndex: reply ? reply.stepIndex : null,
+    // The suppression setting the reply was decided under, which is what it
+    // acts by, even after the campaign's setting has changed.
+    replyRule: reply ? reply.rule : null,
     resumeAt: reply && reply.type === 'ooo' ? reply.resumeAt : null,
     unsubscribedAt: unsubMs === Infinity ? null : contact.unsubscribedAt,
     suppressedBy: status === 'paused_colleague' ? colleague.by : null,

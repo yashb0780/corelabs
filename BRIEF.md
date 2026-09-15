@@ -693,6 +693,16 @@ it goes out, its subject line, and two worked-out figures: how many contacts
 it has been sent to and how many replies followed it. Editing a sequence after
 it has started is out of scope.
 
+**Seeing what a step says.** Clicking a step opens its subject line and body
+in a read-only window laid out like the Single email screen of Start a
+campaign: the same "Subject line" and "Email" labels (a LinkedIn step says
+"Message"), the same hint, the same spacing, and `{{first_name}}`,
+`{{company}}` and `{{sender_name}}` shown as written. The body box grows to
+fit the whole message. The same window opens from everywhere a step is
+named on the page: a contact's last step sent in Companies and Activity,
+"After step 2, Follow up" on a reply, and the step on an unsubscribe. Added
+at the owner's request on 15 September 2026.
+
 #### Replies
 
 Every reply in the campaign, newest first. Each row shows:
@@ -782,6 +792,11 @@ option:
 - A banner on the company row names who replied and when, e.g. "Helena Voss
   replied interested on Thu 10 Sep, 2:14 PM. Outreach to 2 colleagues is
   paused." It is visible with the row collapsed.
+- If the campaign's setting has changed since the pause, the banner adds
+  that it was paused under the earlier setting, and that changing the
+  setting does not lift a pause while Resume outreach does. Without it, a
+  campaign reading "Stop for that contact only" with paused colleagues
+  looks like the data is wrong, when it is this rule working.
 - The paused colleagues show "Paused, colleague replied" and a dash for next
   send.
 - A "Resume outreach" button on the banner undoes the pause. The colleagues
@@ -874,9 +889,11 @@ These fields go beyond the list agreed for this section, each for a reason:
 
 Sequence steps gain a `name` ("Intro", "Follow up") for "Step 2 of 4, Follow
 up". A step with no name shows its type instead, so steps built in Start a
-campaign need no new field. A single email is stored as a one-step sequence
-whose step also carries the email `body`, so a draft single email reopens
-with its text.
+campaign need no new field. Every step carries a `body`, the message it
+sends, shown when the step is clicked on the campaign's page. A single email
+is stored as a one-step sequence, so a draft single email reopens with its
+text. Every seed step has a subject and body of its own; no two share one.
+Steps added with "Add step" have no body yet, and the page says so.
 
 **Email addresses** use the reserved domain `example.com` for every contact,
 hand-written and generated alike: `helena.voss@example.com`. It is plainly
@@ -1136,6 +1153,22 @@ step.
     header, a draft, a single email, the 200-company limit on the biggest
     list, and dark mode. Mark as out of office and Mark as not interested
     were not clicked through.
+
+- **Step 3 follow-up: seeing what a step says** (not yet committed).
+  - Clicking a step opens its subject and body read only
+    (`src/components/campaign/StepEmailModal.jsx`), from the Email
+    sequence tab, contact rows, reply rows and unsubscribe rows. See
+    "Seeing what a step says" under "Email sequence".
+  - Every seed step now has its own subject and body in `SEED_SEQUENCES`,
+    and the steps a new sequence starts with (`CAMPAIGN_SEQUENCE`) have
+    bodies too, so campaigns built in the session show a message.
+  - The owner saw a campaign reading "Stop for that contact only" with
+    colleagues paused. The seed data was checked and is right: every seed
+    reply is decided under its own campaign's setting, and the only "Stop
+    for that contact only" campaign has no paused colleagues. What shows
+    it is changing a campaign's setting on its page: pauses decided under
+    the old setting stay, as this section specifies. The banner now says
+    so. The check script tests both.
 
 **Decided on 15 September 2026**
 

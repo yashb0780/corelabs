@@ -60,26 +60,47 @@ export const STEP_TYPES = [
 
 /* The steps a new sequence starts with. `day` is how many days after the
    sequence starts the step goes out, and `time` is when on that day, as
-   24 hour "HH:MM" (shown as "9:00 AM"). {{company}} fills in for each
-   account. */
+   24 hour "HH:MM" (shown as "9:00 AM"). `body` is what the step says; it
+   is kept with the campaign and shown on the campaign's page.
+   {{first_name}}, {{company}} and {{sender_name}} fill in for each
+   contact. */
 export const CAMPAIGN_SEQUENCE = [
   {
     type: 'email',
     day: 0,
     time: '09:00',
     subject: 'A quick question about {{company}}’s roadmap',
+    body: `Hi {{first_name}},
+
+I noticed {{company}} has been growing its platform team, which usually means a bigger change is close.
+
+We help teams plan that kind of move and see it through. Would it be worth a short call to compare notes?
+
+Best,
+{{sender_name}}`,
   },
   {
     type: 'linkedin-connect',
     day: 3,
     time: '09:00',
     subject: 'Following up on my note',
+    body: `Hi {{first_name}}, I emailed a few days ago about the platform work at {{company}}. Connecting here as well, in case this is an easier place to talk.
+
+{{sender_name}}`,
   },
   {
     type: 'email',
     day: 7,
     time: '09:00',
     subject: 'How a team like {{company}}’s cut its rollout time',
+    body: `Hi {{first_name}},
+
+A team much like yours at {{company}} cut its rollout time by planning the handover before the build started, not after.
+
+Happy to share what they did, if it would help.
+
+Best,
+{{sender_name}}`,
   },
 ]
 
@@ -470,6 +491,12 @@ export const CAMPAIGN_SCREEN_COPY = {
       back: (date) => `Back ${date}`,
       banner: (who, when, paused) =>
         `${who} replied interested on ${when}. Outreach to ${plural(paused, 'colleague', 'colleagues')} is paused.`,
+      // Added to the banner when the pause came from a reply decided under a
+      // different setting from the one shown now. Changing the setting
+      // never lifts a pause, so without this the banner looks like a
+      // contradiction.
+      earlierRule: (label) =>
+        `It was paused under the earlier setting, “${label}”. Changing the setting does not lift a pause: Resume outreach does.`,
       resumeOutreach: 'Resume outreach',
       allSuppressed:
         'Every company in this campaign is paused because someone there replied. Nothing more will send until outreach is resumed.',
@@ -517,6 +544,18 @@ export const CAMPAIGN_SCREEN_COPY = {
       noneOfKind: (label) => `No replies marked ${label.toLowerCase()}.`,
     },
 
+    // What a step says, opened by clicking a step anywhere on the page. Its
+    // field labels are the Single email screen's (campaignModal.email
+    // above), so change them there. A LinkedIn step's body is a message,
+    // not an email, so it gets its own label.
+    stepView: {
+      open: 'See what this step says',
+      linkedInBody: 'Message',
+      noBody: 'No message has been written for this step.',
+      subtitle: (type, when) => `${type} · ${when}`,
+      close: 'Close',
+    },
+
     unsubscribed: {
       columns: { contact: 'Contact', company: 'Company', after: 'Unsubscribed after', when: 'When' },
       none: 'No one has unsubscribed from this campaign.',
@@ -537,21 +576,142 @@ export const CAMPAIGN_SCREEN_COPY = {
 }
 
 /* The sequences the seed campaigns use. `name` is what the step is called
-   on screen: "Step 2 of 4, Follow up". */
+   on screen: "Step 2 of 4, Follow up". Every step has a subject and a body
+   of its own, which the campaign's page shows when a step is clicked. No
+   two steps share one: a sequence that repeats itself reads as a template.
+   {{first_name}}, {{company}} and {{sender_name}} fill in for each contact
+   and are shown as written. Keep the wording generic: no platform or
+   ecosystem names, even where the campaign's list name has one. */
 export const SEED_SEQUENCES = {
   fourSteps: [
-    { name: 'Intro', type: 'email', day: 0, time: '09:00', subject: 'A quick question about {{company}}’s roadmap' },
-    { name: 'Follow up', type: 'email', day: 3, time: '09:00', subject: 'Following up on my note' },
-    { name: 'Connect', type: 'linkedin-connect', day: 6, time: '10:00', subject: 'Connecting after my emails' },
-    { name: 'Last note', type: 'email', day: 10, time: '09:00', subject: 'Should I close the loop?' },
+    {
+      name: 'Intro',
+      type: 'email',
+      day: 0,
+      time: '09:00',
+      subject: '{{company}} and the next phase of your platform work',
+      body: `Hi {{first_name}},
+
+I have been following {{company}}’s recent hiring, and it looks like a larger platform change is taking shape.
+
+We are a services firm that helps teams plan and deliver that kind of change without slowing the work already in flight. Most of our clients come to us before they have picked an approach, which is usually the best time to talk.
+
+Would a short call in the next two weeks be useful?
+
+Best,
+{{sender_name}}`,
+    },
+    {
+      name: 'Follow up',
+      type: 'email',
+      day: 3,
+      time: '09:00',
+      subject: 'Who at {{company}} owns this?',
+      body: `Hi {{first_name}},
+
+Following up on my note from earlier in the week. These decisions rarely sit with one person, so if someone else at {{company}} is closer to it, I would be grateful for a pointer.
+
+If it is you, I am happy to send a one-page outline of how we usually approach the first 90 days.
+
+Thanks,
+{{sender_name}}`,
+    },
+    {
+      name: 'Connect',
+      type: 'linkedin-connect',
+      day: 6,
+      time: '10:00',
+      subject: 'Connecting after my emails',
+      body: `Hi {{first_name}}, I sent a couple of notes about the platform work at {{company}}. Connecting here in case it is easier to pick up the conversation on LinkedIn.
+
+{{sender_name}}`,
+    },
+    {
+      name: 'Last note',
+      type: 'email',
+      day: 10,
+      time: '09:00',
+      subject: 'Should I close the loop, {{first_name}}?',
+      body: `Hi {{first_name}},
+
+I have not heard back, so I will assume the timing is not right and stop writing for now.
+
+If the platform work at {{company}} comes back onto the agenda, reply to this email and I will pick it up from there. No need to start over.
+
+All the best,
+{{sender_name}}`,
+    },
   ],
   threeSteps: [
-    { name: 'Intro', type: 'email', day: 0, time: '09:00', subject: 'A quick question about {{company}}’s roadmap' },
-    { name: 'Follow up', type: 'email', day: 4, time: '09:00', subject: 'Following up on my note' },
-    { name: 'Case study', type: 'email', day: 9, time: '09:00', subject: 'How a team like {{company}}’s cut its rollout time' },
+    {
+      name: 'Intro',
+      type: 'email',
+      day: 0,
+      time: '09:00',
+      subject: 'An outside view on {{company}}’s rollout plans',
+      body: `Hi {{first_name}},
+
+Teams at companies like {{company}} often reach the same point: the plan is agreed, but there are not enough people who have done the move before.
+
+That is the gap we fill. We bring a small team that has run this kind of rollout several times, works alongside yours, and hands over cleanly at the end.
+
+Is this on your list for the coming year? If so, I would value 20 minutes to hear how you are approaching it.
+
+Regards,
+{{sender_name}}`,
+    },
+    {
+      name: 'Follow up',
+      type: 'email',
+      day: 4,
+      time: '09:00',
+      subject: 'Three questions worth asking before you start',
+      body: `Hi {{first_name}},
+
+A quick follow up. When we speak to teams early, three questions tend to shape everything that follows:
+
+1. What has to keep running untouched while the change happens?
+2. Who owns the decision, and who has to live with it?
+3. What would make the first six months count as a success?
+
+If any of those are still open at {{company}}, I am happy to share how other teams answered them.
+
+Best,
+{{sender_name}}`,
+    },
+    {
+      name: 'Case study',
+      type: 'email',
+      day: 9,
+      time: '09:00',
+      subject: 'How one team cut its rollout from 18 months to 12',
+      body: `Hi {{first_name}},
+
+One last note, with something you can use whether or not we talk.
+
+A manufacturing client of ours was facing an 18 month rollout. They settled the scope in the first month and ran two workstreams side by side instead of one after the other, and went live in twelve.
+
+If you would like to walk through how that might apply at {{company}}, reply and I will send a few times.
+
+Best,
+{{sender_name}}`,
+    },
   ],
   singleEmail: [
-    { type: 'email', day: 0, time: '10:00', subject: EMAIL_TEMPLATE.subject, body: EMAIL_TEMPLATE.body },
+    {
+      type: 'email',
+      day: 0,
+      time: '10:00',
+      subject: 'A smaller next upgrade for {{company}}',
+      body: `Hi {{first_name}},
+
+Upgrades get harder the longer custom work piles up. We help teams at companies like {{company}} sort out what to keep, what to retire and what to rebuild, so the next upgrade is a smaller job than the last one.
+
+If that is a conversation worth having, reply and I will send over a few times.
+
+Best,
+{{sender_name}}`,
+    },
   ],
 }
 

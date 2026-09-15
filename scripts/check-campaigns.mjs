@@ -244,6 +244,23 @@ async function checkSeeds(label, now) {
     check(activity.companyGroups(byId['warm-accounts']).every((g) => g.suppression), 'a Warm accounts company has no banner')
   })
 
+  section('every seed reply is decided under its own campaign’s setting', () => {
+    for (const c of store.getCampaigns()) {
+      for (const p of c.contacts.filter((p) => p.reply)) {
+        check(p.reply.rule === c.suppressionRule, `${c.id}: ${p.contactName}'s reply was decided under ${p.reply.rule}, the campaign says ${c.suppressionRule}`)
+      }
+      const paused = byId[c.id].activity.some((a) => a.status === 'paused_colleague')
+      check(!paused || c.suppressionRule === 'stop_company', `${c.id} (${c.suppressionRule}) has paused colleagues`)
+    }
+  })
+
+  section('every seed step has a subject and body of its own', () => {
+    const steps = Object.values(data.SEED_SEQUENCES).flat()
+    check(steps.every((s) => s.subject?.trim() && s.body?.trim()), 'a seed step has no subject or no body')
+    check(new Set(steps.map((s) => s.subject)).size === steps.length, 'two seed steps share a subject line')
+    check(new Set(steps.map((s) => s.body)).size === steps.length, 'two seed steps share a body')
+  })
+
   section('step 1 of every seed campaign goes out at its start time', () => {
     for (const c of store.getCampaigns().filter((c) => c.start)) {
       check(c.start.time === c.sequence[0].time, `${c.id} starts at ${c.start.time} but step 1 goes at ${c.sequence[0].time}`)
@@ -380,6 +397,9 @@ async function checkChanges() {
     store.setSuppressionRule('warm-accounts', 'keep_sending')
     const v = view('warm-accounts')
     check(v.activity.filter((a) => !a.replyType).every((a) => a.status === 'paused_colleague'), 'a paused colleague was released by the new setting')
+    // What lets the banner say the pause came from the earlier setting.
+    const by = activity.companyGroups(v)[0].suppression.by
+    check(by.replyRule === 'stop_company' && v.suppressionRule === 'keep_sending', 'the pausing reply does not keep the setting it was decided under')
   })
 
   section('Resume outreach puts colleagues back; the person who replied stays stopped', () => {

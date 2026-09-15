@@ -9,6 +9,9 @@
  * applies to replies from then on; pauses that already happened stay until
  * someone clicks Resume outreach.
  *
+ * Clicking a step anywhere on the page opens what it says, read only
+ * (StepEmailModal.jsx).
+ *
  * Then four tabs, one file each in src/components/campaign/:
  *   CampaignCompanies.jsx     Companies and Activity
  *   CampaignSequence.jsx      Email sequence
@@ -28,6 +31,7 @@ import { CampaignCompanies } from '../components/campaign/CampaignCompanies'
 import { CampaignReplies } from '../components/campaign/CampaignReplies'
 import { CampaignSequence } from '../components/campaign/CampaignSequence'
 import { CampaignUnsubscribed } from '../components/campaign/CampaignUnsubscribed'
+import { StepEmailModal } from '../components/campaign/StepEmailModal'
 import { actionsFor, useCampaignActions } from '../components/campaign/useCampaignActions'
 import { Field, Select } from '../components/form'
 import { Button, EmptyNote, EmptyState, Tabs, TonePill } from '../components/ui'
@@ -66,6 +70,8 @@ export default function CampaignDetail() {
   const campaign = useCampaign(campaignId)
   const actions = useCampaignActions()
   const [tab, setTab] = useState('companies')
+  // The step whose subject and body are open, by index, or null.
+  const [viewing, setViewing] = useState(null)
   const crumbs = ['Workspace', { label: COPY.title, to: '/campaigns' }]
 
   if (!campaign) {
@@ -95,11 +101,21 @@ export default function CampaignDetail() {
 
   const panels = {
     companies: (
-      <CampaignCompanies view={view} onResumeOutreach={(companyId) => actions.resumeOutreach(id, companyId)} />
+      <CampaignCompanies
+        view={view}
+        onResumeOutreach={(companyId) => actions.resumeOutreach(id, companyId)}
+        onViewStep={setViewing}
+      />
     ),
-    sequence: <CampaignSequence campaign={campaign} view={view} />,
-    replies: <CampaignReplies view={view} onClassify={(contactId, type) => actions.classify(id, contactId, type)} />,
-    unsubscribed: <CampaignUnsubscribed view={view} />,
+    sequence: <CampaignSequence campaign={campaign} view={view} onViewStep={setViewing} />,
+    replies: (
+      <CampaignReplies
+        view={view}
+        onClassify={(contactId, type) => actions.classify(id, contactId, type)}
+        onViewStep={setViewing}
+      />
+    ),
+    unsubscribed: <CampaignUnsubscribed view={view} onViewStep={setViewing} />,
   }
 
   return (
@@ -161,6 +177,10 @@ export default function CampaignDetail() {
           {!(view.status === 'draft' && (tab === 'replies' || tab === 'unsubscribed')) && panels[tab]}
         </div>
       </div>
+
+      {viewing !== null && view.sequence[viewing] && (
+        <StepEmailModal view={view} index={viewing} onClose={() => setViewing(null)} />
+      )}
 
       {actions.overlay}
     </PageShell>

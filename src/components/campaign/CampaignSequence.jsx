@@ -6,12 +6,16 @@
  * out, its subject line, and two figures worked out from the activity: how
  * many contacts it has been sent to, and how many replies followed it.
  *
+ * Clicking a step, anywhere on its row, opens what it says: its subject
+ * line and body, in StepEmailModal.jsx.
+ *
  * Under the day and time, the date: when the step first went out, or when
  * it is due if it has not. A paused campaign says its unsent steps are on
  * hold, and a step nobody is left to receive shows no date at all, rather
  * than a date that will never happen.
  */
 import { cx } from '../cx'
+import { StepLink } from './StepEmailModal'
 import { CAMPAIGN_SCREEN_COPY, STEP_TYPES } from '../../data/campaigns'
 import { campaignStepTimes, stepName } from '../../lib/campaignActivity'
 import { atMs, formatShortDateTime, formatTime, msToAt, splitAt } from '../../lib/schedule'
@@ -30,7 +34,7 @@ const shortAt = (at) => {
   return formatShortDateTime(date, time)
 }
 
-export function CampaignSequence({ campaign, view }) {
+export function CampaignSequence({ campaign, view, onViewStep }) {
   const now = Date.now()
   const times = campaignStepTimes(campaign)
   const stillSending = view.activity.some((a) => a.nextSendAt)
@@ -74,11 +78,17 @@ export function CampaignSequence({ campaign, view }) {
           </thead>
           <tbody>
             {rows.map(({ step, when, sentTo, replies }, i) => (
-              <tr key={i} className="border-b border-line bg-surface last:border-b-0">
+              <tr
+                key={i}
+                onClick={() => onViewStep(i)}
+                className="cursor-pointer border-b border-line bg-surface transition-colors duration-150 ease-lp last:border-b-0 hover:bg-surface-hover"
+              >
                 <td className={TD}>
                   <p className="flex items-baseline gap-2 leading-tight">
                     <span className="text-2xs font-num tabular-nums text-txt-3">{i + 1}</span>
-                    <span className="truncate text-sm font-name text-txt">{stepName(step)}</span>
+                    <span className="min-w-0 text-sm font-name text-txt">
+                      <StepLink onOpen={() => onViewStep(i)}>{stepName(step)}</StepLink>
+                    </span>
                   </p>
                 </td>
                 <td className={cx(TD, 'text-sm text-txt-2')}>{typeLabel[step.type] ?? step.type}</td>

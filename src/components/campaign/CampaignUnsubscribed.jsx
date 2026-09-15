@@ -3,9 +3,10 @@
  * stop, newest first: contact, company, the step they unsubscribed after,
  * and when. An unsubscribed contact is never sent another step, under any
  * suppression setting, so the last step they were sent is the one they
- * unsubscribed after.
+ * unsubscribed after. Clicking it opens what that step said.
  */
 import { EmptyNote } from '../ui'
+import { StepLink } from './StepEmailModal'
 import { CAMPAIGN_SCREEN_COPY } from '../../data/campaigns'
 import { atMs, formatShortDateTime, splitAt } from '../../lib/schedule'
 
@@ -21,7 +22,7 @@ const shortAt = (at) => {
   return formatShortDateTime(date, time)
 }
 
-export function CampaignUnsubscribed({ view }) {
+export function CampaignUnsubscribed({ view, onViewStep }) {
   const rows = view.activity
     .filter((a) => a.unsubscribedAt)
     .sort((a, b) => atMs(b.unsubscribedAt) - atMs(a.unsubscribedAt))
@@ -48,7 +49,13 @@ export function CampaignUnsubscribed({ view }) {
               </td>
               <td className={`${TD} text-sm text-txt-2`}>{a.companyName}</td>
               <td className={`${TD} text-sm text-txt`}>
-                {a.lastStepIndex === null ? CAMPAIGN_SCREEN_COPY.none : AFTER(a.lastStepIndex + 1, a.lastStepName)}
+                {a.lastStepIndex === null ? (
+                  CAMPAIGN_SCREEN_COPY.none
+                ) : (
+                  <StepLink onOpen={() => onViewStep(a.lastStepIndex)}>
+                    {AFTER(a.lastStepIndex + 1, a.lastStepName)}
+                  </StepLink>
+                )}
               </td>
               <td className={`${TD} text-sm whitespace-nowrap text-txt-2`}>{shortAt(a.unsubscribedAt)}</td>
             </tr>

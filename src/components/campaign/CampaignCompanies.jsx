@@ -9,7 +9,8 @@
  * Each contact row shows name, role and email, the last step sent to them
  * ("Step 2 of 4, Follow up"), when it went, their next send, where they are
  * in the campaign, and how their reply was classified. This is where the
- * Campaigns table's "who did the last step go to" lives now.
+ * Campaigns table's "who did the last step go to" lives now. Clicking the
+ * step opens what it said.
  *
  * Where an interested reply has paused a company, a banner on the company
  * row, visible even when it is collapsed, names who replied and when, and
@@ -25,11 +26,13 @@ import { Icon } from '../Icon'
 import { cx } from '../cx'
 import { SearchInput } from '../form'
 import { Button, CompanyLogo, EmptyNote, TonePill } from '../ui'
+import { StepLink } from './StepEmailModal'
 import {
   CAMPAIGN_SCREEN_COPY,
   PARTICIPATION,
   PICKER_ROW_LIMIT,
   REPLY_TYPES,
+  SUPPRESSION_RULES,
 } from '../../data/campaigns'
 import { getCompany } from '../../data/companies'
 import { companyGroups } from '../../lib/campaignActivity'
@@ -64,9 +67,13 @@ export function ReplyBadge({ type }) {
   )
 }
 
-/* The banner on a paused company, with the button that lifts the pause. */
-function SuppressionBanner({ suppression, onResume }) {
+/* The banner on a paused company, with the button that lifts the pause.
+   If the campaign's setting has changed since the pause, it says so: a
+   change never lifts a pause, and without the sentence a "Stop for that
+   contact only" campaign with paused colleagues looks contradictory. */
+function SuppressionBanner({ suppression, rule, onResume }) {
   const { by, paused } = suppression
+  const earlier = by.replyRule !== rule && SUPPRESSION_RULES.find((r) => r.id === by.replyRule)
   return (
     <div
       className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-md px-3 py-2"
@@ -75,6 +82,7 @@ function SuppressionBanner({ suppression, onResume }) {
       <Icon name="pause" className="size-3.5 shrink-0 text-[var(--lp-tone-amber)]" />
       <p className="min-w-0 flex-1 text-sm text-txt">
         {COPY.banner(by.contactName, longAt(by.replyReceivedAt), paused)}
+        {earlier && <span className="text-txt-2"> {COPY.earlierRule(earlier.label)}</span>}
       </p>
       <Button variant="secondary" size="sm" icon="play" onClick={onResume}>
         {COPY.resumeOutreach}
@@ -83,7 +91,7 @@ function SuppressionBanner({ suppression, onResume }) {
   )
 }
 
-function CompanyRow({ group, steps, open, onToggle, onResumeOutreach }) {
+function CompanyRow({ group, steps, rule, open, onToggle, onResumeOutreach }) {
   const real = getCompany(group.id)
   const panelId = `company-${group.id}`
   const furthest =
@@ -141,6 +149,7 @@ function CompanyRow({ group, steps, open, onToggle, onResumeOutreach }) {
           <div onClick={(e) => e.stopPropagation()} className="pl-9">
             <SuppressionBanner
               suppression={group.suppression}
+              rule={rule}
               onResume={() => onResumeOutreach(group.id)}
             />
           </div>
@@ -150,7 +159,7 @@ function CompanyRow({ group, steps, open, onToggle, onResumeOutreach }) {
   )
 }
 
-function ContactRow({ a, steps }) {
+function ContactRow({ a, steps, onViewStep }) {
   return (
     <tr className="border-b border-line bg-canvas">
       <td className={cx(TD, 'pl-12')}>
@@ -168,9 +177,9 @@ function ContactRow({ a, steps }) {
         {a.lastStepIndex === null ? (
           <span className="text-txt-3">{NONE}</span>
         ) : (
-          <span className="block truncate" title={CAMPAIGN_SCREEN_COPY.lastStep(a.lastStepIndex + 1, steps, a.lastStepName)}>
+          <StepLink onOpen={() => onViewStep(a.lastStepIndex)}>
             {CAMPAIGN_SCREEN_COPY.lastStep(a.lastStepIndex + 1, steps, a.lastStepName)}
-          </span>
+          </StepLink>
         )}
       </td>
       <td className={cx(TD, 'text-sm whitespace-nowrap text-txt-2')}>
@@ -190,7 +199,7 @@ function ContactRow({ a, steps }) {
   )
 }
 
-export function CampaignCompanies({ view, onResumeOutreach }) {
+export function CampaignCompanies({ view, onResumeOutreach, onViewStep }) {
   const groups = useMemo(() => companyGroups(view), [view])
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(() => new Set())
@@ -264,11 +273,13 @@ export function CampaignCompanies({ view, onResumeOutreach }) {
                   <CompanyRow
                     group={g}
                     steps={steps}
+                    rule={view.suppressionRule}
                     open={isOpen}
                     onToggle={() => toggle(g.id)}
                     onResumeOutreach={onResumeOutreach}
                   />
-                  {isOpen && g.contacts.map((a) => <ContactRow key={a.id} a={a} steps={steps} />)}
+                  {isOpen &&
+                    g.contacts.map((a) => <ContactRow key={a.id} a={a} steps={steps} onViewStep={onViewStep} />)}
                 </tbody>
               )
             })}

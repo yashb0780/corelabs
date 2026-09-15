@@ -10,11 +10,15 @@
  * src/lib/campaigns.js): interested applies the campaign's suppression
  * setting now, out of office stops no one, not interested stops only that
  * contact. The reply then leaves the review queue with its new badge.
+ *
+ * "After step 2, Follow up" opens what that step said, so a reply can be
+ * read against the email it answered.
  */
 import { useState } from 'react'
 import { cx } from '../cx'
 import { Button, EmptyNote, FilterPill } from '../ui'
 import { ReplyBadge } from './CampaignCompanies'
+import { StepLink } from './StepEmailModal'
 import { CAMPAIGN_SCREEN_COPY } from '../../data/campaigns'
 import { stepName } from '../../lib/campaignActivity'
 import { atMs, formatShortDateTime, splitAt } from '../../lib/schedule'
@@ -32,7 +36,7 @@ const shortAt = (at) => {
 // screen rather than squashing the snippet.
 const ROW = 'grid grid-cols-[minmax(0,15rem)_minmax(0,1fr)_9rem_10.5rem] items-start gap-4'
 
-export function CampaignReplies({ view, onClassify }) {
+export function CampaignReplies({ view, onClassify, onViewStep }) {
   const [filter, setFilter] = useState('all')
 
   const replies = view.activity
@@ -75,7 +79,9 @@ export function CampaignReplies({ view, onClassify }) {
 
                 <div className="min-w-0 leading-tight">
                   <p className="text-2xs text-txt-3">
-                    {COPY.after(a.replyStepIndex + 1, stepName(view.sequence[a.replyStepIndex]))}
+                    <StepLink onOpen={() => onViewStep(a.replyStepIndex)}>
+                      {COPY.after(a.replyStepIndex + 1, stepName(view.sequence[a.replyStepIndex]))}
+                    </StepLink>
                   </p>
                   <p className="mt-1 truncate text-sm text-txt" title={a.replySnippet}>
                     “{a.replySnippet}”
