@@ -16,6 +16,18 @@
    TO CHANGE A NUMBER: edit it below. The chart, its tooltip and the table
    on its detail page all read from here.
 
+   EXCEPT THE CAMPAIGN NUMBERS. A value written as `campaigns: '<name>'`
+   instead of a number is not typed here: it is filled in from the
+   campaigns themselves (getCampaignSummary in src/lib/campaigns.js), the
+   same figures the Campaigns screen shows, so the two screens always
+   agree. Today that is the funnel's Contacted and Replied stages and the
+   Campaign reply rate bars. Do not replace them with typed numbers.
+
+   The typed funnel stages around them must keep the funnel descending:
+   Enriched above the most Contacted can ever reach, and Meeting booked
+   below the interested replies. scripts/check-campaigns.mjs checks both
+   (section 9 of BRIEF.md, "Where the numbers come from").
+
    TO ADD A REPORT: copy one and change it. `type` is one of the keys in
    REPORT_TYPES and `source` one of the keys in REPORT_SOURCES.
    ========================================================================== */
@@ -65,10 +77,13 @@ export const REPORT_TYPES = {
      categoryLabel  for bar and pie: what the groups are, e.g. "Industry".
                   Heads the first column of the table on the detail page.
      data         the numbers. Its shape depends on the type:
-                    funnel  stages: [{ label, value }]
+                    funnel  stages: [{ label, value }]. A stage written
+                            { label, campaigns: 'contacted' } takes its value
+                            from the campaigns (see the top of this file)
                     line    periods: [...], series: [{ label, color, values }]
                     bar     bars: [{ label, value }], plus `horizontal: true`
-                            for long labels
+                            for long labels. `campaigns: 'replyRateBars'` in
+                            place of `bars` takes them from the campaigns
                     pie     slices: [{ label, value, color }]
      color        for line and pie: chart-1 to chart-4 from tokens.css, or
                   "other" for the neutral grey. Series with `dashed: true`
@@ -89,8 +104,10 @@ export const REPORTS = [
         { label: 'Sourced', value: 4820 },
         { label: 'Signal matched', value: 3172 },
         { label: 'Enriched', value: 2486 },
-        { label: 'Contacted', value: 864 },
-        { label: 'Replied', value: 173 },
+        // From the campaigns: accounts sent at least one step.
+        { label: 'Contacted', campaigns: 'contacted' },
+        // From the campaigns: those with a reply that is not out of office.
+        { label: 'Replied', campaigns: 'replied' },
         { label: 'Meeting booked', value: 41 },
       ],
     },
@@ -156,14 +173,9 @@ export const REPORTS = [
     categoryLabel: 'Campaign',
     data: {
       horizontal: true,
-      bars: [
-        { label: 'LeanIX signal · Q3', value: 14.6 },
-        { label: 'Confirmed legacy ECC · Healthcare', value: 11.2 },
-        { label: 'Clean core candidates · Chemicals', value: 9.8 },
-        { label: 'TX Manufacturing under 500', value: 8.4 },
-        { label: 'RISE evaluators · Midwest', value: 7.3 },
-        { label: 'S/4HANA 2027 deadline · Mid-market', value: 5.9 },
-      ],
+      // From the campaigns: one bar per campaign run from a saved list that
+      // has contacted someone, highest first.
+      campaigns: 'replyRateBars',
     },
   },
   {

@@ -7,9 +7,10 @@
  *
  * Campaigns live in src/lib/campaigns.js rather than in this page, because
  * a campaign scheduled on Company Search or from the assistant has to be
- * here afterwards. Everything shown about one (its status, where each
- * contact is, every count) is worked out by src/lib/campaignActivity.js.
- * Nothing is persisted: a reload goes back to src/data/campaigns.js.
+ * here afterwards. The rows and the five cards both come from
+ * useCampaignSummary() there, the same figures the Reports screen reads,
+ * so the two screens always agree. Nothing is persisted: a reload goes
+ * back to src/data/campaigns.js.
  *
  * "New campaign" asks for a saved list, then opens the same Start a
  * campaign window as everywhere else. Launch on a draft opens that window
@@ -30,8 +31,7 @@ import { useCampaignActions } from '../components/campaign/useCampaignActions'
 import { SearchInput } from '../components/form'
 import { Button, EmptyState, FilterPill } from '../components/ui'
 import { CAMPAIGN_SCREEN_COPY as COPY, CAMPAIGN_STATUSES } from '../data/campaigns'
-import { campaignMetrics, campaignView } from '../lib/campaignActivity'
-import { useCampaignClock, useCampaigns } from '../lib/campaigns'
+import { useCampaignSummary } from '../lib/campaigns'
 import { scopeForList } from '../lib/listActions'
 import { atMs } from '../lib/schedule'
 
@@ -42,15 +42,11 @@ const STATUS_ORDER = ['active', 'scheduled', 'paused', 'completed', 'draft']
 const sortKey = (v) => atMs(v.stats.lastActivityAt ?? v.createdAt)
 
 export default function Campaigns() {
-  useCampaignClock()
-  const campaigns = useCampaigns()
+  const { views, metrics } = useCampaignSummary()
   const actions = useCampaignActions()
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState(null)
   const [picking, setPicking] = useState(false)
-
-  const views = campaigns.map((c) => campaignView(c))
-  const metrics = campaignMetrics(views)
 
   const q = query.trim().toLowerCase()
   const shown = views

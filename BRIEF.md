@@ -943,6 +943,24 @@ reload removes it, like everything else added in the session.
   account, in any campaign, that has been sent at least one step. Replied is
   every one of those with a reply that is not out of office, the same rule
   as the Reply rate card.
+- **Both read one summary, never their own sums.** `getCampaignSummary()`
+  in `src/lib/campaigns.js`, the campaign module's single read method for
+  figures across campaigns, returns the campaigns as the screens see them,
+  the five cards, Contacted, Replied and the reply rate bars. The
+  Campaigns screen reads its cards and rows from it
+  (`useCampaignSummary()`), and `useReports()` in `src/lib/reports.js`
+  fills in the report numbers from it. In `src/data/reports.js` those
+  numbers are markers (`campaigns: 'contacted'` and so on), not typed
+  values. Nothing outside the campaign module works them out. Campaigns
+  changed during a session move both screens together, and a reload
+  resets both.
+- **The funnel must keep descending.** Two of its stages come from the
+  campaigns and the rest are typed, so the check script asserts Enriched
+  ≥ Contacted ≥ Replied ≥ Meeting booked at every time of day, after every
+  change a session can make, and in the worst case a demo can reach: an
+  email sent now to every saved list and every real company, which takes
+  Contacted to its ceiling. If a typed stage is ever edited so the stages
+  cross, the check fails rather than the funnel rising on screen.
 
 **No number is tuned to match another.** Each seed campaign's reply counts
 are written once as plausible inputs, and every report shows whatever they
@@ -1171,14 +1189,35 @@ step.
   - Checked in the browser: the window opens with the right step from all
     four places, its fields cannot be edited, and a LinkedIn step says
     "Message".
+- **Step 4, Reports reading from campaigns** (committed on main, not yet
+  pushed). Done.
+  - The campaign store gained its read methods: `getCampaignSummary()`,
+    `useCampaignSummary()` and `useCampaignViews()` in
+    `src/lib/campaigns.js`. See "Both read one summary" under "Where the
+    numbers come from".
+  - Reports' Contacted, Replied and reply rate bars come from that
+    summary, and so do the Campaigns screen's cards and rows. The typed
+    864, 173 and six bars are gone from `src/data/reports.js`.
+  - With the seed data, Reports now shows Contacted 2,059, Replied 104
+    (5.1 percent, the same as the Reply rate card) and these bars: LeanIX
+    signal · Q3 13.2, Clean core candidates · Chemicals 10.5, Confirmed
+    legacy ECC · Healthcare 9.2, RISE evaluators · Midwest 6.9, TX
+    Manufacturing under 500 6.5, S/4HANA 2027 deadline · Mid-market 3.3.
+    Their order changed from the typed bars; no input was tuned to keep it.
+  - New checks: Reports equals the summary, the Reply rate card is
+    exactly Replied divided by Contacted, and the funnel descends,
+    including the worst case above. The descending check was proven to
+    fail by lowering Enriched below Contacted, then restored.
+  - Checked in the browser: Reports and its detail page show the campaign
+    figures, and an email sent to the BTP list on the Campaigns screen
+    moved the card to 4.9 percent and Reports to Contacted 2,116 with a
+    new BTP bar, without a reload.
 
 **Decided on 15 September 2026**
 
 1. View goes to `/campaigns/<id>`. Built in step 3.
-2. Reports stays as it is until step 4. Until then the Campaigns screen
-   shows a 5.1 percent reply rate while Reports still shows the old typed
-   bars and a funnel with 864 contacted. Do not demo the two side by side
-   before step 4.
+2. Reports stayed as it was until step 4. Done in step 4: the two screens
+   now show the same numbers and can be demoed side by side.
 3. Step 1's time follows the start time. Built in step 2.
 4. The checks are kept in the repo. Done in step 2.
 5. The campaign table shows dates without times and the last step without
@@ -1191,20 +1230,13 @@ by an hour: a 10:00 AM step comes back at 9:00 AM. `applyDelays()` and
 rather than by calendar days. It only shows when a pause spans the change
 (next on 1 November 2026). Not fixed yet.
 
-**Next: step 4, Reports reading from campaigns.**
+**Next: step 5, update `CLAUDE.md`.**
 
-- The "Campaign reply rate" bars come from `replyRateBars()`, replacing
-  the typed bars in `src/data/reports.js`.
-- The Account funnel's Contacted and Replied stages come from
-  `funnelCounts()`, replacing the typed 864 and 173. Both functions are
-  already in `src/lib/campaignActivity.js`. See "Where the numbers come
-  from" for the rules, including that no input is tuned to match a report.
-- When it is done, Reports and the Campaigns screen show the same numbers
-  (about 2,059 contacted, 104 replied), and decision 2 above no longer
-  applies. Add a check for it to `scripts/check-campaigns.mjs`.
-
-**After that**
-
-- Step 5: update `CLAUDE.md` to describe the built screens and the check
-  script. Until then its "Known gaps" entry still calls Campaigns a
-  placeholder.
+- Describe the built Campaigns screens in place of the "Known gaps" entry
+  that still calls Campaigns a placeholder: the campaign table, the detail
+  page and its tabs, the step content window, the store's read methods,
+  and that Reports reads its campaign numbers from them.
+- Add `node scripts/check-campaigns.mjs` to "When making changes", next to
+  `npm run build`.
+- Then this build is finished. The daylight-saving issue above is the one
+  loose end.

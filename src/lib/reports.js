@@ -8,9 +8,17 @@
 
    In memory only. Nothing is persisted, so a reload goes back to
    src/data/reports.js. That keeps the no-localStorage guardrail intact.
+
+   The campaign numbers are not kept here. A report stores only a marker
+   (`campaigns: 'contacted'` and so on, see src/data/reports.js), and
+   useReports() fills it in from getCampaignSummary() in
+   src/lib/campaigns.js every time it is read. So Reports shows exactly
+   what the Campaigns screen shows, including campaigns changed during the
+   session, and a renamed or duplicated report keeps reading them too.
    ========================================================================== */
 
-import { useSyncExternalStore } from 'react'
+import { useMemo, useSyncExternalStore } from 'react'
+import { useCampaignSummary } from './campaigns'
 import {
   REPORTS,
   REPORTS_COPY as COPY,
@@ -35,8 +43,35 @@ function subscribe(onChange) {
 
 const getReports = () => reports
 
+/**
+ * A report with its campaign markers replaced by the numbers they stand
+ * for, taken from `summary` (getCampaignSummary in src/lib/campaigns.js).
+ * A report with no markers comes back unchanged. Pure, so the checks can
+ * call it too.
+ */
+export function withCampaignFigures(report, summary) {
+  const { data } = report
+  if (data.campaigns) {
+    const { campaigns, ...rest } = data
+    return { ...report, data: { ...rest, bars: summary[campaigns] } }
+  }
+  if (data.stages?.some((st) => st.campaigns)) {
+    return {
+      ...report,
+      data: {
+        ...data,
+        stages: data.stages.map((st) => (st.campaigns ? { label: st.label, value: summary[st.campaigns] } : st)),
+      },
+    }
+  }
+  return report
+}
+
+/** The dashboard, with every campaign number filled in. */
 export function useReports() {
-  return useSyncExternalStore(subscribe, getReports, getReports)
+  const stored = useSyncExternalStore(subscribe, getReports, getReports)
+  const summary = useCampaignSummary()
+  return useMemo(() => stored.map((r) => withCampaignFigures(r, summary)), [stored, summary])
 }
 
 export function useReport(id) {

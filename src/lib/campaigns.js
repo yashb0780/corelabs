@@ -16,6 +16,11 @@
    campaignView() in src/lib/campaignActivity.js, which works out its
    status, where each contact is and every count.
 
+   FIGURES OTHER SCREENS SHOW come from getCampaignSummary() below, never
+   from recalculating: the Campaigns screen's cards and the Reports
+   screen's Contacted, Replied and reply rate bars read the same result,
+   so the two can never disagree.
+
    Campaigns are never changed in place: every change replaces the campaign
    object, which is how campaignView() knows to work it out again.
    ========================================================================== */
@@ -35,10 +40,13 @@ import { membersForList, membersFromCompanies, seededRandom } from './listMember
 import { addDays, atMs, joinAt, msToAt, nowAt, splitAt, todayIso } from './schedule'
 import {
   applyDelays,
+  campaignMetrics,
   campaignStepTimes,
   campaignView,
   daysToCatchUp,
+  funnelCounts,
   HOUR,
+  replyRateBars,
 } from './campaignActivity'
 
 /* --- Contacts ------------------------------------------------------------- */
@@ -252,6 +260,53 @@ export function useCampaigns() {
 
 export function useCampaign(id) {
   return useCampaigns().find((c) => c.id === id) ?? null
+}
+
+/* --- Figures for the screens -------------------------------------------- */
+
+let summaryCache = { campaigns: null, minute: null, summary: null }
+
+/**
+ * Every figure worked out across all campaigns, in one place:
+ *   views          every campaign as the screens see it (campaignView)
+ *   metrics        the five cards on the Campaigns screen
+ *   contacted      accounts sent at least one step, each counted once:
+ *                  the Account funnel's Contacted stage
+ *   replied        those with a reply that is not out of office: the
+ *                  funnel's Replied stage, and the top of the Reply rate
+ *   replyRateBars  the "Campaign reply rate" report's bars
+ * Worked out once each time the campaigns change or the minute turns
+ * over, and the same object is handed to everyone who asks until then.
+ */
+export function getCampaignSummary(now = Date.now()) {
+  const list = current()
+  const minute = Math.floor(now / 60000)
+  if (summaryCache.campaigns === list && summaryCache.minute === minute) return summaryCache.summary
+
+  const views = list.map((c) => campaignView(c, now))
+  const { contacted, replied } = funnelCounts(views)
+  const summary = {
+    views,
+    metrics: campaignMetrics(views, now),
+    contacted,
+    replied,
+    replyRateBars: replyRateBars(views),
+  }
+  summaryCache = { campaigns: list, minute, summary }
+  return summary
+}
+
+/** getCampaignSummary() for a screen: redraws when a campaign changes,
+    and as time passes. */
+export function useCampaignSummary() {
+  useCampaigns()
+  useCampaignClock()
+  return getCampaignSummary()
+}
+
+/** Every campaign as the screens see it, in the order they were added. */
+export function useCampaignViews() {
+  return useCampaignSummary().views
 }
 
 /**

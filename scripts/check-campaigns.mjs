@@ -74,6 +74,7 @@ async function load() {
     lists: await get('/src/data/savedLists.js'),
     companies: await get('/src/data/companies.js'),
     reports: await get('/src/data/reports.js'),
+    reportsLib: await get('/src/lib/reports.js'),
     listActions: await get('/src/lib/listActions.js'),
     listMembers: await get('/src/lib/listMembers.js'),
     schedule: await get('/src/lib/schedule.js'),
@@ -116,6 +117,47 @@ const EXPECTED = {
   'industrial-first-touch': { status: 'active', lastStep: 0, nextSend: true },
   'btp-postings-outreach': { status: 'scheduled', lastStep: null, nextSend: true },
   'ohio-food-beverage-draft': { status: 'draft', lastStep: null, nextSend: false },
+}
+
+/*
+ * Reports reads Contacted, Replied and the reply rate bars from the
+ * campaign store's summary, never from its own sums. These two checks run
+ * against the seed data at every time of day, and again after every change
+ * a session can make.
+ */
+function checkReportsMatch(m, now) {
+  const summary = m.store.getCampaignSummary(now)
+  const filled = m.reports.REPORTS.map((r) => m.reportsLib.withCampaignFigures(r, summary))
+  const stages = filled.find((r) => r.id === 'account-funnel').data.stages
+  const stage = (label) => stages.find((s) => s.label === label).value
+  check(stage('Contacted') === summary.contacted, `Reports shows Contacted ${stage('Contacted')}, the campaigns say ${summary.contacted}`)
+  check(stage('Replied') === summary.replied, `Reports shows Replied ${stage('Replied')}, the campaigns say ${summary.replied}`)
+  const bars = filled.find((r) => r.id === 'campaign-reply-rate').data.bars
+  check(JSON.stringify(bars) === JSON.stringify(summary.replyRateBars), 'the reply rate bars on Reports differ from the campaigns')
+  check(bars.length > 0, 'the reply rate report has no bars')
+  check(summary.metrics.replyRate === summary.replied / summary.contacted, 'the Reply rate card is not Replied divided by Contacted')
+  // Nothing outside the store may work these out a second way.
+  const views = m.store.getCampaigns().map((c) => m.activity.campaignView(c, now))
+  const again = m.activity.funnelCounts(views)
+  check(again.contacted === summary.contacted && again.replied === summary.replied, 'the summary disagrees with the campaigns it summarises')
+  return stages
+}
+
+/* Two funnel stages come from the campaigns and the rest are typed, so a
+   session could in principle push them past each other. This fails the
+   check instead of letting it show on screen. */
+function checkFunnelDescends(stages) {
+  const at = (label) => stages.find((s) => s.label === label).value
+  const order = ['Enriched', 'Contacted', 'Replied', 'Meeting booked']
+  for (let i = 1; i < order.length; i++) {
+    check(
+      at(order[i - 1]) >= at(order[i]),
+      `the funnel no longer descends: ${order[i - 1]} ${at(order[i - 1])} is below ${order[i]} ${at(order[i])}`,
+    )
+  }
+  for (let i = 1; i < stages.length; i++) {
+    check(stages[i - 1].value >= stages[i].value, `the funnel rises from ${stages[i - 1].label} to ${stages[i].label}`)
+  }
 }
 
 const person = (view, name) => view.activity.find((a) => a.contactName === name)
@@ -280,6 +322,8 @@ async function checkSeeds(label, now) {
 
     const funnel = m.reports.REPORTS.find((r) => r.id === 'account-funnel').data.stages
     const stage = (label) => funnel.find((s) => s.label === label).value
+    check(!('value' in funnel.find((s) => s.label === 'Contacted')), 'Contacted is typed into the report data again')
+    check(!('value' in funnel.find((s) => s.label === 'Replied')), 'Replied is typed into the report data again')
     const ceiling =
       m.lists.SAVED_LISTS.reduce((n, l) => n + l.records, 0) +
       m.companies.companies.filter((c) => c.contacts.length > 0).length
@@ -287,6 +331,10 @@ async function checkSeeds(label, now) {
     check(contacted <= ceiling, `Contacted (${contacted}) is above its own ceiling (${ceiling})`)
     check(stage('Meeting booked') < interested, `Meeting booked (${stage('Meeting booked')}) is not below interested replies (${interested})`)
     console.log(`      reply rate ${(100 * metrics.replyRate).toFixed(1)}%, contacted ${contacted}, replied ${replied}, interested ${interested}`)
+  })
+
+  section('Reports shows the same Contacted, Replied and reply rates as Campaigns', () => {
+    checkFunnelDescends(checkReportsMatch(m, now))
   })
 }
 
@@ -411,6 +459,35 @@ async function checkChanges() {
       check(p.status === 'in_sequence', `${name} is ${p.status}`)
       check(p.nextSendAt && schedule.atMs(p.nextSendAt) > clock, `${name} has no next send in the future`)
     }
+  })
+
+  section('after all those changes, Reports still matches Campaigns and the funnel descends', () => {
+    checkFunnelDescends(checkReportsMatch(m, clock))
+  })
+
+  section('the worst a demo can do: an email sent now to every list and company', () => {
+    const everyone = [
+      ...m.lists.SAVED_LISTS.map((l) => m.listMembers.membersForList(l.id, l.records, l.contacts)),
+      m.listMembers.membersFromCompanies(m.companies.companies.map((c) => c.id)),
+    ]
+    const now = schedule.nowParts()
+    for (const members of everyone) {
+      store.addCampaign({
+        ...input,
+        type: 'email',
+        start: now,
+        sequence: [{ type: 'email', day: 0, time: now.time, subject: 'Hi', body: 'Hello' }],
+        contacts: members.flatMap((a) =>
+          a.contacts.map((c) => ({ id: c.id, name: c.name, title: c.title, companyId: a.id, companyName: a.name })),
+        ),
+      })
+    }
+    const stages = checkReportsMatch(m, clock)
+    const ceiling =
+      m.lists.SAVED_LISTS.reduce((n, l) => n + l.records, 0) +
+      m.companies.companies.filter((c) => c.contacts.length > 0).length
+    check(m.store.getCampaignSummary(clock).contacted === ceiling, `Contacted reached ${m.store.getCampaignSummary(clock).contacted}, expected the ceiling ${ceiling}`)
+    checkFunnelDescends(stages)
   })
 }
 
