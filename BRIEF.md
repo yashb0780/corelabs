@@ -595,7 +595,7 @@ It never sends the user to Company Search.
 
 ### Changes to Start a campaign
 
-Four changes. Nothing else about the window moves.
+Five changes. Nothing else about the window moves.
 
 1. **The suppression setting.** The sequence screen gains one field: "When
    someone replies interested", a choice of the three options described
@@ -614,6 +614,11 @@ Four changes. Nothing else about the window moves.
    email" to "“<name>” sent to N contacts". A Draft appearing after the user
    clicked "Send email" would read as the send having failed. Nothing is
    actually sent, and the window's existing note already says so.
+5. **Step 1 goes out at the start time.** In the sequence builder, step 1
+   has no time box of its own: its time cell shows the start time, and a
+   hint under "Sequence starts" says so. Later steps keep their own times.
+   Before this, a sequence "starting" at 2:00 PM could send step 1 at 9:00
+   AM that morning. Decided by the owner on 15 September 2026.
 
 ### Launching a draft
 
@@ -857,6 +862,10 @@ These fields go beyond the list agreed for this section, each for a reason:
   moves on.
 - `resumeAt` carries the out of office return date.
 - `unsubscribedAt` feeds the Unsubscribed tab.
+- `source`, on the campaign, is the saved list or real companies it was
+  started from. Launching a draft reopens Start a campaign on that scope,
+  with the draft's contacts ticked, so the pickers still show the whole
+  list.
 
 Sequence steps gain a `name` ("Intro", "Follow up") for "Step 2 of 4, Follow
 up". A step with no name shows its type instead, so steps built in Start a
@@ -1067,47 +1076,71 @@ step.
   - The store already has every change the screens will need: launch a
     draft, pause, resume, duplicate, change the setting, correct a reply,
     resume outreach.
-  - Nothing on screen uses it yet. `/campaigns` still shows "Not built yet".
+  - Nothing on screen used it until step 2.
 - **Data fixes alongside it:**
   - the funnel's typed stages, Signal matched 3,172, Enriched 2,486 and
     Meeting booked 41
   - `example.com` for every email address and website
+- **Step 2, the Campaigns screen** (committed on main, not yet pushed).
+  - `/campaigns` has the header, the five metric cards, and the campaign
+    table with search, status filters and the row menu (View, Launch,
+    Pause or Resume, Duplicate), each confirmed by a toast.
+  - "New campaign" opens "Choose a saved list", then Start a campaign on
+    that list.
+  - Start a campaign has the suppression field on the sequence screen,
+    opens straight at a draft's own screen for Launch, and step 1 now goes
+    out at the start time (change 5 above).
+  - A campaign remembers the list or companies it came from (`source`, see
+    "Data shape"), so a launched draft reopens on the whole list with its
+    own contacts ticked.
+  - `/campaigns/<id>` exists and shows the campaign's name over an honest
+    "Not built yet" panel, or the "Campaign not found" message.
+  - New files: `src/components/campaign/CampaignMetrics.jsx`,
+    `CampaignTable.jsx` and `ListPickerModal.jsx`, and
+    `src/pages/CampaignDetail.jsx`. The words are in
+    `CAMPAIGN_SCREEN_COPY` in `src/data/campaigns.js`.
+  - Dates in the table put the time on a second, muted line ("Mon 14 Sep"
+    over "9:00 AM"). Eight single-line columns did not fit a laptop screen
+    without squeezing the campaign name to a few characters.
+  - Checked in the browser: every menu action, the list picker, launching
+    and cancelling a draft, send now, a campaign scheduled from Company
+    Search, dark mode and a tablet width.
+- **The checks** are kept as `scripts/check-campaigns.mjs`. Run
+  `node scripts/check-campaigns.mjs` after changing the campaign data,
+  store or activity logic. It loads the real store at eight times of day,
+  checks every seed case in this section, the metrics and funnel rules,
+  and every change the screens can make. The step 1 script was never
+  saved, so this one was rewritten from this section.
 
-**Next: step 2, the Campaigns screen.**
+**Decided on 15 September 2026**
 
-- The header, metrics row and campaign table, with search, status filters
-  and the row menu.
-- "New campaign" with its saved list picker.
-- The two changes to Start a campaign that the menu depends on: the
-  suppression field, and opening on a draft for Launch.
+1. View goes to `/campaigns/<id>`, which says "Not built yet" until step 3.
+2. Reports stays as it is until step 4. Until then the Campaigns screen
+   shows a 5.1 percent reply rate while Reports still shows the old typed
+   bars and a funnel with 864 contacted. Do not demo the two side by side
+   before step 4.
+3. Step 1's time follows the start time. Built in step 2.
+4. The checks are kept in the repo. Done in step 2.
+
+**Known issue, found in step 2.** Resuming a paused campaign, or resuming
+outreach, across a daylight-saving change moves a send off its step time
+by an hour: a 10:00 AM step comes back at 9:00 AM. `applyDelays()` and
+`daysToCatchUp()` in `src/lib/campaignActivity.js` push sends by 24 hours
+rather than by calendar days. It only shows when a pause spans the change
+(next on 1 November 2026). Not fixed yet.
+
+**Next: step 3, the campaign detail page.**
+
+- Replace the placeholder in `src/pages/CampaignDetail.jsx` with the
+  header (with Launch, Pause or Resume, Duplicate, and the suppression
+  setting) and the four tabs described under "Campaign detail".
+- The empty states for the detail page are already written in
+  `src/data/campaigns.js`.
 
 **After that**
 
-- Step 3: the campaign detail page and its four tabs.
 - Step 4: Reports reading from campaigns, meaning the reply rate bars and
   the funnel's Contacted and Replied.
-- Step 5: update `CLAUDE.md` to describe the built screen.
-
-**Decide before step 2**
-
-1. **Where View goes before the detail page exists.** Clicking a campaign
-   row, or View, leads to a page step 2 does not build. Recommendation: step
-   2 adds the `/campaigns/<id>` address showing an honest "Not built yet"
-   panel, the same as the other unbuilt screens. The alternative is
-   building steps 2 and 3 together.
-2. **When Reports starts reading from campaigns.** Until step 4, the
-   Campaigns screen will show a 5.1 percent reply rate while Reports still
-   shows the old typed bars and a funnel with 864 contacted. The two would
-   disagree in a demo. Recommendation: bring step 4 into step 2. The
-   calculations already exist, so it is small.
-3. **The sequence start time.** In Start a campaign, "Sequence starts" has
-   a date and a time, but the time is only used to check it has not passed.
-   Each step goes out at its own time, so a sequence "starting" at 2:00 PM
-   can send step 1 at 9:00 AM that morning, and the Campaigns screen would
-   show both. Recommendation: step 1's time follows the start time, and
-   stops being a separate field.
-4. **Keeping the checks.** Step 1 was checked by a script that loads the
-   store through Vite and tests every seed case at several times of day. It
-   is not in the repo. Recommendation: keep it as
-   `scripts/check-campaigns.mjs`, run with `node`. It needs nothing new
-   installed.
+- Step 5: update `CLAUDE.md` to describe the built screens and the check
+  script. Until then its "Known gaps" entry still calls Campaigns a
+  placeholder.

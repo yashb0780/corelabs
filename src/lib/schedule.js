@@ -123,9 +123,13 @@ export function formatLongDateTime(dateIso, time) {
 const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const SHORT_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
+/** "Mon 14 Sep", for a table cell that puts the time on a line of its own. */
+export function formatShortDate(dateIso) {
+  const d = toDate(dateIso)
+  return `${SHORT_DAYS[d.getDay()]} ${d.getDate()} ${SHORT_MONTHS[d.getMonth()]}${yearIfNeeded(d)}`
+}
+
 /** "Mon 14 Sep, 9:00 AM", for the resolved date beside a sequence step. */
 export function formatShortDateTime(dateIso, time) {
-  const d = toDate(dateIso)
-  const date = `${SHORT_DAYS[d.getDay()]} ${d.getDate()} ${SHORT_MONTHS[d.getMonth()]}`
-  return `${date}${yearIfNeeded(d)}, ${formatTime(time)}`
+  return `${formatShortDate(dateIso)}, ${formatTime(time)}`
 }

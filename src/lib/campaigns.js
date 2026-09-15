@@ -56,6 +56,10 @@ function emailFor(name) {
   return `${local}@${CONTACT_EMAIL_DOMAIN}`
 }
 
+/** The id the Accounts and Contacts pickers know a contact by, without
+    the campaign prefix contactsFrom() adds. */
+export const memberId = (contact) => contact.id.slice(contact.id.indexOf(':') + 1)
+
 /**
  * A campaign's contacts from the pickers' shape: accounts, each with its
  * contacts. Ids are prefixed with the campaign's, so the same person in two
@@ -198,6 +202,13 @@ function seedCampaign(seed, now) {
     suppressionRule: seed.suppression ?? DEFAULT_SUPPRESSION_RULE,
     inbox: seed.inbox ?? CAMPAIGN_INBOXES[0],
     sequence,
+    source: list
+      ? { accounts: list.records, contacts: list.contacts, seed: list.id }
+      : {
+          accounts: accounts.length,
+          contacts: accounts.reduce((n, a) => n + a.contacts.length, 0),
+          companyIds: seed.companies,
+        },
     contacts: contactsFrom(seed.id, accounts),
   }
 
@@ -260,8 +271,12 @@ function updateContacts(campaign, ids, change) {
 /**
  * The fields Start a campaign hands over, shared by a new campaign and a
  * launched draft:
- *   { type, name, listName, contacts, sequence, start, inbox, suppressionRule }
+ *   { type, name, listName, source, contacts, sequence, start, inbox, suppressionRule }
  * `contacts` is the pickers' shape: [{ id, name, title, companyId, companyName }].
+ * `source` is what the scope was drawn from, { accounts, contacts } plus
+ * `companyIds` or a saved list's `seed`, so a draft (a duplicate, say) can
+ * reopen Start a campaign on the same accounts. See scopeForCampaign() in
+ * src/lib/listActions.js.
  */
 function fromSetup(id, input) {
   return {
@@ -275,6 +290,7 @@ function fromSetup(id, input) {
     suppressionRule: input.suppressionRule ?? DEFAULT_SUPPRESSION_RULE,
     inbox: input.inbox,
     sequence: input.sequence,
+    source: input.source,
     contacts: contactsFrom(
       id,
       Object.values(
@@ -339,7 +355,7 @@ export function duplicateCampaign(id) {
     delays: [],
     contacts: source.contacts.map((c) => ({
       ...c,
-      id: `${copyId}:${c.id.slice(c.id.indexOf(':') + 1)}`,
+      id: `${copyId}:${memberId(c)}`,
       reply: null,
       unsubscribedAt: null,
       resumedFrom: [],

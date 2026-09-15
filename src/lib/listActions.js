@@ -53,6 +53,20 @@ export function scopeForList(list) {
 }
 
 /**
+ * A draft campaign's own scope, for launching it: the saved list or real
+ * companies it was started from, which the store keeps as its `source`.
+ * Start a campaign then ticks the draft's contacts within it.
+ */
+export function scopeForCampaign(campaign) {
+  return {
+    name: campaign.name,
+    saveName: COPY.listCopyName(campaign.name),
+    listName: campaign.listName,
+    ...campaign.source,
+  }
+}
+
+/**
  * The accounts in view on Company Search, for an assistant reply to a
  * message that named no list.
  */

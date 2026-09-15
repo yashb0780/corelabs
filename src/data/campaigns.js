@@ -188,9 +188,13 @@ export const CAMPAIGN_COPY = {
 
     sequence: {
       startLabel: 'Sequence starts',
+      startHint: 'Step 1 goes out at this time. Every later step has a time of its own.',
       startDate: 'Start date',
       startTime: 'Start time',
       startPast: 'Pick a start date and time that has not passed yet.',
+      // Step 1 has no time box: it goes out at the start time.
+      firstStepTime: 'Set by the start time',
+      suppressionLabel: 'When someone replies interested',
       stepsLabel: 'Steps',
       stepType: 'Step type',
       day: 'Day',
@@ -324,6 +328,112 @@ export const SUPPRESSION_RULES = [
 ]
 
 export const DEFAULT_SUPPRESSION_RULE = 'stop_company'
+
+/* Every word on the Campaigns screen, and every message it shows when
+   there is nothing to show. The ones written as `(a) => ...` build a
+   sentence from a number or a name; edit the words inside the backticks.
+   Dates inside toasts come from src/lib/schedule.js. */
+export const CAMPAIGN_SCREEN_COPY = {
+  title: 'Campaigns',
+  subtitle: 'Outbound sequences running against your saved lists.',
+  newCampaign: 'New campaign',
+  // Under a campaign's name when it has no saved list behind it.
+  fromCompanySearch: 'From Company Search',
+  // An empty cell: nothing sent yet, or nothing due.
+  none: '–',
+
+  // The five cards above the table. They count every campaign and do not
+  // follow the search or the status filter.
+  metrics: {
+    label: 'Campaign totals',
+    active: 'Active campaigns',
+    activeNote: (scheduled) => `${scheduled.toLocaleString('en-US')} scheduled`,
+    inSequence: 'Contacts in sequence',
+    inSequenceNote: 'In active campaigns, with steps still to come',
+    emailsSent: 'Emails sent · last 30 days',
+    emailsSentNote: 'Email steps only, not LinkedIn',
+    replyRate: 'Reply rate',
+    replyRateNote: 'Of accounts contacted, not counting out of office',
+    interested: 'Interested replies',
+    interestedNote: 'Across every campaign',
+    needReview: (n) => `${n.toLocaleString('en-US')} ${n === 1 ? 'needs' : 'need'} review`,
+  },
+
+  search: 'Search campaigns…',
+  filterLabel: 'Filter by status',
+  all: 'All',
+
+  columns: {
+    campaign: 'Campaign',
+    status: 'Status',
+    size: 'Accounts / Contacts',
+    lastActivity: 'Last activity',
+    lastStep: 'Last step sent',
+    nextSend: 'Next send',
+    replies: 'Replies',
+    actions: 'Actions', // read out by screen readers, not shown
+  },
+  created: (when) => `Created ${when}`,
+  lastStep: (n, total, name) => `Step ${n} of ${total}, ${name}`,
+  sentTo: (contact, company) => `to ${contact} · ${company}`,
+  // The breakdown under the reply total. Kinds with no replies are left out.
+  replyKinds: {
+    interested: (n) => `${n.toLocaleString('en-US')} interested`,
+    ooo: (n) => `${n.toLocaleString('en-US')} out of office`,
+    not_interested: (n) => `${n.toLocaleString('en-US')} not interested`,
+    unclear: (n) => `${n.toLocaleString('en-US')} ${n === 1 ? 'needs' : 'need'} review`,
+  },
+
+  menu: {
+    label: (name) => `Actions for ${name}`,
+    view: 'View',
+    launch: 'Launch',
+    pause: 'Pause',
+    resume: 'Resume',
+    duplicate: 'Duplicate',
+  },
+
+  toast: {
+    paused: (name) => `“${name}” paused. Nothing more will send until it is resumed.`,
+    resumed: (name) => `“${name}” resumed`,
+    resumedNext: (name, when) => `“${name}” resumed. Next send ${when}.`,
+    duplicated: (name) => `Duplicated as “${name}”, a draft`,
+  },
+
+  empty: {
+    title: 'No campaigns yet',
+    body: 'Start one from a saved list with the “New campaign” button.',
+  },
+  noMatch: {
+    body: 'No campaigns match this search and filter.',
+    clear: 'Clear search and filter',
+  },
+
+  // The window "New campaign" opens.
+  listPicker: {
+    title: 'Choose a saved list',
+    search: 'Search saved lists…',
+    noMatch: 'No saved lists match',
+    counts: (accounts, contacts) =>
+      `${plural(accounts, 'account', 'accounts')} · ${plural(contacts, 'contact', 'contacts')}`,
+    cancel: 'Cancel',
+    continue: 'Continue',
+  },
+
+  // One campaign's page, /campaigns/<id>. Not built yet: it is step 3 in
+  // "Build progress" at the end of section 9 of BRIEF.md.
+  detail: {
+    notBuilt: {
+      title: 'Not built yet',
+      body: 'This campaign’s page comes next: its companies and activity, email sequence, replies and unsubscribes.',
+    },
+    notFound: {
+      title: 'Campaign not found',
+      body: 'That campaign is not here. It may have been added in an earlier visit: campaigns reset when the page reloads.',
+      back: 'Back to Campaigns',
+    },
+  },
+}
 
 /* The sequences the seed campaigns use. `name` is what the step is called
    on screen: "Step 2 of 4, Follow up". */

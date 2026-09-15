@@ -10,6 +10,7 @@ import { AssistantWidget } from './components/layout/AssistantWidget'
 import { Sidebar } from './components/layout/Sidebar'
 import AccountDetail from './pages/AccountDetail'
 import AdminSection from './pages/AdminSection'
+import CampaignDetail from './pages/CampaignDetail'
 import Campaigns from './pages/Campaigns'
 import Generate from './pages/Generate'
 import Leads from './pages/Leads'
@@ -53,6 +54,7 @@ export default function App() {
           <Route path="/signals" element={<Signals />} />
           <Route path="/saved-lists" element={<SavedLists />} />
           <Route path="/campaigns" element={<Campaigns />} />
+          <Route path="/campaigns/:campaignId" element={<CampaignDetail />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/reports/:reportId" element={<ReportDetail />} />
           <Route path="/generate" element={<Generate />} />

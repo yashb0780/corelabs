@@ -7,7 +7,9 @@
  *   contacts  pick which contacts are in scope (opened from the Contacts card)
  *   sequence  the sequence builder: when it starts, editable steps (type,
  *             day, time, subject) each showing the date it will send, Add
- *             step, remove a step, and the sending inbox
+ *             step, remove a step, what an interested reply does, and the
+ *             sending inbox. Step 1 has no time of its own: it goes out at
+ *             the start time, so the sequence never sends before it starts.
  *   email     compose one email: subject, body from a template, inbox, and
  *             when to send it (now, or scheduled for a date and time)
  *
@@ -15,6 +17,12 @@
  * one set of selected contacts (see ScopePickers.jsx), so the Accounts and
  * Contacts numbers always agree, and every later screen reads the narrowed
  * numbers. If nothing is left, the two campaign options are disabled.
+ *
+ * Given a `draft` (a campaign from the store), it opens straight at the
+ * sequence builder or the compose screen, filled in from the draft: name,
+ * contacts ticked, steps or email, inbox and suppression setting. The start
+ * date still begins at tomorrow, 9:00 AM. Back reaches the first screen as
+ * usual, where the scope or the type can still be changed.
  *
  * Back returns to the first screen without losing what was typed or
  * scheduled. Nothing is sent. On confirm, `onLaunch` is handed
@@ -45,16 +53,20 @@ import {
   CAMPAIGN_SEQUENCE,
   CAMPAIGN_TYPES,
   DEFAULT_SEND_TIME,
+  DEFAULT_SUPPRESSION_RULE,
   EMAIL_TEMPLATE,
   MAX_STEPS,
   NEW_STEP,
   STEP_TYPES,
+  SUPPRESSION_RULES,
 } from '../../data/campaigns'
+import { memberId } from '../../lib/campaigns'
 import { scopeMembers } from '../../lib/listMembers'
 import {
   formatLongDate,
   formatLongDateTime,
   formatShortDateTime,
+  formatTime,
   isPast,
   nowParts,
   stepSend,
@@ -65,6 +77,11 @@ import {
 
 const COPY = CAMPAIGN_COPY.campaignModal
 const INBOX_OPTIONS = CAMPAIGN_INBOXES.map((i) => ({ value: i, label: i }))
+
+/* Step 1 goes out at the start time rather than a time of its own. Every
+   check and the campaign handed to the store read the steps through this. */
+const timedSteps = (steps, start) =>
+  steps.map((s, i) => (i === 0 ? { ...s, time: start.time } : s))
 
 /* An Accounts or Contacts card. Clicking it opens that picker. Once the
    scope has been narrowed it also says how many there were to start with. */
@@ -180,7 +197,54 @@ function DateTime({ id, value, onChange, dateLabel, timeLabel }) {
 const ROW =
   'grid grid-cols-[1.25rem_minmax(0,14.5rem)_4rem_7.5rem_minmax(0,1fr)_8.5rem_2.25rem] items-center gap-2'
 
-function SequenceView({ counts, start, onStartChange, steps, onStepsChange, inbox, onInboxChange }) {
+/* What an interested reply does. All three are laid out with their
+   explanation, so nobody picks "Keep sending to everyone" by accident. */
+function SuppressionField({ value, onChange }) {
+  return (
+    <fieldset>
+      <legend className="lp-label">{COPY.sequence.suppressionLabel}</legend>
+      <div className="mt-[var(--lp-label-gap)] grid gap-2 sm:grid-cols-3">
+        {SUPPRESSION_RULES.map((rule) => {
+          const on = rule.id === value
+          return (
+            <label
+              key={rule.id}
+              className={cx(
+                'flex cursor-pointer items-start gap-2.5 rounded-lg border px-3 py-2.5 transition-colors duration-150 ease-lp',
+                on ? 'border-accent bg-accent-quiet' : 'border-line hover:border-line-strong',
+              )}
+            >
+              <input
+                type="radio"
+                name="suppression-rule"
+                value={rule.id}
+                checked={on}
+                onChange={() => onChange(rule.id)}
+                className="mt-1 size-3.5 shrink-0 cursor-pointer accent-accent"
+              />
+              <span className="min-w-0 leading-tight">
+                <span className="block text-sm font-name text-txt">{rule.label}</span>
+                <span className="mt-1 block text-2xs text-txt-2">{rule.hint}</span>
+              </span>
+            </label>
+          )
+        })}
+      </div>
+    </fieldset>
+  )
+}
+
+function SequenceView({
+  counts,
+  start,
+  onStartChange,
+  steps,
+  onStepsChange,
+  suppression,
+  onSuppressionChange,
+  inbox,
+  onInboxChange,
+}) {
   const S = COPY.sequence
   // Start above every key in use: this screen remounts after Back, possibly
   // with some steps removed, and a reused key would confuse the rows.
@@ -208,7 +272,7 @@ function SequenceView({ counts, start, onStartChange, steps, onStepsChange, inbo
 
   return (
     <div className="space-y-4">
-      <Field label={S.startLabel} htmlFor="sequence-start">
+      <Field label={S.startLabel} hint={S.startHint} htmlFor="sequence-start">
         <DateTime
           id="sequence-start"
           value={start}
@@ -240,7 +304,7 @@ function SequenceView({ counts, start, onStartChange, steps, onStepsChange, inbo
             </div>
 
             <ol className="divide-y divide-line">
-              {steps.map((step, i) => {
+              {timedSteps(steps, start).map((step, i) => {
                 const n = i + 1
                 const send = stepSend(start, step)
                 const past = send && isPast(send.date, send.time)
@@ -260,12 +324,22 @@ function SequenceView({ counts, start, onStartChange, steps, onStepsChange, inbo
                       onChange={(day) => update(step.key, { day: day === '' ? '' : Math.max(0, Number(day)) })}
                       aria-label={`${S.step(n)}: ${S.day}`}
                     />
-                    <Select
-                      value={step.time}
-                      onChange={(time) => update(step.key, { time })}
-                      options={timeOptions(send?.date ?? start.date)}
-                      aria-label={`${S.step(n)}: ${S.time}`}
-                    />
+                    {i === 0 ? (
+                      <span
+                        title={S.firstStepTime}
+                        className="flex h-9 items-center px-2.5 text-sm text-txt-2"
+                      >
+                        {formatTime(step.time)}
+                        <span className="sr-only">. {S.firstStepTime}</span>
+                      </span>
+                    ) : (
+                      <Select
+                        value={step.time}
+                        onChange={(time) => update(step.key, { time })}
+                        options={timeOptions(send?.date ?? start.date)}
+                        aria-label={`${S.step(n)}: ${S.time}`}
+                      />
+                    )}
                     <TextInput
                       value={step.subject}
                       onChange={(subject) => update(step.key, { subject })}
@@ -299,6 +373,8 @@ function SequenceView({ counts, start, onStartChange, steps, onStepsChange, inbo
           {atMax && <span className="text-2xs text-txt-3">{S.max(MAX_STEPS)}</span>}
         </div>
       </div>
+
+      <SuppressionField value={suppression} onChange={onSuppressionChange} />
 
       <Field label={COPY.inboxLabel} htmlFor="sequence-inbox">
         <Select
@@ -396,16 +472,28 @@ function EmailView({ counts, email, onEmailChange, schedule, onScheduleChange, i
 
 /* --- The modal ----------------------------------------------------------- */
 
-export function CampaignSetupModal({ scope, onLaunch, onClose }) {
-  const [view, setView] = useState('choose')
+export function CampaignSetupModal({ scope, draft = null, onLaunch, onClose }) {
+  // A draft opens at its own screen; everything else at the first one.
+  const [view, setView] = useState(draft ? draft.type : 'choose')
   const [name, setName] = useState(scope.name)
   // Until the name is edited by hand, its account count follows the scope.
   const [nameEdited, setNameEdited] = useState(false)
-  const [inbox, setInbox] = useState(CAMPAIGN_INBOXES[0])
-  const [steps, setSteps] = useState(() =>
-    CAMPAIGN_SEQUENCE.map((s, key) => ({ ...s, key })),
+  const [inbox, setInbox] = useState(draft?.inbox ?? CAMPAIGN_INBOXES[0])
+  const [suppression, setSuppression] = useState(
+    draft?.suppressionRule ?? DEFAULT_SUPPRESSION_RULE,
   )
-  const [email, setEmail] = useState(EMAIL_TEMPLATE)
+  const [steps, setSteps] = useState(() =>
+    (draft?.type === 'sequence' ? draft.sequence : CAMPAIGN_SEQUENCE).map((s, key) => ({
+      ...s,
+      key,
+    })),
+  )
+  // A single email is stored as a one-step sequence carrying the body.
+  const [email, setEmail] = useState(() =>
+    draft?.type === 'email'
+      ? { subject: draft.sequence[0].subject, body: draft.sequence[0].body ?? '' }
+      : EMAIL_TEMPLATE,
+  )
   // Scheduling lives up here with everything else, so Back keeps it.
   const [start, setStart] = useState(() => ({ date: tomorrowIso(), time: DEFAULT_SEND_TIME }))
   const [schedule, setSchedule] = useState(() => ({
@@ -417,7 +505,7 @@ export function CampaignSetupModal({ scope, onLaunch, onClose }) {
   const sequenceReady =
     steps.length > 0 &&
     !isPast(start.date, start.time) &&
-    steps.every((st) => {
+    timedSteps(steps, start).every((st) => {
       const send = stepSend(start, st)
       return send && !isPast(send.date, send.time)
     })
@@ -427,11 +515,14 @@ export function CampaignSetupModal({ scope, onLaunch, onClose }) {
   const bodyRef = useRef(null)
 
   // Every account in scope, with its contacts, and which contacts are
-  // ticked. Everything starts ticked.
+  // ticked. Everything starts ticked, or for a draft, the draft's contacts.
   const members = useMemo(() => scopeMembers(scope), [scope])
-  const [selected, setSelected] = useState(
-    () => new Set(members.flatMap((a) => a.contacts.map((c) => c.id))),
-  )
+  const [selected, setSelected] = useState(() => {
+    const all = members.flatMap((a) => a.contacts.map((c) => c.id))
+    if (!draft) return new Set(all)
+    const inDraft = new Set(draft.contacts.map(memberId))
+    return new Set(all.filter((id) => inDraft.has(id)))
+  })
 
   const totals = {
     accounts: members.length,
@@ -472,7 +563,15 @@ export function CampaignSetupModal({ scope, onLaunch, onClose }) {
   const setup = (fields) => ({
     name: trimmed,
     listName: scope.listName ?? null,
+    source: {
+      accounts: scope.accounts,
+      contacts: scope.contacts,
+      ...(scope.companyIds ? { companyIds: scope.companyIds } : { seed: scope.seed }),
+    },
     inbox,
+    // A single email has nothing left to stop after its one send, so the
+    // setting is kept but never acts.
+    suppressionRule: suppression,
     contacts: members.flatMap((a) =>
       a.contacts
         .filter((c) => selected.has(c.id))
@@ -491,7 +590,7 @@ export function CampaignSetupModal({ scope, onLaunch, onClose }) {
         type: 'sequence',
         start,
         // `key` only tells the step rows apart on screen; it is not kept.
-        sequence: steps.map(({ key: _key, ...s }) => ({ ...s, day: Number(s.day) })),
+        sequence: timedSteps(steps, start).map(({ key: _key, ...s }) => ({ ...s, day: Number(s.day) })),
       }),
     })
 
@@ -568,6 +667,8 @@ export function CampaignSetupModal({ scope, onLaunch, onClose }) {
           onStartChange={setStart}
           steps={steps}
           onStepsChange={setSteps}
+          suppression={suppression}
+          onSuppressionChange={setSuppression}
           inbox={inbox}
           onInboxChange={setInbox}
         />
