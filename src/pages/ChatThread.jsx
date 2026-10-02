@@ -62,7 +62,7 @@ function Thread({ chat, typing }) {
 
   return (
     <div className="flex h-full min-w-0 flex-col">
-      <TopBar breadcrumb={[{ label: REPLIES.breadcrumbRoot, to: '/chat' }, chat.title]} />
+      <TopBar breadcrumb={[{ label: REPLIES.breadcrumbRoot, to: '/chat' }, chat.title]} showSearch={false} />
 
       <div className="flex min-h-0 flex-1 bg-surface">
         <div className="flex min-w-0 flex-1 flex-col">
@@ -118,7 +118,10 @@ export default function ChatThread() {
   if (!chat) {
     return (
       <div className="flex h-full min-w-0 flex-col">
-        <TopBar breadcrumb={[{ label: REPLIES.breadcrumbRoot, to: '/chat' }, REPLIES.notFound.title]} />
+        <TopBar
+          breadcrumb={[{ label: REPLIES.breadcrumbRoot, to: '/chat' }, REPLIES.notFound.title]}
+          showSearch={false}
+        />
         <main className="flex-1 overflow-y-auto bg-surface px-6 py-5">
           <EmptyState title={REPLIES.notFound.title}>
             {REPLIES.notFound.body}{' '}

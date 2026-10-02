@@ -140,6 +140,9 @@ function subscribe(onChange) {
 
 const getState = () => state
 
+/** Whether an address is the chat interface: /chat or a thread under it. */
+export const isChatPath = (pathname) => pathname === '/chat' || pathname.startsWith('/chat/')
+
 export function useChats() {
   return useSyncExternalStore(subscribe, getState, getState)
 }

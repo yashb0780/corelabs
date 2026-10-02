@@ -65,9 +65,7 @@ export function CompanyPanel({ companyId, archetype, onClose }) {
         </button>
       </header>
 
-      {/* Extra room at the bottom so the floating assistant button never
-          covers the last card. */}
-      <div className="lp-stack flex-1 overflow-y-auto px-4 pt-4 pb-24">
+      <div className="lp-stack flex-1 overflow-y-auto p-4">
         <AccountBrief company={company} />
         <AccountFitScore company={company} archetype={archetype} />
         <AccountPhase company={company} />

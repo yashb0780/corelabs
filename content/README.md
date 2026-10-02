@@ -24,7 +24,7 @@ generic-copy rule in `CLAUDE.md`, made at the owner's request.
 
 | File | What it holds |
 |---|---|
-| `home.json` | The New chat page: greetings, placeholder, suggestion chips, Today's signals, and the sidebar labels |
+| `home.json` | The New chat page: greetings, placeholder, suggestion chips, and the sidebar labels |
 | `intents.json` | The keyword rules that turn a prompt into filters, including the negation words |
 | `replies.json` | Everything the agent says: step chips, answers, the "could not match" reply |
 | `starter-chats.json` | The chats already in the sidebar the first time the prototype is opened |

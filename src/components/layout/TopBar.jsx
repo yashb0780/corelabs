@@ -7,6 +7,9 @@
  *
  * Anywhere in Settings the search becomes a settings search (see
  * SettingsSearch.jsx). Everywhere else it is the company search hint.
+ *
+ * `showSearch={false}` leaves the search out and keeps the theme toggle.
+ * Only the chat pages use it: they are a search box of their own.
  */
 import { Link, useLocation } from 'react-router-dom'
 import { Icon } from '../Icon'
@@ -35,7 +38,7 @@ function ThemeToggle() {
   )
 }
 
-export function TopBar({ breadcrumb = [] }) {
+export function TopBar({ breadcrumb = [], showSearch = true }) {
   const { pathname } = useLocation()
 
   return (
@@ -80,7 +83,7 @@ export function TopBar({ breadcrumb = [] }) {
       </nav>
 
       <div className="flex shrink-0 items-center gap-2">
-        {isSettingsPath(pathname) ? (
+        {!showSearch ? null : isSettingsPath(pathname) ? (
           <SettingsSearch />
         ) : (
           <button

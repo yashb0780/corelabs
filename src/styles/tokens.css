@@ -205,7 +205,6 @@
      -------------------------------------------------------------------- */
   --lp-chat-w: 760px; /* the conversation column, and the New chat page */
   --lp-chat-panel-w: 520px; /* the company panel in a thread */
-  --lp-chat-home-top: 14vh; /* space above the greeting on New chat */
 }
 
 /* ==========================================================================

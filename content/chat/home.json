@@ -24,8 +24,6 @@
     "evening": 17
   },
 
-  "recentLabel": "Recent chat",
-
   "placeholder": "Ask anything...",
   "threadPlaceholder": "Ask LeadPlus",
   "sendLabel": "Send",
@@ -42,30 +40,5 @@
     "SAP ECC customers not on S/4HANA",
     "Prep an account brief for Cummins",
     "Who is hiring SAP FICO roles right now"
-  ],
-
-  "_signalsAbout": "The quiet list at the bottom of the page. companyId must match an id in src/data/companies.js; the logo and name come from there. Clicking a row opens that account.",
-  "signalsLabel": "Today's signals",
-  "signals": [
-    {
-      "companyId": "coca-cola",
-      "text": "Transformation Director role posted, ahead of ERP platform selection",
-      "time": "8:42 AM"
-    },
-    {
-      "companyId": "caterpillar",
-      "text": "SAP FICO Consultant role opened for the S/4HANA build stream",
-      "time": "9:15 AM"
-    },
-    {
-      "companyId": "cummins",
-      "text": "ERP Programme Manager role names budget approval",
-      "time": "11:03 AM"
-    },
-    {
-      "companyId": "whirlpool",
-      "text": "Second enterprise architect role naming ERP readiness",
-      "time": "1:27 PM"
-    }
   ]
 }

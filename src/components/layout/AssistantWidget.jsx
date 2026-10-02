@@ -13,10 +13,15 @@
  * It is rendered by App.jsx outside <Routes>, so it survives navigation and
  * the conversation is not thrown away when you click into an account.
  *
+ * It is hidden on the chat interface (/chat and /chat/<id>), which is a
+ * chat already. Hidden, not removed: it stays mounted, so a conversation
+ * started on another page is still there when you come back.
+ *
  * Geometry (size, offsets, radius) and the shadows come from tokens.css.
  * Nothing here sets a colour.
  */
 import { useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { ASSISTANT } from '../../data/assistant'
 import { Icon } from '../Icon'
 import { cx } from '../cx'
@@ -25,6 +30,7 @@ import { ActionPills } from '../campaign/ActionPills'
 import { useListActions } from '../campaign/useListActions'
 import { getLeadsInView } from '../../lib/leadsView'
 import { scopeForList, scopeForView } from '../../lib/listActions'
+import { isChatPath } from '../../lib/chats'
 import { findListInPrompt } from '../../lib/savedLists'
 
 /* The pills under every reply. Enrich contacts is only on Company Search. */
@@ -96,7 +102,7 @@ function TypingDots() {
   )
 }
 
-function AssistantPanel({ onAction }) {
+function AssistantPanel({ onAction, hidden }) {
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState([
     { from: 'assistant', text: ASSISTANT.greeting },
@@ -139,12 +145,16 @@ function AssistantPanel({ onAction }) {
 
   // Escape closes the panel, which is what people expect of a dialog.
   useEffect(() => {
-    if (!open) return
+    if (!open || hidden) return
     const onKey = (e) => e.key === 'Escape' && setOpen(false)
     window.addEventListener('keydown', onKey)
     inputRef.current?.focus()
     return () => window.removeEventListener('keydown', onKey)
-  }, [open])
+  }, [open, hidden])
+
+  // After every hook, so hiding keeps this component, and its messages,
+  // mounted.
+  if (hidden) return null
 
   /* --- Closed: the circular button ------------------------------------- */
   if (!open) {
@@ -276,9 +286,10 @@ function AssistantPanel({ onAction }) {
  */
 export function AssistantWidget() {
   const listActions = useListActions()
+  const { pathname } = useLocation()
   return (
     <>
-      <AssistantPanel onAction={listActions.run} />
+      <AssistantPanel onAction={listActions.run} hidden={isChatPath(pathname)} />
       {listActions.overlay}
     </>
   )

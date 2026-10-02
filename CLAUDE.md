@@ -241,7 +241,10 @@ keeps a company in rather than dropping it.
   removing a chip re-runs the search. Missing data follows the Refine by
   ICP standard: a company with nothing on record for a filter is listed as
   not judged, never counted and never silently dropped. The company panel
-  stacks the account page's own section components. The Chats header in
+  stacks the account page's own section components. The chat interface
+  hides the top bar's company search and the floating assistant button
+  (kept mounted, so its conversation survives); every other page keeps
+  both. The Chats header in
   the sidebar collapses the list. Chat has no "Selling as:" dropdown: the
   seller type is set at onboarding and read from `src/data/workspace.js`
   (Company Search keeps its own dropdown for now). The greeting name is

@@ -1,22 +1,24 @@
 /**
  * NEW CHAT - the empty state at /chat, modelled on Attio's home.
  *
- * A greeting, a link back to the most recent chat, a large composer, three
- * suggestion chips and a quiet list of today's signals. No tables.
+ * A greeting, a large composer and three suggestion chips, centred on the
+ * page and nothing else. The sidebar's Chats list is the way back into an
+ * earlier chat, so the page does not repeat it.
+ *
+ * The top bar has no company search here, and the floating assistant
+ * button is hidden (see AssistantWidget.jsx): this page is already a chat.
  *
  * Sending, or clicking a chip, starts a chat named after the prompt and
  * opens it at /chat/<id>, where the reply lands.
  *
  * Copy: content/chat/home.json, including the name in the greeting.
  */
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import HOME from '../../content/chat/home.json'
-import { Icon } from '../components/Icon'
 import { Composer } from '../components/chat/Composer'
-import { SignalsList } from '../components/chat/SignalsList'
 import { TopBar } from '../components/layout/TopBar'
 import { ActionPill } from '../components/ui'
-import { recentChats, startChat, useChats } from '../lib/chats'
+import { startChat } from '../lib/chats'
 import { fill } from '../lib/fill'
 
 function greeting(now = new Date()) {
@@ -33,53 +35,32 @@ function greeting(now = new Date()) {
 
 export default function ChatHome() {
   const navigate = useNavigate()
-  const { chats } = useChats()
-  const recent = recentChats(chats, 1)[0]
-
   const start = (text) => navigate(`/chat/${startChat(text)}`)
 
   return (
     <div className="flex h-full min-w-0 flex-col">
-      <TopBar breadcrumb={[HOME.breadcrumb]} />
+      <TopBar breadcrumb={[HOME.breadcrumb]} showSearch={false} />
 
       <main className="flex-1 overflow-y-auto bg-surface">
+        {/* Centred in the space below the top bar. The extra padding at the
+            bottom lifts the group a little above the true middle, which
+            reads as centred; dead centre looks low. */}
         <div
-          className="mx-auto px-6 pb-24"
-          style={{ maxWidth: 'var(--lp-chat-w)', paddingTop: 'var(--lp-chat-home-top)' }}
+          className="mx-auto flex min-h-full flex-col justify-center px-6 pt-10 pb-[18vh]"
+          style={{ maxWidth: 'var(--lp-chat-w)' }}
         >
-          <h1 className="text-title text-txt">{greeting()}</h1>
+          <h1 className="text-center text-title text-txt">{greeting()}</h1>
 
-          <div className="mt-8 space-y-2">
-            {recent && (
-              <Link
-                to={`/chat/${recent.id}`}
-                className="group inline-flex max-w-full items-center gap-1.5 px-1 text-xs text-txt-3 transition-colors duration-150 ease-lp hover:text-txt"
-              >
-                <Icon name="clock" className="size-3.5 shrink-0" />
-                <span className="shrink-0">{HOME.recentLabel}:</span>
-                <span className="truncate font-name text-txt-2 group-hover:text-txt">
-                  {recent.title}
-                </span>
-                <Icon name="arrowRight" className="size-3 shrink-0" />
-              </Link>
-            )}
-            <Composer
-              placeholder={HOME.placeholder}
-              onSend={start}
-              autoFocus
-            />
+          <div className="mt-8">
+            <Composer placeholder={HOME.placeholder} onSend={start} autoFocus />
           </div>
 
-          <div className="mt-3 flex flex-wrap gap-1.5">
+          <div className="mt-3 flex flex-wrap justify-center gap-1.5">
             {HOME.suggestions.map((s) => (
               <ActionPill key={s} onClick={() => start(s)}>
                 {s}
               </ActionPill>
             ))}
-          </div>
-
-          <div className="mt-14">
-            <SignalsList />
           </div>
         </div>
       </main>
