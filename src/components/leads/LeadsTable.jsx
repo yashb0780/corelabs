@@ -8,6 +8,9 @@
  * selects it instead, which brings up the action bar at the bottom of the
  * page. The checkbox handles its own clicks so it never opens the account.
  *
+ * CompanyCell and FitScoreCell are exported because a chat's result card
+ * shows the same company and score, and should never drift from this table.
+ *
  * Row padding comes from --lp-row-pad-x / --lp-row-pad-y in
  * src/styles/tokens.css. Change the density there, not here.
  */
@@ -22,7 +25,7 @@ import { CompanyLogo, TonePill } from '../ui'
 
 /* --- Company cell ------------------------------------------------------- */
 
-function CompanyCell({ company }) {
+export function CompanyCell({ company }) {
   return (
     <div className="flex items-center gap-2.5">
       <CompanyLogo company={company} />
@@ -38,7 +41,7 @@ function CompanyCell({ company }) {
 
 /* --- ICP Fit Score cell ------------------------------------------------- */
 
-function FitScoreCell({ score }) {
+export function FitScoreCell({ score }) {
   return (
     <div className="flex items-center gap-2.5">
       <span

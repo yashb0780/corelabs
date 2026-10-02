@@ -32,9 +32,16 @@ Copied verbatim from section 6 of `BRIEF.md`.
     `localStorage` under one key, `lp-theme`, holding the string "light" or
     "dark". Added deliberately so the theme survives navigation and reload.
     No user data is stored. Do not remove it.
+  - **Sanctioned exception:** chats are remembered in `localStorage` under
+    one key, `lp-chats`, at the owner's request, so a chat survives a
+    reload. It holds each chat's prompts and the filters picked, nothing
+    else. Written only by `src/lib/chats.js`. Do not remove it.
 - Tokens in `src/styles/tokens.css` are the only place colours, radii and font
   sizes are defined. No hex codes in component files.
-- All data lives in `src/data/`. Never move content strings into components.
+- All data lives in `src/data/` or `content/`. Never move content strings
+  into components. `content/` is plain JSON (and, from Phase 2 of chat,
+  markdown) for the chat and skills screens, at the owner's request; see
+  `content/README.md`. Company data stays in `src/data/companies.js`.
 - One file per section. Never combine two sections into one file or split one
   section across files.
 - Design reference is Linear: minimal but high contrast and information dense.
@@ -89,6 +96,7 @@ not the function. Fix the phase.
 ## Folder structure
 
 ```
+content/           chat copy, intents and starter chats as JSON (see its README)
 src/data/          all dummy data, copy and empty-state text
 src/lib/           pure logic with no UI: window rule, ICP filters, theme,
                    the vendor profile store, settings paths and search
@@ -101,6 +109,8 @@ src/components/vendor/   one file per group of the vendor profile
 src/components/lists/    SavedListsTable, AssignModal, ShareModal
 src/components/campaign/ the action pills, campaign preview, save-as-list
 src/components/reports/  report cards, modals, and the hand-drawn SVG charts
+src/components/chat/     the chat composer, agent reply, result card,
+                         company panel and Today's signals
 src/components/form.jsx  shared form controls
 src/components/overlay.jsx  Modal, RowMenu, Toast. No shadows: a modal is
                          lifted by the --lp-scrim backdrop instead
@@ -219,6 +229,20 @@ keeps a company in rather than dropping it.
   not add it as an action anywhere else. Its list names are SAP-specific at the owner's
   request, a deliberate exception to the generic-copy rule, noted at the top
   of that file.
+- Chat (`/chat`, `/chat/<id>`) has no brief. It is modelled on Attio's home
+  (the empty state) and Lightfield (the thread). "New chat" sits at the top
+  of the sidebar and the five most recent chats under Chats. There is no
+  model: `src/lib/intents.js` matches phrases from
+  `content/chat/intents.json`, including negation ("not on", "without",
+  "excluding", "no"), and anything unmatched gets the "could not match
+  that yet" reply with three prompts. A reply stores only its filters, so
+  removing a chip re-runs the search. Missing data follows the Refine by
+  ICP standard: a company with nothing on record for a filter is listed as
+  not judged, never counted and never silently dropped. The company panel
+  stacks the account page's own section components. The greeting uses the
+  signed-in teammate's first name (Priya). Its copy is SAP-specific at the
+  owner's request, noted in `content/README.md`. The "/" button shows a
+  placeholder until the Skills library (Phase 2) is built.
 - The assistant widget is visual only. There is no model behind it: it waits a
   moment and replies from `src/data/assistant.js`, recognising only the name
   of a saved list. It is rendered by `App.jsx` outside `<Routes>` so the

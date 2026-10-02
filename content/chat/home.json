@@ -1,0 +1,67 @@
+{
+  "_about": "The New chat page at /chat, and the two chat entries in the left sidebar. The greeting name is not here: it is the first name of the signed-in teammate in src/data/teammates.js.",
+
+  "sidebar": {
+    "newChat": "New chat",
+    "chatsLabel": "Chats"
+  },
+
+  "breadcrumb": "New chat",
+
+  "_greetingsAbout": "Picked by the clock on the viewer's computer. Morning from 5am, afternoon from 12pm, evening from 5pm until 5am.",
+  "greetings": {
+    "morning": "Good morning, {name}.",
+    "afternoon": "Good afternoon, {name}.",
+    "evening": "Good evening, {name}."
+  },
+  "greetingHours": {
+    "morning": 5,
+    "afternoon": 12,
+    "evening": 17
+  },
+
+  "recentLabel": "Recent chat",
+
+  "placeholder": "Ask anything...",
+  "threadPlaceholder": "Ask LeadPlus",
+  "sendLabel": "Send",
+
+  "_skillsAbout": "The / button in the composer. Skills arrive in Phase 2; until then it shows this note.",
+  "skillsButtonLabel": "Skills",
+  "skillsPlaceholder": {
+    "title": "Skills are coming next",
+    "body": "Soon you will pick a saved skill here, such as an account brief, and run it on an account or a list."
+  },
+
+  "_suggestionsAbout": "The chips under the composer. Clicking one sends it as the first message of a new chat.",
+  "suggestions": [
+    "SAP ECC customers not on S/4HANA",
+    "Prep an account brief for Cummins",
+    "Who is hiring SAP FICO roles right now"
+  ],
+
+  "_signalsAbout": "The quiet list at the bottom of the page. companyId must match an id in src/data/companies.js; the logo and name come from there. Clicking a row opens that account.",
+  "signalsLabel": "Today's signals",
+  "signals": [
+    {
+      "companyId": "coca-cola",
+      "text": "Transformation Director role posted, ahead of ERP platform selection",
+      "time": "8:42 AM"
+    },
+    {
+      "companyId": "caterpillar",
+      "text": "SAP FICO Consultant role opened for the S/4HANA build stream",
+      "time": "9:15 AM"
+    },
+    {
+      "companyId": "cummins",
+      "text": "ERP Programme Manager role names budget approval",
+      "time": "11:03 AM"
+    },
+    {
+      "companyId": "whirlpool",
+      "text": "Second enterprise architect role naming ERP readiness",
+      "time": "1:27 PM"
+    }
+  ]
+}

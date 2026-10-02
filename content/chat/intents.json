@@ -1,0 +1,275 @@
+{
+  "_about": "The rules that turn a chat prompt into filters on the dummy companies. There is no AI behind this: the app looks for the phrases below, in lower case, ignoring punctuation. To teach it a new phrase, add it to a filter's phrases list.",
+
+  "_negationsAbout": "A filter is flipped to 'excluding' when one of these words comes up to negationReach words before its phrase. 'SAP ECC customers not on S/4HANA' keeps ECC and excludes S/4HANA. A word only counts as a whole word, so the 'no' inside 'now' or 'know' never does. After an excluded filter, 'and' or 'or' carries the exclusion on: 'excluding S/4HANA and Oracle' excludes both.",
+  "negations": [
+    "not on",
+    "not using",
+    "not running",
+    "not in",
+    "not yet on",
+    "other than",
+    "not",
+    "no",
+    "without",
+    "excluding",
+    "exclude",
+    "except",
+    "minus"
+  ],
+  "negationReach": 3,
+  "conjunctions": ["and", "or", "nor"],
+
+  "_companiesAbout": "A prompt that names a company opens its account brief, when it also says brief, prep or similar, or when it matches no filter. Every company's own name already works; these are extra names for them.",
+  "briefPhrases": [
+    "brief",
+    "prep",
+    "prepare",
+    "tell me about",
+    "research",
+    "overview",
+    "summary",
+    "summarise",
+    "summarize"
+  ],
+  "companyAliases": {
+    "coke": "coca-cola",
+    "itw": "illinois-tool-works",
+    "emerson": "emerson-electric",
+    "colgate": "colgate-palmolive",
+    "sherwin": "sherwin-williams"
+  },
+
+  "_filtersAbout": "Each filter: phrases that trigger it, the field it checks, and what it looks for there. field is one of stack (the technology stack), jobs (job posting titles, text and keywords), phase (the decision phase id), industry, or segment. include is the chip when it keeps companies, exclude the chip when it removes them. noData names what is missing when a company has nothing on record for that field: those companies are listed as not judged rather than dropped.",
+  "filters": [
+    {
+      "id": "sap-ecc",
+      "phrases": ["sap ecc", "ecc 6 0", "ecc 6", "ecc"],
+      "field": "stack",
+      "match": ["SAP ECC"],
+      "include": "ERP: SAP ECC",
+      "exclude": "Excluding: SAP ECC",
+      "noData": "stack"
+    },
+    {
+      "id": "s4hana",
+      "phrases": ["sap s/4hana", "sap s4hana", "sap s/4", "s/4 hana", "s 4hana", "s/4hana", "s4hana", "s/4", "s4"],
+      "field": "stack",
+      "match": ["S/4HANA"],
+      "include": "ERP: SAP S/4HANA",
+      "exclude": "Excluding: S/4HANA",
+      "noData": "stack"
+    },
+    {
+      "id": "oracle",
+      "phrases": ["oracle ebs", "oracle"],
+      "field": "stack",
+      "match": ["Oracle"],
+      "include": "Stack: Oracle",
+      "exclude": "Excluding: Oracle",
+      "noData": "stack"
+    },
+    {
+      "id": "infor",
+      "phrases": ["infor"],
+      "field": "stack",
+      "match": ["Infor"],
+      "include": "Stack: Infor",
+      "exclude": "Excluding: Infor",
+      "noData": "stack"
+    },
+    {
+      "id": "workday",
+      "phrases": ["workday"],
+      "field": "stack",
+      "match": ["Workday"],
+      "include": "Stack: Workday",
+      "exclude": "Excluding: Workday",
+      "noData": "stack"
+    },
+    {
+      "id": "snowflake",
+      "phrases": ["snowflake"],
+      "field": "stack",
+      "match": ["Snowflake"],
+      "include": "Stack: Snowflake",
+      "exclude": "Excluding: Snowflake",
+      "noData": "stack"
+    },
+    {
+      "id": "blue-yonder",
+      "phrases": ["blue yonder"],
+      "field": "stack",
+      "match": ["Blue Yonder"],
+      "include": "Stack: Blue Yonder",
+      "exclude": "Excluding: Blue Yonder",
+      "noData": "stack"
+    },
+    {
+      "id": "kinaxis",
+      "phrases": ["kinaxis"],
+      "field": "stack",
+      "match": ["Kinaxis"],
+      "include": "Stack: Kinaxis",
+      "exclude": "Excluding: Kinaxis",
+      "noData": "stack"
+    },
+
+    {
+      "id": "hiring-fico",
+      "phrases": ["sap fico", "fico"],
+      "field": "jobs",
+      "match": ["FICO"],
+      "include": "Hiring: SAP FICO",
+      "exclude": "Not hiring: SAP FICO",
+      "noData": "job posting"
+    },
+    {
+      "id": "hiring-abap",
+      "phrases": ["sap abap", "abap"],
+      "field": "jobs",
+      "match": ["ABAP"],
+      "include": "Hiring: ABAP",
+      "exclude": "Not hiring: ABAP",
+      "noData": "job posting"
+    },
+    {
+      "id": "hiring-basis",
+      "phrases": ["sap basis", "basis"],
+      "field": "jobs",
+      "match": ["Basis"],
+      "include": "Hiring: SAP Basis",
+      "exclude": "Not hiring: SAP Basis",
+      "noData": "job posting"
+    },
+    {
+      "id": "hiring-data-migration",
+      "phrases": ["data migration"],
+      "field": "jobs",
+      "match": ["Data Migration", "migrate", "Move master data"],
+      "include": "Hiring: data migration",
+      "exclude": "Not hiring: data migration",
+      "noData": "job posting"
+    },
+    {
+      "id": "hiring-process-owners",
+      "phrases": ["global process owners", "global process owner", "process owners", "process owner"],
+      "field": "jobs",
+      "match": ["Process Owner"],
+      "include": "Hiring: process owners",
+      "exclude": "Not hiring: process owners",
+      "noData": "job posting"
+    },
+    {
+      "id": "hiring-architects",
+      "phrases": ["enterprise architects", "enterprise architect", "architects", "architect"],
+      "field": "jobs",
+      "match": ["Architect"],
+      "include": "Hiring: architects",
+      "exclude": "Not hiring: architects",
+      "noData": "job posting"
+    },
+
+    {
+      "id": "phase-latent",
+      "phrases": ["latent"],
+      "field": "phase",
+      "match": ["latent"],
+      "include": "Phase: Latent",
+      "exclude": "Excluding: Latent",
+      "noData": "decision phase"
+    },
+    {
+      "id": "phase-evaluating",
+      "phrases": ["evaluating"],
+      "field": "phase",
+      "match": ["evaluating"],
+      "include": "Phase: Evaluating",
+      "exclude": "Excluding: Evaluating",
+      "noData": "decision phase"
+    },
+    {
+      "id": "phase-mobilizing",
+      "phrases": ["mobilizing", "mobilising"],
+      "field": "phase",
+      "match": ["mobilizing"],
+      "include": "Phase: Mobilizing",
+      "exclude": "Excluding: Mobilizing",
+      "noData": "decision phase"
+    },
+    {
+      "id": "phase-executing",
+      "phrases": ["executing"],
+      "field": "phase",
+      "match": ["executing"],
+      "include": "Phase: Executing",
+      "exclude": "Excluding: Executing",
+      "noData": "decision phase"
+    },
+    {
+      "id": "phase-landed",
+      "phrases": ["landed"],
+      "field": "phase",
+      "match": ["landed"],
+      "include": "Phase: Landed",
+      "exclude": "Excluding: Landed",
+      "noData": "decision phase"
+    },
+    {
+      "id": "phase-re-expanding",
+      "phrases": ["re expanding", "reexpanding"],
+      "field": "phase",
+      "match": ["re-expanding"],
+      "include": "Phase: Re-expanding",
+      "exclude": "Excluding: Re-expanding",
+      "noData": "decision phase"
+    },
+
+    {
+      "id": "industry-manufacturing",
+      "phrases": ["manufacturing", "manufacturers", "industrials", "industrial"],
+      "field": "industry",
+      "match": ["Industrial", "Manufacturing", "Heavy Equipment"],
+      "include": "Industry: Manufacturing",
+      "exclude": "Excluding: Manufacturing",
+      "noData": "industry"
+    },
+    {
+      "id": "industry-consumer",
+      "phrases": ["consumer products", "consumer goods", "consumer", "cpg"],
+      "field": "industry",
+      "match": ["Consumer Products", "Beverages", "Home Appliances"],
+      "include": "Industry: Consumer goods",
+      "exclude": "Excluding: Consumer goods",
+      "noData": "industry"
+    },
+    {
+      "id": "industry-beverages",
+      "phrases": ["beverages", "beverage", "drinks"],
+      "field": "industry",
+      "match": ["Beverages"],
+      "include": "Industry: Beverages",
+      "exclude": "Excluding: Beverages",
+      "noData": "industry"
+    },
+    {
+      "id": "industry-chemicals",
+      "phrases": ["chemicals", "chemical", "coatings", "gases"],
+      "field": "industry",
+      "match": ["Chemicals", "Gases"],
+      "include": "Industry: Chemicals",
+      "exclude": "Excluding: Chemicals",
+      "noData": "industry"
+    },
+
+    {
+      "id": "segment-multi-erp",
+      "phrases": ["multi erp", "multiple erps", "multiple erp", "multi instance", "multiple instances"],
+      "field": "segment",
+      "match": ["multi-erp"],
+      "include": "Segment: Multi-ERP",
+      "exclude": "Excluding: Multi-ERP",
+      "noData": "segment"
+    }
+  ]
+}

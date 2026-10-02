@@ -1,19 +1,23 @@
 /**
- * The left sidebar: three sections of navigation, plus the prototype pill
- * and the Collapse control at the bottom.
+ * The left sidebar: "New chat" at the top, three sections of navigation,
+ * the five most recent chats, then the prototype pill and the Collapse
+ * control at the bottom.
  *
  * While you are in Settings the whole menu is swapped out for the settings
  * list, with a back chevron at the top, rather than showing a second column
  * next to it. There is only ever one nav column on screen.
  *
  * TO CHANGE THE MENU: edit the NAV_SECTIONS array below. The settings list
- * comes from SETTINGS_NAV in src/data/sections.js.
+ * comes from SETTINGS_NAV in src/data/sections.js. The chat labels come from
+ * content/chat/home.json, and the chats themselves from src/lib/chats.js.
  */
 import { useEffect } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import HOME from '../../../content/chat/home.json'
 import { Icon } from '../Icon'
 import { cx } from '../cx'
 import { SETTINGS_NAV, SETTINGS_SIDEBAR_COPY } from '../../data/sections'
+import { recentChats, useChats } from '../../lib/chats'
 import {
   activeSettingsNavId,
   isSettingsPath,
@@ -110,9 +114,36 @@ function ProductMark({ collapsed }) {
   )
 }
 
+/** How many chats the Chats group lists. */
+const RECENT_CHATS = 5
+
+/**
+ * The most recent chats by title. Hidden when the sidebar is collapsed:
+ * five identical chat icons would tell you nothing.
+ */
+function ChatsNav({ collapsed }) {
+  const { chats } = useChats()
+  const recent = recentChats(chats, RECENT_CHATS)
+  if (collapsed || !recent.length) return null
+
+  return (
+    <div>
+      <p className="lp-label px-2 pb-1.5">{HOME.sidebar.chatsLabel}</p>
+      <div className="space-y-0.5">
+        {recent.map((c) => (
+          <NavRow key={c.id} to={`/chat/${c.id}`} label={c.title} icon="chat" collapsed={collapsed} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function MainNav({ collapsed }) {
   return (
     <nav aria-label="Main" className="flex-1 space-y-5 overflow-y-auto px-2 py-3">
+      {/* `end`, so it is lit on the New chat page but not inside a chat. */}
+      <NavRow to="/chat" end label={HOME.sidebar.newChat} icon="plus" collapsed={collapsed} />
+
       {NAV_SECTIONS.map((section) => (
         <div key={section.label}>
           {!collapsed && (
@@ -125,6 +156,8 @@ function MainNav({ collapsed }) {
           </div>
         </div>
       ))}
+
+      <ChatsNav collapsed={collapsed} />
     </nav>
   )
 }

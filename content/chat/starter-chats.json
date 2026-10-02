@@ -1,0 +1,8 @@
+{
+  "_about": "The chats already in the sidebar the first time the prototype is opened in a browser, so the Chats list and the Recent chat link are not empty in a demo. Each is just its first prompt: the reply is worked out live, exactly as if it had been typed. hoursAgo sets how recent it looks; the smallest is the Recent chat. Once someone has chatted, their own chats are kept instead and these are not added again.",
+  "chats": [
+    { "id": "starter-latent", "prompt": "Latent accounts not on S/4HANA", "hoursAgo": 2 },
+    { "id": "starter-mobilizing", "prompt": "Mobilizing accounts excluding beverages", "hoursAgo": 26 },
+    { "id": "starter-coca-cola", "prompt": "Prep an account brief for Coca-Cola", "hoursAgo": 50 }
+  ]
+}

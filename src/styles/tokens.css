@@ -198,6 +198,14 @@
   --lp-assistant-button-offset: 28px;
   --lp-assistant-button-radius: 17px;
   --lp-assistant-icon: 26px; /* leaves even padding inside the 60px button */
+
+  /* --- Chat --------------------------------------------------------------
+     The New chat page and a chat thread. The column is kept to a reading
+     width; the company panel opens beside it on the right.
+     -------------------------------------------------------------------- */
+  --lp-chat-w: 760px; /* the conversation column, and the New chat page */
+  --lp-chat-panel-w: 520px; /* the company panel in a thread */
+  --lp-chat-home-top: 14vh; /* space above the greeting on New chat */
 }
 
 /* ==========================================================================

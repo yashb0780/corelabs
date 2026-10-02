@@ -1,0 +1,69 @@
+{
+  "_about": "Everything the chat agent says in a thread at /chat/<id>. There is no AI: the app picks one of these and fills in the words in curly brackets from the dummy company data.",
+
+  "_typingAbout": "How long the typing dots show before a reply lands, in milliseconds.",
+  "typingMs": 1100,
+
+  "breadcrumbRoot": "Chats",
+  "untitled": "New chat",
+  "_titleAbout": "A chat is named after its first prompt, cut to this many words.",
+  "titleWords": 7,
+
+  "steps": {
+    "interpreted": "Interpreted request",
+    "searched": { "one": "Searched 1 company", "other": "Searched {n} companies" },
+    "applied": { "zero": "No filters applied", "one": "Applied 1 filter", "other": "Applied {n} filters" },
+    "opened": "Opened {company}",
+    "read": { "zero": "No signals on record", "one": "Read 1 signal", "other": "Read {n} signals" }
+  },
+
+  "interpretedAs": "Interpreted as",
+  "removeFilter": "Remove filter {label}",
+
+  "results": {
+    "answer": { "one": "1 of {total} companies matches. It is shown below.", "other": "{count} of {total} companies match, ranked by ICP fit score." },
+    "none": "No companies match all of those filters. Remove a filter below to widen the search.",
+    "unfiltered": "With no filters left, here are all {total} companies, ranked by ICP fit score.",
+    "found": { "zero": "No companies found", "one": "1 company found", "other": "{n} companies found" },
+    "ranked": "Ranked by ICP fit",
+    "notJudged": {
+      "one": "{names} has no {fields} data on record, so it was not judged. It is not counted above.",
+      "other": "{names} have no {fields} data on record, so they were not judged. They are not counted above."
+    },
+    "fieldJoin": " or "
+  },
+
+  "brief": {
+    "lead": "{company} is {phase} with an ICP fit score of {score}.",
+    "whyNow": "Why now: {title}.",
+    "noWhyNow": "There is not enough evidence on record yet to say why now.",
+    "contacts": "Key contacts: {contacts}.",
+    "noContacts": "No contacts are on record yet.",
+    "openFull": "Open the full account page from the panel for the landscape, momentum and every signal."
+  },
+
+  "icp": {
+    "_about": "The Refine by ICP pill under a result. Its wording and the chip labels come from the existing Refine by ICP copy in src/data/vendorProfile.js, so the two places always match. This is the only extra line it needs.",
+    "nothing": "Your vendor profile has no technologies, size band or industries yet, so there is nothing to refine by."
+  },
+
+  "noMatch": {
+    "text": "I could not match that yet. This prototype understands technologies, hiring, decision phases, industries and company names. Try one of these:",
+    "prompts": [
+      "SAP ECC customers not on S/4HANA",
+      "Mobilizing accounts without Oracle",
+      "Prep an account brief for Coca-Cola"
+    ]
+  },
+
+  "panel": {
+    "close": "Close panel",
+    "openFull": "Open full account page"
+  },
+
+  "notFound": {
+    "title": "Chat not found",
+    "body": "It may have been started in another browser. Start a new one instead.",
+    "link": "Start a new chat"
+  }
+}

@@ -12,6 +12,8 @@ import AccountDetail from './pages/AccountDetail'
 import AdminSection from './pages/AdminSection'
 import CampaignDetail from './pages/CampaignDetail'
 import Campaigns from './pages/Campaigns'
+import ChatHome from './pages/ChatHome'
+import ChatThread from './pages/ChatThread'
 import Generate from './pages/Generate'
 import Leads from './pages/Leads'
 import NotFound from './pages/NotFound'
@@ -48,6 +50,8 @@ export default function App() {
       <div className="min-w-0 flex-1">
         <Routes>
           <Route path="/" element={<Navigate to="/leads" replace />} />
+          <Route path="/chat" element={<ChatHome />} />
+          <Route path="/chat/:chatId" element={<ChatThread />} />
           <Route path="/leads" element={<Leads />} />
           <Route path="/leads/:companyId" element={<AccountDetail />} />
           <Route path="/segments" element={<Segments />} />
