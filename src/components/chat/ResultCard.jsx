@@ -3,8 +3,8 @@
  * company with its logo, ICP fit score, Decision Phase and Window.
  *
  * The company and score cells are the Company Search table's own, so the
- * two never drift apart. Window follows the "Selling as:" choice in the
- * composer, as it does on Company Search.
+ * two never drift apart. Window follows the workspace's seller type, set
+ * at onboarding in src/data/workspace.js.
  *
  * Clicking a row opens that company in the panel on the right.
  */

@@ -7,11 +7,8 @@
  * Sending, or clicking a chip, starts a chat named after the prompt and
  * opens it at /chat/<id>, where the reply lands.
  *
- * Copy: content/chat/home.json. The greeting's name is the signed-in
- * teammate's first name, from src/data/teammates.js, so it matches the
- * "Created by" on Saved lists.
+ * Copy: content/chat/home.json, including the name in the greeting.
  */
-import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import HOME from '../../content/chat/home.json'
 import { Icon } from '../components/Icon'
@@ -19,8 +16,6 @@ import { Composer } from '../components/chat/Composer'
 import { SignalsList } from '../components/chat/SignalsList'
 import { TopBar } from '../components/layout/TopBar'
 import { ActionPill } from '../components/ui'
-import { DEFAULT_ARCHETYPE } from '../data/companies'
-import { CURRENT_USER_ID, getTeammate } from '../data/teammates'
 import { recentChats, startChat, useChats } from '../lib/chats'
 import { fill } from '../lib/fill'
 
@@ -33,17 +28,15 @@ function greeting(now = new Date()) {
       : hour >= afternoon && hour < evening
         ? 'afternoon'
         : 'evening'
-  const name = getTeammate(CURRENT_USER_ID)?.name.split(' ')[0] ?? ''
-  return fill(HOME.greetings[part], { name })
+  return fill(HOME.greetings[part], { name: HOME.greetingName })
 }
 
 export default function ChatHome() {
   const navigate = useNavigate()
   const { chats } = useChats()
-  const [archetype, setArchetype] = useState(DEFAULT_ARCHETYPE)
   const recent = recentChats(chats, 1)[0]
 
-  const start = (text) => navigate(`/chat/${startChat(text, archetype)}`)
+  const start = (text) => navigate(`/chat/${startChat(text)}`)
 
   return (
     <div className="flex h-full min-w-0 flex-col">
@@ -72,8 +65,6 @@ export default function ChatHome() {
             )}
             <Composer
               placeholder={HOME.placeholder}
-              archetype={archetype}
-              onArchetypeChange={setArchetype}
               onSend={start}
               autoFocus
             />

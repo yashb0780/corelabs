@@ -6,6 +6,9 @@
  *
  * The chat itself lives in src/lib/chats.js, so it survives navigating
  * away and back, and a reload. Each reply is drawn by AgentReply.jsx.
+ *
+ * The Window pills and the panel follow the workspace's seller type, set
+ * at onboarding in src/data/workspace.js. Chat never changes it.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
@@ -17,7 +20,8 @@ import { Composer } from '../components/chat/Composer'
 import { useListActions } from '../components/campaign/useListActions'
 import { TopBar } from '../components/layout/TopBar'
 import { EmptyState } from '../components/ui'
-import { sendMessage, setChatArchetype, useChats } from '../lib/chats'
+import { workspaceArchetype } from '../data/workspace'
+import { sendMessage, useChats } from '../lib/chats'
 
 function UserBubble({ text }) {
   return (
@@ -45,6 +49,7 @@ function Thread({ chat, typing }) {
   const actions = useListActions()
   const scrollRef = useRef(null)
   const closePanel = useCallback(() => setOpenId(null), [])
+  const archetype = workspaceArchetype()
 
   // Keep the newest message in view.
   useEffect(() => {
@@ -72,7 +77,7 @@ function Thread({ chat, typing }) {
                     chatId={chat.id}
                     message={m}
                     title={chat.title}
-                    archetype={chat.archetype}
+                    archetype={archetype}
                     openId={openId}
                     onOpen={(id) => setOpenId((cur) => (cur === id ? null : id))}
                     onPrompt={ask}
@@ -88,8 +93,6 @@ function Thread({ chat, typing }) {
             <Composer
               size="sm"
               placeholder={HOME.threadPlaceholder}
-              archetype={chat.archetype}
-              onArchetypeChange={(a) => setChatArchetype(chat.id, a)}
               onSend={ask}
               busy={typing}
               autoFocus
@@ -98,7 +101,7 @@ function Thread({ chat, typing }) {
         </div>
 
         {openId && (
-          <CompanyPanel companyId={openId} archetype={chat.archetype} onClose={closePanel} />
+          <CompanyPanel companyId={openId} archetype={archetype} onClose={closePanel} />
         )}
       </div>
 

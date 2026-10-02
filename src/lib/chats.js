@@ -11,7 +11,9 @@
    the reply lands does not lose it.
 
    WHAT A CHAT LOOKS LIKE
-     { id, title, archetype, createdAt, updatedAt, messages: [...] }
+     { id, title, createdAt, updatedAt, messages: [...] }
+   Chats do not carry a seller type. That is set once at onboarding, in
+   src/data/workspace.js, and every thread reads it from there.
    A user message is { id, from: 'user', text }. An agent message stores
    what it decided, never the companies it found:
      { id, from: 'agent', kind: 'results', filters: [{ id, negate }], icp: [] }
@@ -23,14 +25,17 @@
    ON localStorage
    The guardrails otherwise rule out localStorage. Keeping chats across a
    reload is a sanctioned exception, added at the owner's request. It stores
-   one key, `lp-chats`, holding the chats above: prompts and the filters
-   picked, nothing else. See the note in CLAUDE.md.
+   one key, `lp-chats`, holding { chats, chatsCollapsed }: the chats above
+   (prompts and the filters picked) and whether the sidebar's Chats list is
+   collapsed. Nothing else. See the note in CLAUDE.md.
+
+   Before the Chats list could collapse, the key held the list of chats on
+   its own. A value saved that way still loads, as expanded.
    ========================================================================== */
 
 import { useSyncExternalStore } from 'react'
 import REPLIES from '../../content/chat/replies.json'
 import STARTERS from '../../content/chat/starter-chats.json'
-import { DEFAULT_ARCHETYPE } from '../data/companies'
 import { interpret } from './intents'
 
 const STORAGE_KEY = 'lp-chats'
@@ -69,7 +74,6 @@ function starterChats() {
     return {
       id: s.id,
       title: titleFrom(s.prompt),
-      archetype: DEFAULT_ARCHETYPE,
       createdAt: at,
       updatedAt: at,
       messages: [userMessage(s.prompt), replyTo(s.prompt)],
@@ -81,9 +85,9 @@ const isChat = (c) =>
   c && typeof c.id === 'string' && typeof c.title === 'string' && Array.isArray(c.messages)
 
 /**
- * Saved chats if there are any, otherwise the starters. A chat saved while
- * a reply was still typing gets its reply now, so no thread is left hanging
- * on an unanswered prompt.
+ * Saved chats if there are any, otherwise the starters, plus whether the
+ * Chats list was collapsed. A chat saved while a reply was still typing
+ * gets its reply now, so no thread is left hanging on an unanswered prompt.
  */
 function load() {
   let saved = null
@@ -92,17 +96,25 @@ function load() {
   } catch {
     // Blocked storage or a damaged value. Start from the starters instead.
   }
-  if (!Array.isArray(saved)) return starterChats()
+  // The older shape: just the list of chats.
+  if (Array.isArray(saved)) saved = { chats: saved }
 
-  return saved.filter(isChat).map((c) => {
+  const chatsCollapsed = saved?.chatsCollapsed === true
+  if (!Array.isArray(saved?.chats)) return { chats: starterChats(), chatsCollapsed }
+
+  const chats = saved.chats.filter(isChat).map((c) => {
     const last = c.messages[c.messages.length - 1]
     return last?.from === 'user' ? { ...c, messages: [...c.messages, replyTo(last.text)] } : c
   })
+  return { chats, chatsCollapsed }
 }
 
-function save(chats) {
+function save({ chats, chatsCollapsed }) {
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(chats.slice(0, MAX_KEPT)))
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ chats: chats.slice(0, MAX_KEPT), chatsCollapsed }),
+    )
   } catch {
     // Not being able to keep them is survivable: they still last the session.
   }
@@ -112,12 +124,12 @@ function save(chats) {
 
 const listeners = new Set()
 // `typing` holds the ids of chats waiting on a reply. It is never saved.
-let state = { chats: load(), typing: {} }
+let state = { ...load(), typing: {} }
 
 function set(next) {
-  const chatsChanged = next.chats !== state.chats
+  const changed = next.chats !== state.chats || next.chatsCollapsed !== state.chatsCollapsed
   state = next
-  if (chatsChanged) save(state.chats)
+  if (changed) save(state)
   listeners.forEach((fn) => fn())
 }
 
@@ -158,14 +170,18 @@ function ask(chatId, text) {
   }, REPLIES.typingMs)
 }
 
+/** Collapses or expands the sidebar's Chats list. Remembered across reloads. */
+export function toggleChatsCollapsed() {
+  set({ ...state, chatsCollapsed: !state.chatsCollapsed })
+}
+
 /** A new chat named after its first prompt. Returns its id. */
-export function startChat(prompt, archetype = DEFAULT_ARCHETYPE) {
+export function startChat(prompt) {
   const text = prompt.trim()
   const now = Date.now()
   const chat = {
     id: newId('chat'),
     title: titleFrom(text),
-    archetype,
     createdAt: now,
     updatedAt: now,
     messages: [userMessage(text)],
@@ -184,10 +200,6 @@ export function sendMessage(chatId, prompt) {
     messages: [...c.messages, userMessage(text)],
   }))
   ask(chatId, text)
-}
-
-export function setChatArchetype(chatId, archetype) {
-  patchChat(chatId, (c) => ({ ...c, archetype }))
 }
 
 /** Changes one agent message, e.g. a removed filter chip. */

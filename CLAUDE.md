@@ -34,8 +34,10 @@ Copied verbatim from section 6 of `BRIEF.md`.
     No user data is stored. Do not remove it.
   - **Sanctioned exception:** chats are remembered in `localStorage` under
     one key, `lp-chats`, at the owner's request, so a chat survives a
-    reload. It holds each chat's prompts and the filters picked, nothing
-    else. Written only by `src/lib/chats.js`. Do not remove it.
+    reload. It holds each chat's prompts and the filters picked, and
+    whether the sidebar's Chats list is collapsed, nothing else. Any other
+    chat preference goes inside this key too, not a new one. Written only
+    by `src/lib/chats.js`. Do not remove it.
 - Tokens in `src/styles/tokens.css` are the only place colours, radii and font
   sizes are defined. No hex codes in component files.
 - All data lives in `src/data/` or `content/`. Never move content strings
@@ -239,8 +241,13 @@ keeps a company in rather than dropping it.
   removing a chip re-runs the search. Missing data follows the Refine by
   ICP standard: a company with nothing on record for a filter is listed as
   not judged, never counted and never silently dropped. The company panel
-  stacks the account page's own section components. The greeting uses the
-  signed-in teammate's first name (Priya). Its copy is SAP-specific at the
+  stacks the account page's own section components. The Chats header in
+  the sidebar collapses the list. Chat has no "Selling as:" dropdown: the
+  seller type is set at onboarding and read from `src/data/workspace.js`
+  (Company Search keeps its own dropdown for now). The greeting name is
+  set on its own in `content/chat/home.json` ("Mike"), deliberately not
+  the signed-in teammate, who is still Priya Raman everywhere else. Its
+  copy is SAP-specific at the
   owner's request, noted in `content/README.md`. The "/" button shows a
   placeholder until the Skills library (Phase 2) is built.
 - The assistant widget is visual only. There is no model behind it: it waits a

@@ -1,14 +1,18 @@
 {
-  "_about": "The New chat page at /chat, and the two chat entries in the left sidebar. The greeting name is not here: it is the first name of the signed-in teammate in src/data/teammates.js.",
+  "_about": "The New chat page at /chat, and the chat entries in the left sidebar.",
 
   "sidebar": {
     "newChat": "New chat",
-    "chatsLabel": "Chats"
+    "chatsLabel": "Chats",
+    "showChats": "Show chats",
+    "hideChats": "Hide chats"
   },
 
   "breadcrumb": "New chat",
 
   "_greetingsAbout": "Picked by the clock on the viewer's computer. Morning from 5am, afternoon from 12pm, evening from 5pm until 5am.",
+  "_greetingNameAbout": "The name in the greeting. Set here on its own, so it does not follow the signed-in teammate in src/data/teammates.js.",
+  "greetingName": "Mike",
   "greetings": {
     "morning": "Good morning, {name}.",
     "afternoon": "Good afternoon, {name}.",

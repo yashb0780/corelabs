@@ -17,7 +17,7 @@ import HOME from '../../../content/chat/home.json'
 import { Icon } from '../Icon'
 import { cx } from '../cx'
 import { SETTINGS_NAV, SETTINGS_SIDEBAR_COPY } from '../../data/sections'
-import { recentChats, useChats } from '../../lib/chats'
+import { recentChats, toggleChatsCollapsed, useChats } from '../../lib/chats'
 import {
   activeSettingsNavId,
   isSettingsPath,
@@ -120,20 +120,45 @@ const RECENT_CHATS = 5
 /**
  * The most recent chats by title. Hidden when the sidebar is collapsed:
  * five identical chat icons would tell you nothing.
+ *
+ * The Chats header is a button, the way Claude's is: it hides or shows the
+ * list under it and leaves the header in place to bring it back. It looks
+ * exactly like the other section labels, plus a small chevron. Whether it
+ * is collapsed is remembered in src/lib/chats.js, across reloads.
  */
 function ChatsNav({ collapsed }) {
-  const { chats } = useChats()
+  const { chats, chatsCollapsed } = useChats()
   const recent = recentChats(chats, RECENT_CHATS)
   if (collapsed || !recent.length) return null
 
+  const toggleLabel = chatsCollapsed ? HOME.sidebar.showChats : HOME.sidebar.hideChats
+
   return (
     <div>
-      <p className="lp-label px-2 pb-1.5">{HOME.sidebar.chatsLabel}</p>
-      <div className="space-y-0.5">
-        {recent.map((c) => (
-          <NavRow key={c.id} to={`/chat/${c.id}`} label={c.title} icon="chat" collapsed={collapsed} />
-        ))}
-      </div>
+      <button
+        type="button"
+        onClick={toggleChatsCollapsed}
+        aria-expanded={!chatsCollapsed}
+        aria-controls="sidebar-chats"
+        title={toggleLabel}
+        className="lp-label group flex w-full items-center gap-1 rounded-md px-2 pb-1.5 text-left transition-colors duration-150 ease-lp hover:text-txt-2"
+      >
+        {HOME.sidebar.chatsLabel}
+        <Icon
+          name="chevronDown"
+          className={cx(
+            'size-3 shrink-0 transition-transform duration-150 ease-lp',
+            chatsCollapsed && '-rotate-90',
+          )}
+        />
+      </button>
+      {!chatsCollapsed && (
+        <div id="sidebar-chats" className="space-y-0.5">
+          {recent.map((c) => (
+            <NavRow key={c.id} to={`/chat/${c.id}`} label={c.title} icon="chat" collapsed={collapsed} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

@@ -1,7 +1,10 @@
 /**
- * The chat composer: a text box, the "Selling as:" dropdown, the "/" skills
- * button and a send button. Used large on the New chat page and pinned to
- * the bottom of a thread, so the two always look the same.
+ * The chat composer: a text box, the "/" skills button and a send button.
+ * Used large on the New chat page and pinned to the bottom of a thread, so
+ * the two always look the same.
+ *
+ * There is no "Selling as:" dropdown here on purpose. The seller type is
+ * set once at onboarding (src/data/workspace.js), not changed in chat.
  *
  * Enter sends, Shift+Enter starts a new line. The box grows with what is
  * typed, up to a limit, then scrolls.
@@ -13,7 +16,6 @@ import { useEffect, useRef, useState } from 'react'
 import HOME from '../../../content/chat/home.json'
 import { Icon } from '../Icon'
 import { cx } from '../cx'
-import { ArchetypeSelector } from '../leads/ArchetypeSelector'
 
 /** Tallest the box grows before it scrolls, in lines. */
 const MAX_LINES = 8
@@ -73,8 +75,6 @@ function SkillsButton() {
 export function Composer({
   size = 'lg',
   placeholder,
-  archetype,
-  onArchetypeChange,
   onSend,
   busy = false,
   autoFocus = false,
@@ -131,10 +131,7 @@ export function Composer({
         )}
       />
       <div className={cx('flex items-center justify-between gap-2', large ? 'px-3 pt-2 pb-3' : 'px-2.5 pt-1.5 pb-2.5')}>
-        <div className="flex min-w-0 items-center gap-2">
-          <ArchetypeSelector value={archetype} onChange={onArchetypeChange} />
-          <SkillsButton />
-        </div>
+        <SkillsButton />
         <button
           type="submit"
           disabled={!canSend}
