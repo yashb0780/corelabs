@@ -30,6 +30,9 @@ function subscribe(onChange) {
 
 const getLists = () => lists
 
+/** The lists as they are now, for code outside a component. */
+export const getSavedLists = getLists
+
 export function useSavedLists() {
   return useSyncExternalStore(subscribe, getLists, getLists)
 }

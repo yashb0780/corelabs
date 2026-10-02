@@ -14,11 +14,16 @@
      { id, title, createdAt, updatedAt, messages: [...] }
    Chats do not carry a seller type. That is set once at onboarding, in
    src/data/workspace.js, and every thread reads it from there.
-   A user message is { id, from: 'user', text }. An agent message stores
-   what it decided, never the companies it found:
+   A user message is { id, from: 'user', text, at, skill? }. `skill` is set
+   when a skill was attached in the chat box:
+     { id, name, input: { type, id }, inputLabel }
+   An agent message stores what it decided, never the companies it found:
      { id, from: 'agent', kind: 'results', filters: [{ id, negate }], icp: [] }
      { id, from: 'agent', kind: 'brief', companyId }
+     { id, from: 'agent', kind: 'skill', skillId, input: { type, id } }
      { id, from: 'agent', kind: 'nomatch' }
+   A skill run is scripted from the data each time it renders, by
+   src/lib/skillRuns.js, the same way a result is.
    The companies are found again from src/data/companies.js every time a
    thread renders, so removing a filter chip simply re-runs the search.
 
@@ -46,6 +51,13 @@ const HOUR = 60 * 60 * 1000
 let counter = 0
 const newId = (prefix) => `${prefix}-${Date.now().toString(36)}${(counter++).toString(36)}`
 
+/** A chat started from a skill: "Account brief · Cummins", plus any text. */
+function titleFor(text, skill) {
+  if (!skill) return titleFrom(text)
+  const base = skill.inputLabel ? `${skill.name} · ${skill.inputLabel}` : skill.name
+  return text ? `${base}: ${titleFrom(text)}` : base
+}
+
 /** A chat's name: its first prompt, cut to a few words, capitalised. */
 export function titleFrom(prompt) {
   const all = prompt.trim().replace(/[?.!]+$/, '').split(/\s+/)
@@ -55,15 +67,22 @@ export function titleFrom(prompt) {
 }
 
 /** The agent's reply to a prompt. See the shapes in the banner above. */
-function replyTo(text) {
-  const intent = interpret(text)
+function replyTo(text, skill) {
   const base = { id: newId('m'), from: 'agent' }
+  if (skill) return { ...base, kind: 'skill', skillId: skill.id, input: skill.input }
+  const intent = interpret(text)
   if (intent.kind === 'results') return { ...base, kind: 'results', filters: intent.filters, icp: [] }
   if (intent.kind === 'brief') return { ...base, kind: 'brief', companyId: intent.companyId }
   return { ...base, kind: 'nomatch' }
 }
 
-const userMessage = (text) => ({ id: newId('m'), from: 'user', text })
+const userMessage = (text, skill) => ({
+  id: newId('m'),
+  from: 'user',
+  text,
+  at: Date.now(),
+  ...(skill ? { skill } : {}),
+})
 
 /* --- Loading and saving ------------------------------------------------- */
 
@@ -104,7 +123,9 @@ function load() {
 
   const chats = saved.chats.filter(isChat).map((c) => {
     const last = c.messages[c.messages.length - 1]
-    return last?.from === 'user' ? { ...c, messages: [...c.messages, replyTo(last.text)] } : c
+    return last?.from === 'user'
+      ? { ...c, messages: [...c.messages, replyTo(last.text, last.skill)] }
+      : c
   })
   return { chats, chatsCollapsed }
 }
@@ -164,9 +185,9 @@ function setTyping(id, on) {
 }
 
 /** Adds the user's message now and the reply after the typing pause. */
-function ask(chatId, text) {
+function ask(chatId, text, skill) {
   setTyping(chatId, true)
-  const reply = replyTo(text)
+  const reply = replyTo(text, skill)
   window.setTimeout(() => {
     patchChat(chatId, (c) => ({ ...c, updatedAt: Date.now(), messages: [...c.messages, reply] }))
     setTyping(chatId, false)
@@ -178,31 +199,49 @@ export function toggleChatsCollapsed() {
   set({ ...state, chatsCollapsed: !state.chatsCollapsed })
 }
 
-/** A new chat named after its first prompt. Returns its id. */
-export function startChat(prompt) {
+/**
+ * A new chat named after its first prompt, or after the skill attached to
+ * it. Returns its id.
+ */
+export function startChat(prompt, skill = null) {
   const text = prompt.trim()
   const now = Date.now()
   const chat = {
     id: newId('chat'),
-    title: titleFrom(text),
+    title: titleFor(text, skill),
     createdAt: now,
     updatedAt: now,
-    messages: [userMessage(text)],
+    messages: [userMessage(text, skill)],
   }
   set({ ...state, chats: [chat, ...state.chats] })
-  ask(chat.id, text)
+  ask(chat.id, text, skill)
   return chat.id
 }
 
-export function sendMessage(chatId, prompt) {
+/** A message with only a skill attached and no text is fine. */
+export function sendMessage(chatId, prompt, skill = null) {
   const text = prompt.trim()
-  if (!text || state.typing[chatId]) return
+  if ((!text && !skill) || state.typing[chatId]) return
   patchChat(chatId, (c) => ({
     ...c,
     updatedAt: Date.now(),
-    messages: [...c.messages, userMessage(text)],
+    messages: [...c.messages, userMessage(text, skill)],
   }))
-  ask(chatId, text)
+  ask(chatId, text, skill)
+}
+
+/**
+ * Every time a skill was run from a chat in this browser, newest first, for
+ * the Recent runs on its page: { chatId, at, input, inputLabel }.
+ */
+export function skillRunsIn(chats, skillId) {
+  return chats
+    .flatMap((c) =>
+      c.messages
+        .filter((m) => m.from === 'user' && m.skill?.id === skillId)
+        .map((m) => ({ chatId: c.id, at: m.at ?? c.updatedAt, input: m.skill.input, inputLabel: m.skill.inputLabel })),
+    )
+    .sort((a, b) => b.at - a.at)
 }
 
 /** Changes one agent message, e.g. a removed filter chip. */

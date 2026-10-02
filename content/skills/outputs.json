@@ -1,0 +1,204 @@
+{
+  "_about": "The wording of every scripted skill run: what appears in a chat when a skill runs, and the Example output on a skill's page. There is no model. The app fills the words in curly brackets from the dummy data in src/data/, so the names and numbers always match the rest of the prototype. Each block below belongs to the skill named in its key.",
+
+  "steps": {
+    "ran": "Ran {skill}",
+    "read": "Read {input}",
+    "searched": { "one": "Searched 1 company", "other": "Searched {n} companies" },
+    "postings": { "zero": "No postings on record", "one": "Read 1 posting", "other": "Read {n} postings" },
+    "signals": { "zero": "No signals on record", "one": "Read 1 signal", "other": "Read {n} signals" },
+    "contacts": { "zero": "No contacts on record", "one": "Mapped 1 contact", "other": "Mapped {n} contacts" },
+    "replies": { "zero": "No replies yet", "one": "Read 1 reply", "other": "Read {n} replies" }
+  },
+
+  "age": { "zero": "today", "one": "1 day ago", "other": "{n} days ago" },
+  "viewSkill": "View skill",
+  "missing": "This skill is no longer in your library, so it could not run. Skills you write last until the page is reloaded.",
+  "generic": "Ran **{skill}** on {input}. Custom skills have no scripted answer in this prototype, so here is the output format the skill asks for:",
+  "genericNoFormat": "Ran **{skill}** on {input}. Custom skills have no scripted answer in this prototype, and this one has no output format written yet.",
+  "notJudged": {
+    "one": "{names} has no stack data on record, so it was not judged.",
+    "other": "{names} have no stack data on record, so they were not judged."
+  },
+
+  "ecc-holdout-finder": {
+    "lead": {
+      "zero": "No holdouts: every ECC account shows an S/4HANA signal somewhere on record.",
+      "one": "**1 holdout** of {total} companies: on SAP ECC with no S/4HANA signal anywhere on record.",
+      "other": "**{n} holdouts** of {total} companies: on SAP ECC with no S/4HANA signal anywhere on record."
+    },
+    "droppedHeading": "Dropped for an S/4HANA signal",
+    "dropped": "**{company}**: S/4HANA in {where}",
+    "where": {
+      "stack": "the stack",
+      "signals": "a fired signal",
+      "postings": "a job posting",
+      "momentum": "rising mentions"
+    },
+    "whereJoin": " and ",
+    "_momentumFloorAbout": "Rising S/4HANA mentions only count as a signal once the latest period has at least this many. One stray mention is noise.",
+    "momentumFloor": 3
+  },
+
+  "pre-rfp-detector": {
+    "tools": ["LeanIX", "Signavio"],
+    "hitsLead": {
+      "one": "**1 account** shows analyze-and-plan tooling.",
+      "other": "**{n} accounts** show analyze-and-plan tooling."
+    },
+    "hit": "**{company}**: {tool} found in {where}. Treat as analyze-and-plan.",
+    "none": "**No LeanIX or Signavio adoption on record** across the {total} accounts. Nothing has been flagged.",
+    "nearestHeading": "Nearest analyze-and-plan evidence",
+    "nearest": "**{company}** · Evaluating: {whyNow}",
+    "noNearest": "No accounts are in the Evaluating phase either."
+  },
+
+  "job-post-decoder": {
+    "postingsHeading": "Postings read",
+    "posting": "**{title}** ({team}, {age}): \"{snippet}\"",
+    "keyPhrases": "Key phrases: {phrases}",
+    "phaseHeading": "Inferred phase",
+    "phase": "**{phase}**: {description}",
+    "none": "No postings on record for {company}, so the phase is **Unclassified**. Nothing was guessed from other signals."
+  },
+
+  "account-brief": {
+    "header": "**{company}** · {industry} · {hq} · ICP fit {score}",
+    "footprintHeading": "ERP footprint",
+    "noStack": "No ERP systems on record.",
+    "signalsHeading": "Live signals",
+    "signal": "{label} (+{points})",
+    "noSignals": "No signals have fired.",
+    "phaseHeading": "Likely phase",
+    "phase": "**{phase}**. {note}",
+    "noPhaseNote": "There is not enough evidence to explain the phase yet.",
+    "contactsHeading": "Key contacts",
+    "contact": "**{name}**, {title} · {tenure}",
+    "champion": " · likely champion",
+    "noContacts": "No contacts on record yet."
+  },
+
+  "rise-risk-check": {
+    "flagged": "**RISE with SAP presence found at {company}.** Treat it as a negative signal: SAP is already shaping the programme.",
+    "absent": "**No RISE with SAP commitment on record at {company}.** Not a negative signal.",
+    "notJudged": "**Nothing on record about RISE** at {company}, so it was not judged.",
+    "quotesHeading": "Where it appears",
+    "negations": ["no ", "not ", "without "]
+  },
+
+  "buying-committee-map": {
+    "_seatsAbout": "The seats, in order. A contact fills the first seat whose match words appear in their title. standIn words fill the seat only when no match is found, and the line says so.",
+    "seats": [
+      { "role": "CIO", "match": ["Chief Information", "CIO"] },
+      { "role": "CFO", "match": ["Chief Financial", "CFO"], "standIn": ["Finance", "Controller"] },
+      { "role": "SAP CoE lead", "match": ["SAP", "ERP", "Enterprise Applications", "Enterprise Architect", "Programme", "Program"] },
+      { "role": "IT procurement", "match": ["Procurement", "Sourcing", "Vendor Management"] }
+    ],
+    "filled": "**{role}**: {name}, {title}",
+    "standIn": " (stand-in: no CFO on record)",
+    "champion": " · likely champion",
+    "empty": "**{role}**: not identified yet",
+    "othersHeading": "Also on record",
+    "other": "{name}, {title}",
+    "noContacts": "No contacts on record at {company}, so every seat is open."
+  },
+
+  "partner-of-record-check": {
+    "_phrasesAbout": "A line on record that contains an open phrase counts as the seat being open; one that contains an engaged phrase, and no open phrase, counts as a partner engaged.",
+    "openPhrases": ["no implementation partner", "no partner", "partner not named", "partner not signed", "partner seat open", "not picked a partner"],
+    "engagedPhrases": ["partner named", "named partner", "partner is already named", "partner is named"],
+    "engaged": "**Partner engaged.** A systems integrator is already named at {company}.",
+    "engagedOpening": "The record does not say which firm. The opening is scope expansion or a second opinion, not the programme.",
+    "open": "**Seat open.** No partner has been named at {company}.",
+    "openOpening": "The partner decision is still to be made. Get in before the shortlist forms.",
+    "unknown": "**Not judged.** Nothing on record says whether a partner is engaged at {company}.",
+    "evidenceHeading": "Evidence",
+    "quote": "\"{text}\""
+  },
+
+  "signal-based-first-touch": {
+    "to": "To: **{name}**, {title}",
+    "toNobody": "To: no contact on record yet",
+    "subject": "Subject: A question on {company}'s next step",
+    "greeting": "Hi {first},",
+    "greetingNobody": "Hi there,",
+    "opener": "Saw this at {company}: {signal}.",
+    "decision": "At the {phase} stage that usually means deciding {decision}.",
+    "decisions": {
+      "latent": "whether a programme is worth scoping at all",
+      "evaluating": "what the business case has to prove",
+      "mobilizing": "who runs the build before the partner seat closes",
+      "executing": "how to keep scope from slipping mid-build",
+      "landed": "who supports the platform after go-live",
+      "re-expanding": "how wave two reuses the first template",
+      "unclassified": "where to start"
+    },
+    "ask": "We help teams make that call with evidence, not slides. Worth 20 minutes next week?",
+    "signOff": "Best,",
+    "words": "{n} words, under the 80 word limit. Opens with the signal, not a compliment.",
+    "over": "{n} words, over the 80 word limit. Trim it before sending.",
+    "noSignals": "No signals have fired at {company}, so there is nothing true to open with. Run Account brief first."
+  },
+
+  "meeting-prep": {
+    "whoHeading": "Who you are meeting",
+    "contact": "**{name}**, {title}",
+    "champion": " · likely champion",
+    "noContacts": "No contacts on record yet.",
+    "changedHeading": "What changed",
+    "noSignals": "No signals have fired.",
+    "whyNowHeading": "Why now",
+    "whyNow": "**{title}**. {body}",
+    "noWhyNow": "No why-now on record yet.",
+    "windowHeading": "Window",
+    "window": "**{phase}**, window **{window}**: {description}",
+    "questionsHeading": "Questions to ask",
+    "questions": {
+      "latent": ["What would have to break for the ERP to become a board topic?", "Who owns the system roadmap today?", "When does your current support contract next come up?"],
+      "evaluating": ["What does the business case have to prove, and to whom?", "Which options are on the table besides a full migration?", "When do you expect a decision on whether to go?"],
+      "mobilizing": ["Who is choosing the implementation partner, and by when?", "What did the last programme teach you about partners?", "Which workstream worries you most?"],
+      "executing": ["Where is the build furthest behind plan?", "Which scope was cut that you still need?", "How are you staffing data migration?"],
+      "landed": ["What has hypercare surfaced that the plan missed?", "Who owns the platform once the partner rolls off?", "Which sites or entities are still on the old system?"],
+      "re-expanding": ["Which entities are in wave two, and when?", "How much of the first template carries over?", "Is the wave one partner doing wave two?"],
+      "unclassified": ["What are you running for finance and supply chain today?", "Is anything on the system roadmap for the next two years?", "Who should we be talking to about it?"]
+    },
+    "watchHeading": "Watch out for",
+    "confidence": "Evidence confidence is **{level}**: {detail}",
+    "noConfidence": "No evidence confidence on record."
+  },
+
+  "weekly-signal-digest": {
+    "lead": {
+      "zero": "No new postings in the last seven days.",
+      "one": "**1 new posting** across 1 account in the last seven days.",
+      "other": "**{n} new postings** across {accounts} accounts in the last seven days."
+    },
+    "postingsHeading": "New postings this week",
+    "posting": "**{company}**: {title} ({team}), {age}",
+    "actHeading": "Accounts to act on",
+    "act": "**{company}** · ICP fit {score}: {whyNow}",
+    "noAct": "No accounts are Mobilizing right now.",
+    "maxAge": 7
+  },
+
+  "campaign-review": {
+    "lead": "**{campaign}** · {status} · {accounts} accounts, {contacts} contacts",
+    "numbers": "{contacted} accounts contacted and {replied} replied: a reply rate of **{rate}**.",
+    "nothingSent": "Nothing has been sent yet, so there is no reply rate.",
+    "repliesHeading": "Replies",
+    "replyTypes": {
+      "interested": "Interested: {n}",
+      "unclear": "Needs review: {n}",
+      "not_interested": "Not interested: {n}",
+      "ooo": "Out of office: {n}"
+    },
+    "nextHeading": "Next steps",
+    "next": {
+      "interested": "**{contact}** at {company} is interested. Book the meeting.",
+      "unclear": "**{contact}** at {company} sent a reply that needs review. Read it and classify it.",
+      "not_interested": "**{contact}** at {company} is not interested. Leave them out of the next campaign.",
+      "ooo": "**{contact}** at {company} is out of office. Follow up when they are back."
+    },
+    "noReplies": "No replies yet. Check again after the next step goes out."
+  }
+}

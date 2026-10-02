@@ -10,8 +10,9 @@
  *   action pills  Start a campaign from this list, Save as a list, and
  *                 Refine by ICP
  *
- * The three kinds of message and what they store are described in
- * src/lib/chats.js. All copy comes from content/chat/replies.json.
+ * The kinds of message and what they store are described in
+ * src/lib/chats.js. All copy comes from content/chat/replies.json. A skill
+ * run is drawn by SkillReply.jsx, with the same steps and pills.
  */
 import { Link } from 'react-router-dom'
 import REPLIES from '../../../content/chat/replies.json'
@@ -25,14 +26,15 @@ import { scopeForCompanies } from '../../lib/listActions'
 import { getVendorProfile, useVendorProfile } from '../../lib/profile'
 import { Icon } from '../Icon'
 import { ActionPills } from '../campaign/ActionPills'
-import { ActionPill, Chip, EmptyNote } from '../ui'
+import { ActionPill, Chip, EmptyNote, RemovableChip } from '../ui'
 import { ResultCard } from './ResultCard'
+import { SkillReply } from './SkillReply'
 
 const COPY = REPLIES
 
 /* --- Pieces ------------------------------------------------------------- */
 
-function Steps({ steps }) {
+export function Steps({ steps }) {
   if (!steps.length) return null
   return (
     <div className="flex flex-wrap items-center gap-1.5">
@@ -46,30 +48,18 @@ function Steps({ steps }) {
   )
 }
 
-function RemovableChip({ label, onRemove }) {
-  return (
-    <span className="inline-flex h-7 items-center gap-1 rounded-full border border-accent bg-accent-quiet pr-1 pl-3 text-xs font-name text-accent">
-      {label}
-      <button
-        type="button"
-        onClick={onRemove}
-        aria-label={fill(COPY.removeFilter, { label })}
-        title={fill(COPY.removeFilter, { label })}
-        className="grid size-5 place-items-center rounded-full transition-colors duration-150 ease-lp hover:bg-accent hover:text-accent-txt"
-      >
-        <Icon name="close" className="size-3" />
-      </button>
-    </span>
-  )
-}
-
 function InterpretedAs({ chips }) {
   if (!chips.length) return null
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       <span className="lp-label mr-1">{COPY.interpretedAs}</span>
       {chips.map((c) => (
-        <RemovableChip key={c.key} label={c.label} onRemove={c.onRemove} />
+        <RemovableChip
+          key={c.key}
+          label={c.label}
+          onRemove={c.onRemove}
+          removeLabel={fill(COPY.removeFilter, { label: c.label })}
+        />
       ))}
     </div>
   )
@@ -80,7 +70,7 @@ function InterpretedAs({ chips }) {
  * companies found, named after the chat; Refine by ICP adds the vendor
  * profile's filters as chips, or takes them off again.
  */
-function Actions({ companies, title, onAction, refine }) {
+export function Actions({ companies, title, onAction, refine }) {
   if (!companies.length && !refine) return null
   const scope = { ...scopeForCompanies(companies), name: title, saveName: title, nameFor: undefined }
 
@@ -244,6 +234,7 @@ export function AgentReply({ chatId, message, title, archetype, openId, onOpen, 
     <div className="space-y-3">
       {message.kind === 'results' && <Results {...shared} />}
       {message.kind === 'brief' && <Brief {...shared} />}
+      {message.kind === 'skill' && <SkillReply {...shared} />}
       {message.kind === 'nomatch' && <NoMatch onPrompt={onPrompt} />}
     </div>
   )

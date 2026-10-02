@@ -187,6 +187,18 @@ keeps a company in rather than dropping it.
   `/tenant`, `/vendor`, `/customer` and `/admin/*` forward into Settings;
   `src/pages/AdminSection.jsx` is now only that redirect.
 - Signals, Generate, Resources - placeholder screens, no brief written yet.
+- Skills (`/skills`, `/skills/<id>`, `/skills/new`, `/skills/<id>/edit`)
+  has no brief. The seed skills are markdown files in `content/skills/`,
+  read at load by `src/lib/skills.js` (frontmatter via
+  `src/lib/frontmatter.js`, markdown drawn by `src/components/Markdown.jsx`,
+  both written here rather than added as libraries). New skills and edits
+  live at module scope and reset on reload: no new localStorage. System
+  skills are read only. There is no model: each seed skill's run is
+  scripted from the dummy data by `src/lib/skillRuns.js`, so the Example
+  output on a skill's page is that same script on its example input and
+  can never drift from the data. Run opens New chat with the skill
+  attached; the "/" button or typing "/" in any chat box opens the picker.
+  Skill copy is SAP-specific at the owner's request.
 - Campaigns has a brief (section 9 of `BRIEF.md`) and is being built in
   steps. Its data and store exist but the screen is still a placeholder.
   Read "Build progress" at the end of section 9 before continuing: it says
@@ -251,8 +263,8 @@ keeps a company in rather than dropping it.
   set on its own in `content/chat/home.json` ("Mike"), deliberately not
   the signed-in teammate, who is still Priya Raman everywhere else. Its
   copy is SAP-specific at the
-  owner's request, noted in `content/README.md`. The "/" button shows a
-  placeholder until the Skills library (Phase 2) is built.
+  owner's request, noted in `content/README.md`. The "/" button opens the
+  skills picker (see Skills below).
 - The assistant widget is visual only. There is no model behind it: it waits a
   moment and replies from `src/data/assistant.js`, recognising only the name
   of a saved list. It is rendered by `App.jsx` outside `<Routes>` so the

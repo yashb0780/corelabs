@@ -1,0 +1,96 @@
+{
+  "_about": "Every word on the Skills screens (/skills, a skill's page, the editor) and in the skills picker in the chat box. The skills themselves are the .md files in this folder.",
+
+  "breadcrumbRoot": "Tools",
+  "title": "Skills",
+  "subtitle": "Saved instructions LeadPlus can run on an account, a campaign or your whole workspace.",
+  "newSkill": "New skill",
+  "run": "Run",
+  "runSkill": "Run skill",
+  "edit": "Edit",
+  "readOnly": "Read only",
+  "readOnlyHint": "System skills are maintained by LeadPlus and cannot be edited.",
+  "emptyTab": "No skills here yet. Use New skill to write one.",
+
+  "_tabsAbout": "The tabs on /skills. 'all' shows every skill; the others show one scope.",
+  "tabs": [
+    { "id": "all", "label": "All" },
+    { "id": "workspace", "label": "Workspace" },
+    { "id": "mine", "label": "My skills" },
+    { "id": "system", "label": "System" }
+  ],
+
+  "_scopesAbout": "The badge on every skill. tone is a colour from the tone palette: grey, blue, amber, green or teal.",
+  "scopes": {
+    "system": { "label": "System", "tone": "grey" },
+    "workspace": { "label": "Workspace", "tone": "blue" },
+    "mine": { "label": "My skill", "tone": "teal" }
+  },
+
+  "_categoriesAbout": "The groups on /skills, in this order. A skill's category in its .md file must be one of these ids.",
+  "categories": [
+    { "id": "find", "label": "Find accounts" },
+    { "id": "understand", "label": "Understand accounts" },
+    { "id": "reach", "label": "Reach out" },
+    { "id": "review", "label": "Review" }
+  ],
+
+  "_inputsAbout": "What a skill can run on. label is shown on the skill's page, picker is the label in front of the dropdown in the chat box.",
+  "inputs": {
+    "account": { "label": "One account", "picker": "Account" },
+    "list": { "label": "A saved list", "picker": "List" },
+    "segment": { "label": "A segment", "picker": "Segment" },
+    "campaign": { "label": "A campaign", "picker": "Campaign" },
+    "workspace": { "label": "The whole workspace", "picker": "Workspace" }
+  },
+
+  "detail": {
+    "description": "Description",
+    "whenToUse": "When to use",
+    "inputs": "Inputs",
+    "instructions": "Instructions",
+    "knowledge": "Knowledge used",
+    "exampleOutput": "Example output",
+    "exampleOn": "Example run on {input}",
+    "recentRuns": "Recent runs",
+    "noRuns": "Not run yet.",
+    "notWritten": "Not written yet.",
+    "noKnowledge": "No knowledge attached.",
+    "you": "You",
+    "openChat": "Open chat",
+    "notFoundTitle": "Skill not found",
+    "notFoundBody": "Skills you write last until the page is reloaded.",
+    "backToSkills": "Back to Skills"
+  },
+
+  "editor": {
+    "newTitle": "New skill",
+    "editTitle": "Edit skill",
+    "newSubtitle": "Write it once, run it from any chat with /.",
+    "save": "Save skill",
+    "cancel": "Cancel",
+    "systemTitle": "System skills cannot be edited",
+    "fields": {
+      "name": { "label": "Name", "placeholder": "e.g. Competitor displacement check" },
+      "description": { "label": "Description", "placeholder": "One line on what it does" },
+      "category": { "label": "Category" },
+      "scope": { "label": "Scope", "hint": "Workspace skills are shared with your team. My skills are yours alone." },
+      "inputs": { "label": "Inputs", "hint": "What it runs on. The first one ticked is what the chat box asks for." },
+      "whenToUse": { "label": "When to use", "placeholder": "The moment a rep should reach for this" },
+      "instructions": { "label": "Instructions", "hint": "Markdown: ## for a heading, 1. for a step, - for a bullet, **bold**.", "placeholder": "1. First step\n2. Second step\n\n**Constraints**\n\n- What it must never do" },
+      "outputFormat": { "label": "Output format", "placeholder": "What the answer should look like" },
+      "knowledge": { "label": "Knowledge used", "placeholder": "Type and press Enter" }
+    },
+    "scopeOptions": [
+      { "value": "mine", "label": "My skills" },
+      { "value": "workspace", "label": "Workspace" }
+    ]
+  },
+
+  "picker": {
+    "label": "Skills",
+    "search": "Search skills…",
+    "noMatch": "No skills match",
+    "remove": "Remove skill {name}"
+  }
+}

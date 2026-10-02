@@ -42,6 +42,7 @@ const NAV_SECTIONS = [
     items: [
       { to: '/generate', label: 'Generate', icon: 'sparkle' },
       { to: '/resources', label: 'Resources', icon: 'book' },
+      { to: '/skills', label: 'Skills', icon: 'zap' },
     ],
   },
   {

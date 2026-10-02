@@ -1,0 +1,46 @@
+{
+  "_about": "The Recent runs on each skill's page before anyone has run it in this session. Keyed by the skill's file name. by is a teammate id from src/data/teammates.js (the signed-in teammate shows as You). input is what it ran on: type is account, campaign or workspace, and id is a company id from src/data/companies.js or a campaign id. at is the local date and time. Runs from chats in this browser are added on top automatically.",
+  "runs": {
+    "ecc-holdout-finder": [
+      { "by": "marcus-webb", "input": { "type": "workspace" }, "at": "2026-09-28T09:10" },
+      { "by": "hannah-cho", "input": { "type": "workspace" }, "at": "2026-09-21T08:45" }
+    ],
+    "pre-rfp-detector": [
+      { "by": "elena-sokolova", "input": { "type": "workspace" }, "at": "2026-09-29T11:30" }
+    ],
+    "job-post-decoder": [
+      { "by": "dev-malhotra", "input": { "type": "account", "id": "caterpillar" }, "at": "2026-09-30T15:05" },
+      { "by": "marcus-webb", "input": { "type": "account", "id": "cummins" }, "at": "2026-09-26T10:20" }
+    ],
+    "account-brief": [
+      { "by": "marcus-webb", "input": { "type": "account", "id": "cummins" }, "at": "2026-09-30T16:20" },
+      { "by": "elena-sokolova", "input": { "type": "account", "id": "coca-cola" }, "at": "2026-09-29T10:05" },
+      { "by": "dev-malhotra", "input": { "type": "account", "id": "whirlpool" }, "at": "2026-09-25T14:40" }
+    ],
+    "rise-risk-check": [
+      { "by": "hannah-cho", "input": { "type": "account", "id": "coca-cola" }, "at": "2026-09-29T13:15" }
+    ],
+    "buying-committee-map": [
+      { "by": "tomas-alvarez", "input": { "type": "account", "id": "coca-cola" }, "at": "2026-09-30T09:40" },
+      { "by": "aisha-bello", "input": { "type": "account", "id": "cummins" }, "at": "2026-09-24T16:00" }
+    ],
+    "partner-of-record-check": [
+      { "by": "jordan-reyes", "input": { "type": "account", "id": "caterpillar" }, "at": "2026-09-27T12:25" }
+    ],
+    "signal-based-first-touch": [
+      { "by": "sam-okafor", "input": { "type": "account", "id": "coca-cola" }, "at": "2026-09-30T08:55" },
+      { "by": "marcus-webb", "input": { "type": "account", "id": "colgate-palmolive" }, "at": "2026-09-28T14:10" },
+      { "by": "elena-sokolova", "input": { "type": "account", "id": "kimberly-clark" }, "at": "2026-09-23T10:30" }
+    ],
+    "meeting-prep": [
+      { "by": "dev-malhotra", "input": { "type": "account", "id": "whirlpool" }, "at": "2026-09-29T08:15" }
+    ],
+    "weekly-signal-digest": [
+      { "by": "marcus-webb", "input": { "type": "workspace" }, "at": "2026-09-28T07:30" },
+      { "by": "marcus-webb", "input": { "type": "workspace" }, "at": "2026-09-21T07:30" }
+    ],
+    "campaign-review": [
+      { "by": "priya-raman", "input": { "type": "campaign", "id": "priority-accounts" }, "at": "2026-09-30T17:45" }
+    ]
+  }
+}

@@ -22,6 +22,9 @@ import Reports from './pages/Reports'
 import Resources from './pages/Resources'
 import SavedLists from './pages/SavedLists'
 import SectionPage from './pages/SectionPage'
+import SkillDetail from './pages/SkillDetail'
+import SkillEditor from './pages/SkillEditor'
+import Skills from './pages/Skills'
 import Segments from './pages/Segments'
 import Settings from './pages/Settings'
 import Signals from './pages/Signals'
@@ -63,6 +66,11 @@ export default function App() {
           <Route path="/reports/:reportId" element={<ReportDetail />} />
           <Route path="/generate" element={<Generate />} />
           <Route path="/resources" element={<Resources />} />
+          <Route path="/skills" element={<Skills />} />
+          {/* /skills/new is a fixed address, so it outranks /skills/:skillId. */}
+          <Route path="/skills/new" element={<SkillEditor />} />
+          <Route path="/skills/:skillId" element={<SkillDetail />} />
+          <Route path="/skills/:skillId/edit" element={<SkillEditor />} />
 
           {/* Vendor Profile is a real screen rather than a card placeholder.
               A static path outranks the dynamic /:sectionId/:cardId below it,

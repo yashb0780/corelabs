@@ -311,6 +311,12 @@ const paths = {
       <path d="M5.75 3.25v9.5M10.25 3.25v9.5" />
     </>
   ),
+  /* A lightning bolt: Skills. */
+  zap: (
+    <>
+      <path d="M8.75 1.75 3.25 9h4.5l-.5 5.25L12.75 7h-4.5z" />
+    </>
+  ),
   /* An arrow leaving a box: open this in its own full page. */
   expand: (
     <>

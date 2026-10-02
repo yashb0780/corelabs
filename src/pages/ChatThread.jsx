@@ -23,12 +23,21 @@ import { EmptyState } from '../components/ui'
 import { workspaceArchetype } from '../data/workspace'
 import { sendMessage, useChats } from '../lib/chats'
 
-function UserBubble({ text }) {
+/** The user's message. A skill attached to it shows as a pill in front. */
+function UserBubble({ text, skill }) {
   return (
     <div className="flex justify-end">
-      <p className="max-w-[80%] rounded-lg bg-surface-sunken px-3.5 py-2 text-sm whitespace-pre-wrap text-txt">
-        {text}
-      </p>
+      <div className="max-w-[80%] space-y-1.5 rounded-lg bg-surface-sunken px-3.5 py-2 text-sm text-txt">
+        {skill && (
+          <p className="flex flex-wrap items-center gap-1.5">
+            <span className="rounded-full bg-accent-quiet px-2.5 py-0.5 text-xs font-name text-accent">
+              /{skill.name}
+            </span>
+            {skill.inputLabel && <span className="text-xs text-txt-2">{skill.inputLabel}</span>}
+          </p>
+        )}
+        {text && <p className="whitespace-pre-wrap">{text}</p>}
+      </div>
     </div>
   )
 }
@@ -70,7 +79,7 @@ function Thread({ chat, typing }) {
             <div className="mx-auto space-y-6 px-6 pt-6 pb-4" style={{ maxWidth: 'var(--lp-chat-w)' }}>
               {chat.messages.map((m) =>
                 m.from === 'user' ? (
-                  <UserBubble key={m.id} text={m.text} />
+                  <UserBubble key={m.id} text={m.text} skill={m.skill} />
                 ) : (
                   <AgentReply
                     key={m.id}
@@ -93,7 +102,7 @@ function Thread({ chat, typing }) {
             <Composer
               size="sm"
               placeholder={HOME.threadPlaceholder}
-              onSend={ask}
+              onSend={({ text, skill }) => sendMessage(chat.id, text, skill)}
               busy={typing}
               autoFocus
             />

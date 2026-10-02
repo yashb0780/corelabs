@@ -151,6 +151,29 @@ export function TonePill({ tone = 'grey', dashed = false, size = 'md', children,
   )
 }
 
+/**
+ * An accent chip with a cross that removes it. First used for the
+ * "Interpreted as" filters under a chat reply, and for the skill attached
+ * in the chat box. `removeLabel` is what a screen reader announces for the
+ * cross.
+ */
+export function RemovableChip({ label, onRemove, removeLabel }) {
+  return (
+    <span className="inline-flex h-7 max-w-full items-center gap-1 rounded-full border border-accent bg-accent-quiet pr-1 pl-3 text-xs font-name text-accent">
+      <span className="truncate">{label}</span>
+      <button
+        type="button"
+        onClick={onRemove}
+        aria-label={removeLabel}
+        title={removeLabel}
+        className="grid size-5 shrink-0 place-items-center rounded-full transition-colors duration-150 ease-lp hover:bg-accent hover:text-accent-txt"
+      >
+        <Icon name="close" className="size-3" />
+      </button>
+    </span>
+  )
+}
+
 /** A small neutral chip. Used for state markers and counts. */
 export function Chip({ children, title, className }) {
   return (

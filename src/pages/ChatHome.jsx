@@ -11,9 +11,12 @@
  * Sending, or clicking a chip, starts a chat named after the prompt and
  * opens it at /chat/<id>, where the reply lands.
  *
+ * "Run" on a skill comes here with { skillId } in the router state, and
+ * the composer opens with that skill already attached.
+ *
  * Copy: content/chat/home.json, including the name in the greeting.
  */
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import HOME from '../../content/chat/home.json'
 import { Composer } from '../components/chat/Composer'
 import { TopBar } from '../components/layout/TopBar'
@@ -35,7 +38,8 @@ function greeting(now = new Date()) {
 
 export default function ChatHome() {
   const navigate = useNavigate()
-  const start = (text) => navigate(`/chat/${startChat(text)}`)
+  const location = useLocation()
+  const start = ({ text, skill = null }) => navigate(`/chat/${startChat(text, skill)}`)
 
   return (
     <div className="flex h-full min-w-0 flex-col">
@@ -52,12 +56,20 @@ export default function ChatHome() {
           <h1 className="text-center text-title text-txt">{greeting()}</h1>
 
           <div className="mt-8">
-            <Composer placeholder={HOME.placeholder} onSend={start} autoFocus />
+            {/* Keyed by the visit, so a second Run from Skills attaches
+                its skill afresh rather than keeping the last one. */}
+            <Composer
+              key={location.key}
+              placeholder={HOME.placeholder}
+              onSend={start}
+              initialSkillId={location.state?.skillId ?? null}
+              autoFocus
+            />
           </div>
 
           <div className="mt-3 flex flex-wrap justify-center gap-1.5">
             {HOME.suggestions.map((s) => (
-              <ActionPill key={s} onClick={() => start(s)}>
+              <ActionPill key={s} onClick={() => start({ text: s })}>
                 {s}
               </ActionPill>
             ))}
